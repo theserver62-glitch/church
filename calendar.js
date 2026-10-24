@@ -1,6 +1,6 @@
 // 예장 통합 교회력 날짜 계산과 "이번 주 할 일" 뽑기. 날짜는 모두 'YYYY-MM-DD' 문자열.
 // 시간대 문제를 피하려고 내부 계산은 UTC 자정 Date로만 한다.
-import { EVENTS } from './events.js?v=202610241806';
+import { EVENTS } from './events.js?v=202610241811';
 
 const D = (y, m, d) => new Date(Date.UTC(y, m - 1, d));
 const add = (dt, n) => new Date(dt.getTime() + n * 864e5);
