@@ -986,3 +986,68 @@ body:has(.event-dialog[open]){overflow:hidden}
 .ppt-template .meta{grid-column:1}
 .ppt-template button{grid-row:1/span 2;grid-column:2}
 @media(max-width:559px){.ws-add{grid-template-columns:1fr 1fr}.ws-add button{grid-column:1/-1}}
+
+/* 권한 */
+.perm-note{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3);margin-bottom:var(--s4)}
+.perm-note .sub{min-height:40px}
+.admin-row{grid-template-columns:minmax(0,1fr) auto;align-items:center}
+.admin-row .meta{grid-column:1}
+.admin-row>button,.admin-row>.row{grid-column:2;grid-row:1/span 2}
+.perm-alert{display:flex;align-items:center;gap:var(--s2);margin:0;color:var(--accent);font-weight:600}
+.home-top{flex-wrap:wrap}
+.settings-grid input:disabled,.settings-grid button:disabled{opacity:.6}
+.perm-box{max-width:720px}
+
+/* 예배 순서 표: 컴퓨터는 번호 | 순서 | 담당 | 메모, 폰은 이름 왼쪽·담당 오른쪽, 메모는 아래 한 줄 */
+.worship-steps{display:none}
+.ws-bar{display:flex;align-items:center;gap:var(--s2);margin:var(--s3) 0 var(--s2)}
+.ws-table{width:100%;max-width:820px;border-collapse:collapse}
+.ws-table th,.ws-table td{padding:var(--s2) var(--s2);border-bottom:1px solid var(--line);text-align:left;vertical-align:middle;font-weight:400}
+.ws-table thead th{font-size:var(--fs-14);color:var(--ink-3);font-weight:600}
+.ws-table .ws-num{width:40px;color:var(--ink-3);font-variant-numeric:tabular-nums;text-align:center}
+.ws-table .ws-name{font-size:var(--fs-18);font-weight:600}
+.ws-table .ws-who{white-space:nowrap;color:var(--ink-2)}
+.ws-table .ws-note{font-size:var(--fs-14);color:var(--ink-3)}
+.ws-table .ws-acts{white-space:nowrap}
+.ws-table .ws-acts button{min-width:40px;padding:0 var(--s2);font-size:var(--fs-14);margin-left:var(--s1)}
+@media(max-width:959px){
+ .ws-table thead{display:none}
+ .ws-table tr{display:grid;grid-template-columns:28px minmax(0,1fr) auto;grid-template-areas:"num name who" ". note note" ". acts acts";column-gap:var(--s2);padding:var(--s2) 0;border-bottom:1px solid var(--line)}
+ .ws-table th,.ws-table td{padding:0;border:0}
+ .ws-table .ws-num{grid-area:num;width:auto;text-align:left}
+ .ws-table .ws-name{grid-area:name;font-size:var(--fs-16)}
+ .ws-table .ws-who{grid-area:who;text-align:right}
+ .ws-table .ws-note{grid-area:note}
+ .ws-table .ws-note:empty{display:none}
+ .ws-table .ws-acts{grid-area:acts;margin-top:var(--s1);text-align:right}
+ .ws-table .ws-acts button{min-width:44px}
+}
+.ws-print{width:100%}
+
+/* 행사 추가 창: 종류는 목록 줄, 2단계는 이름·날짜 먼저, 할 일은 접고 한 줄씩, [추가]는 아래에 붙음 */
+.event-dialog .template-list{display:block}
+.event-dialog .template-list button{display:flex;flex-direction:row;justify-content:space-between;align-items:center;width:100%;min-height:var(--tap);padding:0 var(--s2);border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;text-align:left}
+.event-dialog .template-list button:hover{background:var(--paper)}
+.event-dialog .template-list strong{font-size:var(--fs-16)}
+.event-dialog .template-list small{margin:0;color:var(--ink-3)}
+.event-when{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:var(--s2)}
+.days-input{text-align:center}
+.task-fold{border-top:1px solid var(--line);margin-top:var(--s3)}
+.task-line{display:grid;grid-template-columns:auto minmax(0,1fr) 96px auto;gap:var(--s1) var(--s2);align-items:center;padding:var(--s1) 0;border-bottom:1px solid var(--line)}
+.task-weeks{display:flex;align-items:center;gap:2px}
+.task-weeks button{min-width:36px;width:36px;padding:0}
+.weeks-label{min-width:64px;text-align:center;font-size:var(--fs-14);font-weight:600;font-variant-numeric:tabular-nums}
+.task-line .text-button{min-width:40px;padding:0;font-size:var(--fs-18)}
+@media(max-width:639px){.task-line{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"w w x" "t t t" "who who who"}.task-weeks{grid-area:w}.task-line>input:not(.who-input){grid-area:t}.who-input{grid-area:who}.task-line .text-button{grid-area:x;justify-self:end}}
+.dlg-foot{position:sticky;bottom:calc(-1 * var(--s5));z-index:2;margin:var(--s3) calc(-1 * var(--s5)) calc(-1 * var(--s5));padding:var(--s3) var(--s5);background:var(--surface);border-top:1px solid var(--line)}
+.dlg-foot .primary{flex:1}
+@media(max-width:639px){.dlg-foot{margin:var(--s3) calc(-1 * var(--s4)) 0;padding:var(--s3) var(--s4)}}
+@media(max-width:639px){.task-weeks button{width:44px;min-width:44px}}
+.confirm-sheet{max-width:440px}
+.confirm-sheet h2{margin:0 0 var(--s2);font-size:var(--fs-22)}
+.confirm-sheet p{color:var(--ink-2)}
+.dlg-actions{margin-top:var(--s4)}
+.dlg-actions .primary{flex:1}
+.tpl-btns{grid-column:2;grid-row:1/span 2;flex-wrap:nowrap}
+.tpl-btns button{padding:0 var(--s3);white-space:nowrap}
+@media(max-width:559px){.ppt-template{grid-template-columns:1fr}.tpl-btns{grid-column:1;grid-row:auto}}
