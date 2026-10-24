@@ -1122,3 +1122,78 @@ input.check-circle:checked::after{content:'';width:7px;height:12px;margin-top:-3
 .guide-pop.as-sheet::before{display:block;top:var(--s2);left:50%;width:40px;height:4px;margin-left:-20px;border:0;border-radius:2px;background:var(--line-2);transform:none}
 .guide-pop li+li{margin-top:var(--s2)}
 .new-conti-dialog .hint{margin:var(--s4) 0 var(--s2)}
+/* 콘티 21차: 맨 위 한 줄 [날짜 ▾ 콘티 목록] 상태 [공유·출력 ▾] · 콘티 목록 판 · 곡 줄 [악보][⋯] */
+.conti-top{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3);margin:0 0 var(--s4)}
+.conti-pick{gap:var(--s2);padding:0 var(--s3)}
+.conti-pick strong{font-size:var(--fs-18)}
+.conti-pick small{font-size:var(--fs-14);font-weight:400;color:var(--ink-3)}
+.conti-pick .chev,.menu>summary::after{display:inline-block;width:7px;height:7px;margin:0 2px 4px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg)}
+.conti-pick[aria-expanded=true] .chev{margin-bottom:-2px;transform:rotate(-135deg)}
+.conti-status{flex:1 1 auto;margin:0;color:var(--ink-2)}
+.conti-status .saved{color:var(--accent);font-weight:600}
+.conti-status .saving{color:var(--ink-3)}
+.conti-status .err{color:var(--alert);font-weight:600}
+.conti-start{display:flex;flex-wrap:wrap;gap:var(--s2);flex:1 1 auto}
+.menu{position:relative;border:0;margin:0}
+.menu>summary{display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);min-height:var(--tap);min-width:44px;padding:0 var(--s4);border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface);font-weight:600;list-style:none;cursor:pointer}
+.menu>summary::-webkit-details-marker{display:none}
+.menu>summary::after{content:''}
+.song-more>summary{padding:0;font-size:var(--fs-18);letter-spacing:0}
+.song-more>summary::after{display:none}
+.menu-pop{position:absolute;z-index:30;right:0;top:calc(100% + var(--s1));display:grid;min-width:232px;padding:var(--s2);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--float)}
+.menu-pop .menu-item{justify-content:flex-start;width:100%;border:0;background:transparent;font-weight:400}
+.menu-pop .menu-item:hover{background:var(--paper-2)}
+.menu-pop .menu-item.danger{color:var(--alert)}
+.menu-pop .ppt-cover{padding:0 var(--s4) var(--s2) var(--s6)}
+.share-menu{margin-left:auto}
+.conti-panel{margin:0 0 var(--s4);padding:var(--s4);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md)}
+.conti-panel .conti-date{display:flex;flex-direction:column;gap:var(--s1);max-width:280px;margin:0 0 var(--s4)}
+.conti .conti-panel .conti-history{display:block;margin:0;border-top:1px solid var(--line);padding-top:var(--s3)}
+.conti-history h3{margin:0 0 var(--s2);font-size:var(--fs-18)}
+.from-kakao{display:inline-block;margin-left:var(--s2);padding:0 var(--s2);border:1px solid var(--line-2);border-radius:var(--r-pill);font-size:var(--fs-12);font-weight:400;line-height:20px;color:var(--ink-3);vertical-align:middle}
+.conti[data-tab=history] .conti-panel[hidden]{display:block}
+.conti[data-tab=history] .conti-layout{display:none}
+.conti-songs li.conti-song{grid-template-columns:28px minmax(0,1fr) auto auto;gap:var(--s1) var(--s2);align-items:center;padding:var(--s2) 0}
+.conti-song input.title{border-color:transparent;background:transparent;font-weight:600;padding:0 var(--s2)}
+.conti-song input.title:hover,.conti-song input.title:focus{border-color:var(--line-2);background:var(--surface)}
+.key-field{display:inline-flex;align-items:center;gap:var(--s1);margin:0;font-size:var(--fs-14);color:var(--ink-3);font-weight:400}
+.key-field input.key{width:48px;padding:0;text-align:center}
+.conti-song .acts,.conti-song .order-acts{display:flex;gap:var(--s1);align-items:center}
+.conti-song .memo-line{grid-column:2/-1;margin:0;padding:0 var(--s2)}
+.conti-song small.memo-line{font-size:var(--fs-14)}
+.conti-song.ordering{cursor:grab}
+.conti-song.flash{animation:flash 1.6s ease-out}
+@keyframes flash{from{background:var(--accent-soft)}to{background:transparent}}
+.order-bar{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);border-bottom:1px solid var(--line)}
+.order-bar .text-button{margin-left:auto}
+.order-bar small{order:-1}
+.conti-more{gap:var(--s2);margin-top:var(--s2)}
+.browse-title{margin:0 0 var(--s3);font:700 var(--fs-22)/var(--lh-title) var(--display);letter-spacing:-.02em}
+.only-wide{display:none}
+@media(max-width:639px){.conti-status{order:3;flex-basis:100%}.key-field>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}}
+@media(min-width:960px){
+ .only-wide{display:block}.only-narrow{display:none}
+ .conti-layout{grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-rows:auto 1fr}
+ .conti-layout>.special-browser{grid-column:1;grid-row:2}
+ .conti-layout>.song-browser{grid-column:2;grid-row:1/span 2}
+}
+.menu>summary::before{display:none}
+.menu-pop{min-width:264px}
+.menu-pop .menu-item{font-size:var(--fs-16)}
+.conti-panel .conti-date{align-items:stretch}.conti-panel .conti-date>span{position:static;width:auto;height:auto;clip-path:none;text-align:left;font-size:var(--fs-14);color:var(--ink-2)}
+.conti .conti-panel .conti-date{display:grid;justify-items:start;gap:var(--s1)}.conti .conti-panel .conti-date input{width:280px;max-width:100%}
+/* 찬송가 탭: 폰은 탭으로, 컴퓨터는 특송 아래 */
+.conti:not([data-tab=hymn]) .hymn-browser{display:none}
+.conti[data-tab=hymn] .conti-editor,.conti[data-tab=hymn] .song-browser,.conti[data-tab=hymn] .conti-hint{display:none}
+.hymn-note{margin:0 0 var(--s3);font-size:var(--fs-14)}
+.hymn-list li{flex-wrap:wrap}
+.hymn-list .song-info{flex:1 1 160px}
+.hymn-list .sub-link{display:inline-flex;align-items:center;min-height:44px;padding:0 var(--s3);border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface);color:var(--ink);font-weight:600;text-decoration:none}
+.hymn-browser .song-groups,.hymn-browser>div>.song-group:first-child{margin-top:var(--s2)}
+@media(min-width:960px){
+ .conti-layout{grid-template-rows:auto auto 1fr}
+ .conti-layout>.hymn-browser{grid-column:1;grid-row:3}
+ .conti-layout>.song-browser{grid-row:1/span 3}
+}
+.hymn-list li{justify-content:flex-end;gap:var(--s2)}.hymn-list li>*{white-space:nowrap}.hymn-list .song-info{white-space:normal}@media(max-width:639px){.hymn-list .song-info{flex-basis:100%}}
+.hymn-browser .browse button{width:auto;padding:0 var(--s3);font-size:var(--fs-16);font-weight:600}

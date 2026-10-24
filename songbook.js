@@ -186,3 +186,11 @@ export function groupFor(songs, by, sheets = {}) {
   const order = by === 'name' ? [...new Set(CHO)] : ORDER[by] || [];
   return [...g].sort((a, b) => { const ia = order.indexOf(a[0]), ib = order.indexOf(b[0]); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a[0].localeCompare(b[0], 'ko'); });
 }
+
+// 지난 콘티 꼬리표: source가 'kakao'이거나, source 없이 2026-10-24 전 날짜면 카톡 백업에서 가져온 것
+export const fromKakao = (doc, day) => doc?.source === 'kakao' || (!doc?.source && day < '2026-10-24');
+
+// 찬송가: 악보·PPT는 앱에 넣지 않고(한국찬송가공회 저작권) 구글 검색으로 연결
+export const hymnLinks = x => { const q = t => 'https://www.google.com/search?q=' + encodeURIComponent(t); return { sheet: q(`새찬송가 ${x.no}장 ${x.title} 악보`), ppt: q(`새찬송가 ${x.no}장 ${x.title} ppt`) }; };
+// "123" · "123장"은 장 번호 앞자리로, 그 밖은 제목에 들어 있는지로 찾는다
+export const filterHymns = (list, q = '') => { q = q.trim(); const n = q.replace(/장$/, ''); return !q ? list : /^\d+$/.test(n) ? list.filter(x => String(x.no).startsWith(n)) : list.filter(x => x.title.includes(q)); };
