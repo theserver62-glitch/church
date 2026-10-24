@@ -1,15 +1,15 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610241551';
-import { TEMPLATES } from './templates.js?v=202610241551';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610241806';
+import { TEMPLATES } from './templates.js?v=202610241806';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps } from './home.js?v=202610241551';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610241551';
-import { openStore, newChurchCode } from './store.js?v=202610241551';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610241551';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610241551';
-import { docs } from './docs.js?v=202610241551';
-import { equipment, equipmentId, equipmentRows } from './equipment.js?v=202610241551';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId } from './songbook.js?v=202610241551';
-import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610241551';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps } from './home.js?v=202610241806';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610241806';
+import { openStore, newChurchCode } from './store.js?v=202610241806';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610241806';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610241806';
+import { docs } from './docs.js?v=202610241806';
+import { equipment, equipmentId, equipmentRows } from './equipment.js?v=202610241806';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst } from './songbook.js?v=202610241806';
+import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610241806';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -55,8 +55,8 @@ addEventListener('pagehide', flush);
 
 const say = t => { msg.textContent = t; clearTimeout(say.t); say.t = setTimeout(() => (msg.textContent = ''), 4000); };
 const save = (path, obj) => store.update(path, obj).then(() => true).catch(() => { say('저장하지 못했어요. 인터넷 연결을 확인해 주세요.'); return false; });
-const watch = (path, cb) => {
-  const u = store.watch(path, cb, () => say('불러오지 못했어요. 인터넷 연결을 확인해 주세요.'));
+const watch = (path, cb, onErr) => {
+  const u = store.watch(path, cb, e => { say('불러오지 못했어요. 인터넷 연결을 확인해 주세요.'); onErr?.(e); });
   unsubs.push(u);
   return u;
 };
@@ -241,7 +241,7 @@ const SCREEN_HELP = {"home":["◀ ▶로 기간을 옮기고, 오른쪽 '월 보
 function screenHeading(id, title) {
  const key='church:guide:'+id;
  const card=h('section',{class:'card usage-guide',id:'guide-'+id,hidden:localStorage.getItem(key)!=='open'},h('strong',{},'이 화면 사용법'),h('ol',{},SCREEN_HELP[id].map(line=>h('li',{},line))));
- const button=h('button',{type:'button',class:'sub guide-toggle','aria-label':title+' 이 화면 사용법','aria-controls':card.id,'aria-expanded':String(!card.hidden),onclick:()=>{card.hidden=!card.hidden;localStorage.setItem(key,card.hidden?'closed':'open');button.setAttribute('aria-expanded',String(!card.hidden));}},'?');
+ const button=h('button',{type:'button',class:'sub guide-toggle','aria-label':title+' 이 화면 사용법','aria-controls':card.id,'aria-expanded':String(!card.hidden),onclick:()=>{card.hidden=!card.hidden;localStorage.setItem(key,card.hidden?'closed':'open');button.setAttribute('aria-expanded',String(!card.hidden));}},h('span',{class:'q-mark','aria-hidden':'true'},'?'),'이 화면 도움말');
  card.append(h('button',{type:'button',class:'sub',onclick:()=>{card.hidden=true;for(const k of Object.keys(SCREEN_HELP))localStorage.setItem('church:guide:'+k,'closed');button.setAttribute('aria-expanded','false');button.focus();}},'알겠어요'));
  return [h('div',{class:'row screen-heading'},h('h2',{},title),button),card];
 }
@@ -304,7 +304,13 @@ function contiView() {
   } }, h('span', { class: 'desktop-copy' }, '예배'), 'PPT 만들기');
   const box = h('div'), list = h('datalist', { id: 'songbook' }), groups = h('div');
   let sheets={}; // 교회 문서의 sheets: {id: {title, key}}
-  const sheetButton=(title,key)=>{const hit=Object.entries(sheets).find(([,v])=>v?.title===title&&(v.key||'')===(key||''));return hit?h('button',{type:'button',class:'sub sheet-button','aria-label':title+' 악보 보기',onclick:()=>showSheet(title,hit[0],sheets)},'악보'):null;};
+  const sheetButton=(title,key)=>{const hit=Object.entries(sheets).find(([,v])=>v?.title===title&&(v.key||'')===(key||''));return hit?h('button',{type:'button',class:'sub sheet-button','aria-label':title+' 악보 보기',onclick:()=>showSheet(title,hit[0],sheets,{isFav,toggleFav})},glyph('conti'),'악보'):null;};
+  // 우리 교회 악보가 있으면 '악보 있는 곡'을 기본으로 켠다(null = 자동). 정렬: 악보 있는 곡 → 우리 교회 곡 → 시와찬미
+  let onlySheets=null, churchSongs={}, favorites={}, onlyFav=false;
+  const isFav=x=>favorites[label(x)]===true;
+  const toggleFav=x=>{const on=!isFav(x);favorites={...favorites,[label(x)]:on};save(churchPath(),{favorites:{[label(x)]:on}});say(on?label(x)+' 즐겨찾기에 넣었어요':label(x)+' 즐겨찾기에서 뺐어요');draw();drawBrowse();drawChips();};
+  const favButton=x=>h('button',{type:'button',class:'sub fav-button','aria-pressed':String(isFav(x)),'aria-label':(isFav(x)?'즐겨찾기 빼기: ':'즐겨찾기: ')+label(x),title:isFav(x)?'즐겨찾기 빼기':'즐겨찾기',onclick:()=>toggleFav(x)},isFav(x)?'★':'☆');
+  const useSheets=()=>onlySheets===null?Object.keys(sheets).length>0:onlySheets;
   const filters={key:'',theme:'',mood:''}; let count=8;
   const result=h('p',{'aria-live':'polite'});
   const options={key:['C','D','E','F','G','A','B','Ab','Bb','Eb','단조'],theme:['경배와 찬양','은혜와 사랑','회개와 고백','기도와 간구','축복과 교제','선교와 승리'],mood:['신나게','보통','잔잔하게']};
@@ -314,15 +320,18 @@ function contiView() {
   let shown=''; // 칩을 펼쳐 보인 줄(한 번에 한 줄만, 처음엔 모두 접힘)
   const listBox=h('div',{class:'browse-box'},result,groups);
   const chipButtons=()=>[...chips.querySelectorAll('.song-filter button')];
-  const drawChips=()=>fill(chips,search,openRow==='q'&&listBox,Object.entries(options).flatMap(([field,values])=>[h('div',{class:'song-filter '+field,role:'group','aria-label':{key:'키',theme:'주제',mood:'분위기'}[field]},h('button',{type:'button',class:'filter-head','aria-expanded':String(shown===field),onclick:()=>{shown=shown===field?'':field;drawChips();}},h('strong',{}, {key:'키',theme:'주제',mood:'분위기'}[field]),h('span',{},filters[field]||'전체')),shown===field&&['',...values].map(value=>h('button',{type:'button',class:'sub','aria-pressed':String(filters[field]===value),'aria-expanded':String(openRow===field&&filters[field]===value),onclick:e=>{const index=chipButtons().indexOf(e.currentTarget);if(filters[field]===value&&openRow===field)openRow='';else{filters[field]=value;openRow=field;}count=8;drawChips();drawBrowse();chipButtons()[index]?.focus();}},value||'전체'))),openRow===field&&listBox]),openRow==='all'&&listBox);
+  let filtersOpen=false;
+  const favCount=()=>Object.values(favorites).filter(v=>v===true).length;
+  const drawChips=()=>fill(chips,search,openRow==='q'&&listBox,h('button',{type:'button',class:'fav-only','aria-pressed':String(onlyFav),onclick:()=>{onlyFav=!onlyFav;openRow='sheets';count=8;drawChips();drawBrowse();}},'★ 즐겨찾기 '+favCount()+'곡',h('span',{class:'onoff'},onlyFav?'켜짐':'꺼짐')),Object.keys(sheets).length>0&&h('button',{type:'button',class:'sheet-only','aria-pressed':String(useSheets()),onclick:()=>{onlySheets=!useSheets();if(!openRow)openRow='sheets';count=8;drawChips();drawBrowse();}},glyph('conti'),'악보 있는 곡만 보기',h('span',{class:'onoff'},useSheets()?'켜짐':'꺼짐')),openRow==='sheets'&&listBox,h('button',{type:'button',class:'filter-head filter-all','aria-expanded':String(filtersOpen||!!(filters.key||filters.theme||filters.mood)),onclick:()=>{filtersOpen=!(filtersOpen||!!(filters.key||filters.theme||filters.mood));if(!filtersOpen){filters.key=filters.theme=filters.mood='';shown='';if(['key','theme','mood'].includes(openRow))openRow=Object.keys(sheets).length?'sheets':'';drawBrowse();}drawChips();}},h('strong',{},'키·주제·분위기로 고르기'),h('span',{},[filters.key,filters.theme,filters.mood].filter(Boolean).join(' · ')||'전체')),(filtersOpen||filters.key||filters.theme||filters.mood)&&Object.entries(options).flatMap(([field,values])=>[h('div',{class:'song-filter '+field,role:'group','aria-label':{key:'키',theme:'주제',mood:'분위기'}[field]},h('button',{type:'button',class:'filter-head','aria-expanded':String(shown===field),onclick:()=>{shown=shown===field?'':field;drawChips();}},h('strong',{}, {key:'키',theme:'주제',mood:'분위기'}[field]),h('span',{},filters[field]||'전체')),shown===field&&['',...values].map(value=>h('button',{type:'button',class:'sub','aria-pressed':String(filters[field]===value),'aria-expanded':String(openRow===field&&filters[field]===value),onclick:e=>{const index=chipButtons().indexOf(e.currentTarget);if(filters[field]===value&&openRow===field)openRow='';else{filters[field]=value;openRow=field;}count=8;drawChips();drawBrowse();chipButtons()[index]?.focus();}},value||'전체'))),openRow===field&&listBox]),openRow==='all'&&listBox);
   const search=h('input',{type:'search',k:'song-search',placeholder:'곡명 검색','aria-label':'곡명 검색',oninput:()=>{const want=search.value.trim()?'q':openRow==='q'?(wide()?'all':''):openRow;count=8;if(want!==openRow){openRow=want;drawChips();}drawBrowse();}});
   const drawBrowse=()=>{
-    const songs=filterSongs(Object.values(book),{...filters,q:search.value});
-    result.textContent=([filters.key && (filters.key==='단조'?'단조':filters.key+'키'),filters.theme,filters.mood].filter(Boolean).join(' · ')||'전체')+' — '+songs.length+'곡';
-    fill(groups,songs.length?h('ul',{class:'browse'},songs.slice(0,count).map(s=>h('li',{},h('span',{},h('span',{},s.title,' ',h('small',{class:'key-tag'},s.key||'미지정')),h('small',{class:'meta'},[s.note,s.mood,s.theme].filter(Boolean).join(' · '))),sheetLink(s),sheetButton(s.title,s.key),h('button',{class:'sub','aria-label':s.title+' 콘티에 추가',onclick:()=>{setSongs([...cur,{title:s.title,key:s.key,memo:''}]);say(s.title+' 추가했어요 · 이번 주 콘티 '+(cur.length)+'곡');}},'+')))):h('p',{class:'empty'},'조건에 맞는 곡이 없어요'),songs.length>count&&h('button',{class:'sub',onclick:()=>{count+=20;drawBrowse();}},'더 보기 · 남은 '+(songs.length-count)+'곡'));
+    const songs=sheetFirst(filterSongs(Object.values(book),{...filters,q:search.value}),sheets,churchSongs,useSheets()&&!onlyFav,favorites,onlyFav);
+    result.textContent=([onlyFav?'즐겨찾기':useSheets()&&'악보 있는 곡',filters.key && (filters.key==='단조'?'단조':filters.key+'키'),filters.theme,filters.mood].filter(Boolean).join(' · ')||'전체')+' — '+songs.length+'곡';
+    const q=search.value.trim(),typed=q&&!songs.some(x=>x.title===q)&&h('button',{type:'button',class:'sub add-title',onclick:()=>{setSongs([...cur,{title:q,key:'',memo:''}]);say(q+' 추가했어요');search.value='';drawBrowse();}},"+ '"+q+"' 곡으로 추가");
+    fill(groups,typed,songs.length?h('ul',{class:'browse'},songs.slice(0,count).map(s=>h('li',{},h('span',{},h('span',{},s.title,' ',h('small',{class:'key-tag'},s.key||'미지정')),h('small',{class:'meta'},[s.note,s.mood,s.theme].filter(Boolean).join(' · '))),sheetLink(s),sheetButton(s.title,s.key),favButton(s),h('button',{class:'sub','aria-label':s.title+' 콘티에 추가',onclick:()=>{setSongs([...cur,{title:s.title,key:s.key,memo:''}]);say(s.title+' 추가했어요 · 이번 주 콘티 '+(cur.length)+'곡');}},'+')))):h('p',{class:'empty'},onlyFav?'즐겨찾기한 곡이 없어요. 곡 옆 ☆를 누르면 여기에 모여요.':'조건에 맞는 곡이 없어요'),songs.length>count&&h('button',{class:'sub',onclick:()=>{count+=20;drawBrowse();}},'더 보기 · 남은 '+(songs.length-count)+'곡'));
   };
   drawChips();
-  const browse=h('section',{class:'card song-browser'},h('h3',{},'곡 보관함'),h('p',{class:'hint'},'키·주제·분위기 줄을 눌러 고르면 바로 아래에 곡이 펼쳐져요. 같은 칩을 다시 누르면 접혀요.'),chips,h('p',{class:'meta'},'주제는 시와 찬미 분류 · 분위기는 AI 추정'));
+  const browse=h('section',{class:'card song-browser'},h('h3',{},'곡 보관함'),h('p',{class:'hint'},'고르면 바로 아래에 곡이 펼쳐져요'),chips,h('p',{class:'meta'},'주제는 시와 찬미 분류 · 분위기는 AI 추정'));
   // 곡 목록에 있는 "제목 (키)"를 고르면 제목과 키를 나눠 채우고, 목록에 없는 새 곡은 목록에 더한다.
   const pick = i => {
     const s = book[cur[i].title];
@@ -345,16 +354,18 @@ function contiView() {
       later('songs', () => save(p, { songs }));
     } });
   let removed=null; const memoOpen=new Set();
-  const editor=h('div',{class:'conti-editor'});
+  const editor=h('div',{class:'conti-editor'}), editorTitle=h('h3',{class:'conti-title'});
+  // 휴대폰: 지금 화면 위에 검색·보관함 시트를 연다(닫으면 보관함은 제자리로). 컴퓨터는 옆 보관함 검색칸으로
+  const openPicker=()=>{if(wide()){search.focus();return;}const back=browse.parentNode,next=browse.nextSibling,dlg=bigDialog('곡 찾아 추가하기','picker-dialog',browse);dlg.addEventListener('close',()=>back.insertBefore(browse,next));search.focus();};
   const badge=h('span',{class:'tab-badge'});
-  const draw = () => { badge.textContent=cur.length?String(cur.length):''; badge.hidden=!cur.length; for(const el of exports.querySelectorAll('button, select'))el.disabled=!cur.some(s=>s.title.trim()); fill(box,!cur.length&&h('p',{class:'empty conti-empty'},h('span',{class:'desktop-copy'},'오른쪽 보관함에서 곡을 추가하세요'),h('span',{class:'mobile-copy'},"'곡 보관함' 탭에서 곡을 추가하세요")),cur.length>0&&h('div',{class:'song-columns','aria-hidden':'true'},['','곡명','키','메모','순서'].map(t=>h('span',{},t))), h('ol', { class: 'songs' }, cur.map((s, i) => h('li', {},
-    h('span', { class: 'num' }, i + 1 + '.'), field(i, 'title', '곡명'), field(i, 'key', '키'), h('div',{class:'song-tools'},h('div',{class:'song-memo'},s.memo||memoOpen.has(i)?field(i,'memo','메모'):h('button',{class:'text-button',onclick:()=>{memoOpen.add(i);draw();}},'+ 메모')),
+  const draw = () => { badge.textContent=cur.length?String(cur.length):''; badge.hidden=!cur.length; for(const el of exports.querySelectorAll('button, select'))el.disabled=!cur.some(s=>s.title.trim()); fill(box,!cur.length&&h('div',{class:'empty conti-empty'},h('button',{type:'button',class:'primary add-song',onclick:openPicker},'+ 곡 찾아 추가하기'),h('button',{type:'button',class:'sub',onclick:()=>loadLast()},'지난주 콘티 복사하기'),h('p',{class:'hint'},'지난주 곡을 이번 주에 그대로 채워 넣어요. 지금은 비어 있어 덮어쓰는 곡이 없어요.')),cur.length>0&&h('div',{class:'song-columns','aria-hidden':'true'},['','곡명','','키','메모','순서'].map(t=>h('span',{},t))), h('ol', { class: 'songs' }, cur.map((s, i) => h('li', {},
+    h('span', { class: 'num' }, i + 1 + '.'), field(i, 'title', '곡명'), s.title.trim() ? favButton(s) : h('span', { class: 'fav-slot' }), field(i, 'key', '키'), h('div',{class:'song-tools'},h('div',{class:'song-memo'},s.memo||memoOpen.has(i)?field(i,'memo','메모'):h('button',{class:'text-button',onclick:()=>{memoOpen.add(i);draw();}},'+ 메모')),
     h('span', { class: 'acts' }, sheetButton(s.title, s.key),
 
       h('button', { type: 'button', class: 'sub', 'aria-label': `${i + 1}번 곡 위로`, disabled: i === 0, onclick: () => swap(i, i - 1) }, '▲'),
       h('button', { type: 'button', class: 'sub', 'aria-label': `${i + 1}번 곡 아래로`, disabled: i === cur.length - 1, onclick: () => swap(i, i + 1) }, '▼'),
       h('button', { type: 'button', class: 'danger', onclick: () => {removed={song:{...cur[i]},index:i};setSongs(cur.filter((_,j)=>j!==i));} }, '삭제')))))),
-  h('button', { type: 'button', class: 'sub', onclick: () => setSongs([...cur, { title: '', key: '', memo: '' }]) }, '곡 추가'),removed&&h('button',{class:'sub',onclick:()=>{const songs=[...cur];songs.splice(removed.index,0,removed.song);removed=null;setSongs(songs);}},'삭제 되돌리기')); };
+  cur.length > 0 && h('button', { type: 'button', class: 'sub', onclick: () => setSongs([...cur, { title: '', key: '', memo: '' }]) }, '곡 추가'),removed&&h('button',{class:'sub',onclick:()=>{const songs=[...cur];songs.splice(removed.index,0,removed.song);removed=null;setSongs(songs);}},'삭제 되돌리기')); };
   let historyRequest = 0;
   const historyList = h('div');
   const history = h('details', { class: 'conti-history', ontoggle: () => { if (history.open) loadHistory(); } }, h('summary', {}, '지난 콘티'), historyList);
@@ -367,7 +378,7 @@ function contiView() {
       const rows = weeks.filter(w => w.data?.songs?.length);
       fill(historyList, rows.length ? rows.map(({ day, data }) => h('details', {},
         h('summary', {}, fmt(day) + ' · ' + (data.songs[0].title || '제목 없는 곡') + (data.songs.length > 1 ? ' 외 ' + (data.songs.length - 1) + '곡' : '')),
-        h('ol', {}, data.songs.map(s => h('li', {}, label(s), s.memo ? ' · ' + s.memo : ''))),
+        h('ol', { class: 'history-songs' }, data.songs.map(s => h('li', {}, h('span', {}, label(s), s.memo ? ' · ' + s.memo : ''), sheetButton(s.title, s.key)))),
         h('button', { class: 'sub', onclick: () => {
           if (date.value !== selected || churchPath() !== base) return;
           if (confirm(fmt(selected) + ' 콘티를 이 콘티로 덮어쓸까요?')) setSongs(data.songs.map(s => ({ title: s.title || '', key: s.key || '', memo: s.memo || '' })));
@@ -380,6 +391,7 @@ function contiView() {
     if (history.open) loadHistory();
     stop(); removed=null; memoOpen.clear();
     path = `${churchPath()}/conti/${date.value}`;
+    const t = date.value; editorTitle.textContent = (+t.slice(5, 7)) + '월 ' + (+t.slice(8, 10)) + '일(' + '일월화수목금토'[new Date(t + 'T00:00:00Z').getUTCDay()] + ') 주일 찬양';
     stop = watch(path, d => { cur = d?.songs || []; draw(); drawPrint(); });
   };
   const loadLast = async () => {
@@ -392,16 +404,18 @@ function contiView() {
   // 휴대폰: [이번 주 콘티][곡 보관함][지난 콘티] 중 하나만 보인다(컴퓨터는 콘티와 보관함을 나란히)
   const tabs=h('div',{class:'segments conti-tabs',role:'group','aria-label':'콘티 화면 고르기'},[['week','이번 주 콘티'],['book','곡 보관함'],['history','지난 콘티']].map(([id,t])=>h('button',{type:'button',class:'sub','aria-pressed':String(id==='week'),onclick:e=>{wrap.dataset.tab=id;for(const b of tabs.children)b.setAttribute('aria-pressed',String(b===e.currentTarget));if(id==='history'&&!history.open)history.open=true;scrollTo(0,0);}},t,id==='week'&&badge)));
   const wrap=h('div',{class:'conti','data-tab':'week'});
-  view.append(h('h2', {}, '콘티'), (wrap.append(tabs, h('div', { class: 'row conti-date' }, h('label', {}, h('span', {}, '주일 날짜'), date),
-    h('button', { type: 'button', class: 'sub', onclick: loadLast }, '지난 주 콘티 불러오기')),
-  h('p', { class: 'hint conti-hint' }, '곡명을 치면 교회 곡 목록에서 고를 수 있어요. 가사는 저작권이 있어 곡명만 적어요.'), h('div',{class:'conti-layout'},(editor.append(h('h3',{},'선택한 곡'),box,list,h('button',{class:'sub mobile-browse','aria-expanded':'false',onclick:e=>{const open=browse.classList.toggle('expanded');e.currentTarget.setAttribute('aria-expanded',String(open));}},'곡 목록에서 고르기')),editor),browse,exports,history)), wrap), printBox);
+  view.append(h('h2', {}, '콘티'), (wrap.append(tabs, h('div', { class: 'row conti-date' }, h('label', {}, h('span', {}, '주일 날짜'), date)),
+  h('p', { class: 'hint conti-hint' }, '곡명을 치면 교회 곡 목록에서 고를 수 있어요. 가사는 저작권이 있어 곡명만 적어요.'), h('div',{class:'conti-layout'},(editor.append(editorTitle,box,list,h('button',{class:'sub mobile-browse','aria-expanded':'false',onclick:e=>{const open=browse.classList.toggle('expanded');e.currentTarget.setAttribute('aria-expanded',String(open));}},'곡 목록에서 고르기')),editor),browse,exports,history)), wrap), printBox);
   watch(churchPath(), d => {
     churchName = d?.name || '';
     // 할 일 체크 같은 다른 변경 때는 다시 그리지 않는다(펼쳐 둔 묶음이 닫히지 않게)
     const merged = mergeLibrary(defaultSongs, d?.songbook);
-    const sh = d?.sheets || {};
-    if (JSON.stringify(merged) === JSON.stringify(book) && JSON.stringify(sh) === JSON.stringify(sheets)) return;
-    book = merged; sheets = sh; draw(); drawBrowse(); list.replaceChildren(...Object.keys(book).sort().map(v => h('option', { value: v, label: book[v].note ? `${v} · ${book[v].note}` : v }))); });
+    const sh = d?.sheets || {}, fv = d?.favorites || {};
+    if (JSON.stringify(merged) === JSON.stringify(book) && JSON.stringify(sh) === JSON.stringify(sheets) && JSON.stringify(fv) === JSON.stringify(favorites)) return;
+    favorites = fv;
+    churchSongs = d?.songbook || {};
+    if (!openRow && onlySheets === null && Object.keys(sh).length && !Object.keys(sheets).length) openRow = 'sheets';
+    book = merged; sheets = sh; drawChips(); draw(); drawBrowse(); list.replaceChildren(...Object.keys(book).sort().map(v => h('option', { value: v, label: book[v].note ? `${v} · ${book[v].note}` : v }))); });
   drawBrowse(); open();
 }
 
@@ -588,26 +602,55 @@ function setView() {
 }
 
 
+// 준비 시작 문구: 시작했으면 "준비 시작 10월 18일 · 준비 중", 아직이면 "3일 뒤 준비 시작"
+const mdLong = d => (+d.slice(5, 7)) + '월 ' + (+d.slice(8, 10)) + '일';
+const prepText = (start, today) => start > today ? Math.round((parse(start) - parse(today)) / 864e5) + '일 뒤 준비 시작' : '준비 시작 ' + mdLong(start) + ' · 준비 중';
 function scheduleView() {
- const list=h('div',{class:'event-list'});let selectedYear=+todayIso().slice(0,4),data={};
- const tabs=h('div',{class:'segments'},[0,1].map(n=>h('button',{class:'sub','aria-pressed':String(n===0),onclick:()=>{selectedYear=+todayIso().slice(0,4)+n;for(const [i,b] of [...tabs.children].entries())b.setAttribute('aria-pressed',String(i===n));draw();}},n?'내년':'올해')));
+ const list=h('div',{class:'timeline'});let mode='future',data={};const dateOpen=new Set();
+ // 앞으로(오늘부터 12개월) / 지난 일정(지난 12개월)
+ const tabs=h('div',{class:'segments'},[['future','앞으로'],['past','지난 일정']].map(([id,t])=>h('button',{class:'sub','aria-pressed':String(id===mode),onclick:()=>{mode=id;for(const b of tabs.children)b.setAttribute('aria-pressed',String(b.textContent===t));draw();}},t)));
  const addBox=h('section',{class:'card',hidden:true});view.append(h('div',{class:'schedule-bar'},tabs,h('button',{class:'primary',onclick:()=>{addBox.hidden=false;addEventPanel(addBox,todayIso(),()=>{addBox.hidden=true;draw();});}},'+ 행사 추가')),addBox,list);
- function draw(){const tasks=tasksAround(selectedYear+'-07-01',{...data.settings,customEvents:data.customEvents}),today=todayIso(),thisYear=selectedYear===+today.slice(0,4),nextYear=occurrences([selectedYear+1],{...data.settings,customEvents:data.customEvents}),rolled=occurrences([selectedYear],{...data.settings,customEvents:data.customEvents}).map(ev=>ev.date<today&&thisYear?nextYear.find(o=>o.id===ev.id)||ev:ev).sort((a,b)=>a.date.localeCompare(b.date)),all=rolled,past=all.filter(ev=>ev.date<today);const card=ev=>{
- const mine=tasks.filter(t=>t.key.startsWith(ev.id+'_'+ev.date+'_')),n=mine.filter(t=>data.done?.[t.key]).length,days=Math.round((parse(ev.date)-parse(todayIso()))/864e5);
- return h('section',{class:'card event-card'+(days<0?' past':''),style:'--ev:'+eventColor(ev.id)},h('div',{class:'event-head'},h('h3',{},ev.name),h('span',{class:'meta event-date'},(ev.date.slice(0,4)!==String(selectedYear)?ev.date.slice(0,4)+'년 ':'')+fmt(ev.date)+(ev.custom?' · 우리 교회 행사':'')),h('span',{class:'dday'},dLabel(days))),h('div',{class:'progress-row'},mine.length?[h('progress',{max:mine.length,value:n,'aria-label':ev.name+' 준비 진행'}),h('span',{class:'meta'},n+'/'+mine.length+' 완료')]:h('span',{class:'meta grow'},'정해진 준비 일정 없음'),aboutButton(ev,true)),eventDetails(ev,tasks,data,eventEditor(ev,data,()=>{},false)));
- };fill(list,all.filter(ev=>ev.date>=todayIso()).map(card),past.length>0&&h('details',{class:'past-events',open:opened.has('past'),ontoggle:e=>e.target.open?opened.add('past'):opened.delete('past')},h('summary',{},'지난 행사 '+past.length+'개'),h('div',{class:'event-list'},past.map(card))));}watch(churchPath(),d=>{data=d||{};draw();});
+ fill(list,h('p',{class:'hint'},'일정을 불러오는 중이에요'));
+ function draw(){
+ const s={...data.settings,customEvents:data.customEvents},today=todayIso(),y=+today.slice(0,4),tasks=tasksAround(today,s),yearLater=addDays(today,365),yearAgo=addDays(today,-365);
+ const all=mode==='future'?occurrences([y,y+1],s).filter(ev=>ev.date>=today&&ev.date<yearLater):occurrences([y-1,y],s).filter(ev=>ev.date<today&&ev.date>=yearAgo).reverse();
+ // 한 줄: [달력 낱장 날짜] 이름·준비 시작·진행 막대·[준비 n개 중 m개 완료 ∨] | D-day. 가까운 30일만 진하게
+ const row=ev=>{
+  const mine=tasks.filter(t=>t.key.startsWith(ev.id+'_'+ev.date+'_')),n=mine.filter(t=>data.done?.[t.key]).length,days=Math.round((parse(ev.date)-parse(today))/864e5),d=parse(ev.date);
+  const id=ev.id+ev.date,open=opened.has(id),start=mine.reduce((m,t)=>t.due<m?t.due:m,ev.date),tone=days<0?'past':days<=30?'near':'far';
+  const toggle=()=>{open?opened.delete(id):opened.add(id);draw();};
+  const hide=async()=>{if(ev.custom){if(!confirm('삭제하면 준비 체크 기록도 안 보여요'))return;await save(churchPath(),{customEvents:{[ev.id]:null}});}else{if(!confirm(ev.name+'을(를) 이번 일정에서 숨길까요? 설정의 \'절기·행사 켜고 끄기\'에서 다시 켤 수 있어요'))return;await save(churchPath(),{settings:{enabled:{[ev.id+'_'+ev.date.slice(0,4)]:false}}});}};
+  return h('li',{class:'tl-item '+tone+(days===0?' dday0':''),style:'--ev:'+eventColor(ev.id)+';--ev-bg:'+eventTone(ev.id)[0]},
+   h('div',{class:'tl-date','aria-hidden':'true'},h('span',{class:'tl-day'},String(d.getUTCDate())),h('span',{class:'tl-dow'},'일월화수목금토'[d.getUTCDay()])),
+   h('div',{class:'tl-main'},
+    h('div',{class:'tl-name-row'},h('strong',{class:'tl-name'},ev.name),ABOUT[ev.id]&&h('button',{type:'button',class:'text-button tl-about',onclick:()=>showAbout(ev)},'절기 설명 보기'),ev.custom&&h('small',{class:'meta'},'우리 교회 행사')),
+    h('p',{class:'tl-sub'},mine.length?(days<0?'준비 '+n+'/'+mine.length+' 완료':prepText(start,today)):'등록된 준비 항목이 없어요'),
+    mine.length>0&&h('progress',{max:mine.length,value:n,'aria-label':ev.name+' 준비 진행'})),
+   h('span',{class:'dday tl-dday'},days<0?Math.abs(days)+'일 전':dLabel(days)),
+   h('button',{type:'button',class:mine.length?'sub tl-toggle':'text-button tl-toggle quiet','aria-expanded':String(open),onclick:toggle},mine.length?'준비 '+mine.length+'개 중 '+n+'개 완료 · 남은 '+(mine.length-n):'날짜 바꾸기 · 숨기기'),
+   open&&h('div',{class:'tl-detail'},mine.length?taskList(mine,data.done||{}):null,eventExtras(ev,data),
+    h('div',{class:'tl-more'},h('button',{type:'button',class:'text-button','aria-expanded':String(dateOpen.has(id)),onclick:()=>{dateOpen.has(id)?dateOpen.delete(id):dateOpen.add(id);draw();}},'날짜 바꾸기'),h('button',{type:'button',class:'text-button',onclick:hide},ev.custom?'이 행사 삭제':'우리 부서에서 숨기기'),dateOpen.has(id)&&eventEditor(ev,data,()=>{dateOpen.delete(id);draw();},false,false))));
+ };
+ // 월별로 묶는다: "11월", 다른 해면 "2027년 1월"
+ const months=[];for(const ev of all){const k=ev.date.slice(0,7);(months.at(-1)?.[0]===k?months.at(-1)[1]:months[months.push([k,[]])-1][1]).push(ev);}
+ fill(list,months.length?months.map(([k,evs])=>h('section',{class:'tl-month'},h('h3',{},(k.slice(0,4)!==today.slice(0,4)?k.slice(0,4)+'년 ':'')+(+k.slice(5))+'월'),h('ul',{class:'tl-list'},evs.map(row)))):h('div',{class:'empty-state'},h('p',{},mode==='future'?'앞으로 12개월 안에 등록된 행사가 없어요':'지난 12개월 동안의 행사가 없어요'),mode==='future'&&h('button',{type:'button',class:'sub',onclick:()=>{addBox.hidden=false;addEventPanel(addBox,todayIso(),()=>{addBox.hidden=true;draw();});}},'첫 행사 추가')));
+ }
+ watch(churchPath(),d=>{data=d||{};draw();},()=>fill(list,h('div',{class:'empty-state'},h('p',{},'불러오지 못했어요'),h('button',{type:'button',class:'sub',onclick:()=>show('schedule')},'다시 시도'))));
 }
 function moreView(){ view.append(h('div',{class:'more-list'},[['docs','자료실'],['equipment','장비'],['set','설정']].map(([id,t])=>h('button',{class:'sub',onclick:()=>show(id)},t)))); }
-function eventDetails(ev, tasks, d, editor = null) {
-  const id = ev.id + ev.date, mine = tasks.filter(t => t.key.startsWith(ev.id+'_'+ev.date+'_'));
-  return h('details', { open: opened.has(id), ontoggle: e => e.target.open ? opened.add(id) : opened.delete(id) },
-    h('summary', {}, (mine.length ? '준비할 일 ' + mine.length + '개' : '자세히') + ' · 날짜 바꾸기'), editor, mine.length ? taskList(mine, d?.done || {}) : h('p', { class: 'empty' }, '정해진 준비 일정이 없어요'),
-    ev.buy?.length > 0 && h('section', {}, h('h4', {}, '준비물 사기'), h('ul', {}, ev.buy.map(item => h('li', {},
+// 절기 줄을 펼쳤을 때 할 일 아래에 붙는 것: 준비물 사기, 수련회 팁·양식, 관련 서류
+// 행사 이름의 낱말(두 글자 이상)이 서류 제목에 있으면 관련 서류. 여름수련회는 수련회 규모별 준비도
+function relatedDocs(ev, list) {
+  const words = ev.name.replace(/[()·,]/g, ' ').split(/\s+/).filter(w => w.length >= 2 && w !== '주일');
+  return list.filter(doc => words.some(w => doc.title.includes(w)) || (ev.id === 'retreat' && /수련회 규모/.test(doc.title))).slice(0, 3);
+}
+function eventExtras(ev, d) {
+  return [ev.buy?.length > 0 && h('section', {}, h('h4', {}, '준비물 사기'), h('ul', {}, ev.buy.map(item => h('li', {},
       h('a', { href: 'https://www.coupang.com/np/search?q=' + encodeURIComponent(item), target: '_blank', rel: 'noopener' }, item)))),
       h('p', { class: 'hint' }, '쿠팡 검색 결과로 열려요. 광고·제휴 링크가 아니에요.')),
     ev.id === 'retreat' && sizeGuide(d?.settings),
     ev.id === 'retreat' && retreatForms(d?.retreatForms || {}),
-    h('div',{class:'event-docs'},docs.filter(doc=>ev.id==='retreat'?/docs\/(04|05|15)_/.test(doc.file):doc.group==='행정·안내').slice(0,3).map(doc=>h('div',{},h('p',{},doc.title),docLink(doc)))));
+    (()=>{const rel=relatedDocs(ev,docs),list=rel.length?rel:docs.filter(doc=>doc.group==='행정·안내').slice(0,2);return h('div',{class:'event-docs'},h('h4',{},rel.length?'관련 서류':'기본 서류'),list.map(doc=>h('div',{class:'event-doc'},h('span',{class:'event-doc-title'},doc.title),h('button',{type:'button',class:'sub',onclick:()=>showPreview(doc)},'미리보기'),docLink(doc))));})()];
 }
 function icon(kind='sheet',letter='') {
  const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');
@@ -635,22 +678,27 @@ function bigDialog(title, cls, ...kids) {
 }
 const showPreview = doc => bigDialog(doc.title + ' 미리보기', 'preview-dialog', h('iframe', { src: doc.file.replace(/\.docx$/, '.html'), title: doc.title + ' 미리보기' }));
 // 악보 보기: 누를 때 그 악보 문서 하나만 읽는다. 같은 제목에 키가 다른 악보가 있으면 창 안에서 키를 바꾼다
-function showSheet(title, id, sheets) {
+function showSheet(title, id, sheets, fav = null) {
  const keys = Object.entries(sheets).filter(([, v]) => v?.title === title);
- const img = h('img', { class: 'sheet-img', alt: title + ' 악보', hidden: true }), status = h('p', { class: 'hint' }), bar = h('div', { class: 'segments sheet-keys', role: 'group', 'aria-label': '키 바꾸기' });
+ const img = h('img', { class: 'sheet-img', alt: title + ' 악보', hidden: true }), status = h('p', { class: 'hint' }), bar = h('div', { class: 'segments sheet-keys', role: 'group', 'aria-label': '키 바꾸기' }), star = h('div', { class: 'sheet-star' });
+ const drawStar = sid => { const song = { title, key: sheets[sid]?.key || '' }, on = fav?.isFav(song); fill(star, fav && h('button', { type: 'button', class: 'sub fav-button', 'aria-pressed': String(!!on), onclick: () => { fav.toggleFav(song); drawStar(sid); } }, on ? '★ 즐겨찾기' : '☆ 즐겨찾기')); };
  const load = async sid => {
   fill(bar, keys.length > 1 && keys.map(([k, v]) => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(k === sid), onclick: () => load(k) }, v.key || '키 없음')));
-  bar.hidden = keys.length < 2; img.hidden = true; status.hidden = false; status.textContent = '악보를 불러오는 중이에요';
+  bar.hidden = keys.length < 2; drawStar(sid); img.hidden = true; status.hidden = false; status.textContent = '악보를 불러오는 중이에요';
   try { const d = await readOnce(churchPath() + '/sheets/' + sid); if (!String(d?.img).startsWith('data:image/')) throw new Error('img'); img.src = d.img; img.hidden = false; status.hidden = true; }
   catch { status.textContent = '악보를 불러오지 못했어요'; }
  };
- bigDialog(title + ' 악보', 'sheet-dialog', bar, status, img); load(id);
+ bigDialog(title + ' 악보', 'sheet-dialog', h('div', { class: 'sheet-tools' }, bar, star), status, img); load(id);
 }
 function docsView() {
  let dept = null;
+ const find = h('input', { type: 'search', class: 'doc-search', placeholder: '수련회, 회의록, 결과보고…', 'aria-label': '자료 찾기', oninput: () => draw() });
  const picker = h('details', { class: 'dept-picker' }), mineBox = h('section', { class: 'doc-list' }), commonBox = h('section', { class: 'doc-list' });
  const row = doc => h('details', { class: 'doc-row' }, h('summary', {}, h('span', { class: 'doc-title' }, doc.title), h('small', { class: 'meta' }, doc.group)), h('p', {}, doc.desc), h('button', { type: 'button', class: 'sub preview-button', onclick: () => showPreview(doc) }, '미리보기'), docLink(doc));
  const draw = () => {
+  const term = find.value.trim();
+  picker.hidden = !!term;
+  if (term) { const hits = docs.filter(d => (d.title + ' ' + (d.desc || '') + ' ' + (d.group || '')).includes(term)); fill(mineBox, h('h3', {}, '찾은 자료 ' + hits.length + '개'), hits.length ? hits.map(row) : h('p', { class: 'empty' }, '찾는 자료가 없어요. 다른 낱말로 찾아보세요.')); commonBox.hidden = true; return; }
   const { mine, common } = docsFor(docs, dept);
   fill(picker, h('summary', {}, '부서: ' + dept), h('div', { class: 'row', role: 'group', 'aria-label': '부서 고르기' }, DOC_DEPTS.map(d => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(d === dept), onclick: () => { dept = d; picker.open = false; draw(); } }, d))));
   // 분류(행정·안내/교육·행사/수련회·MT/순례)별로 접어 묶는다. 자료가 적으면 처음부터 펼친다.
@@ -659,7 +707,7 @@ function docsView() {
   fill(commonBox, ...(common.length ? [h('h3', {}, '공통 자료 ' + common.length + '개'), ...common.map(row)] : []));
   commonBox.hidden = !common.length;
  };
- view.append(picker, mineBox, commonBox);
+ view.append(find, picker, mineBox, commonBox);
  watch(churchPath(), d => { if (dept !== null) return; dept = docDept(d?.settings); draw(); });
 }
 function equipmentView() {
@@ -671,7 +719,7 @@ function equipmentView() {
  view.append(summary,box,h('h3',{class:'equipment-add-title'},'목록에 없는 품목 추가'),form);
  watch(churchPath(),d=>{
  const entries=equipmentRows(d?.equipment||{}),total=entries.reduce((n,[,v])=>n+Number(v.qty||0),0),needs=entries.filter(([,v])=>v.state==='점검 필요').length,broken=entries.filter(([,v])=>v.state==='고장').length;
- fill(summary,h('span',{},'전체 '+total+'개'),h('span',{},'점검 필요 '+needs),h('span',{class:broken?'late':''},'고장 '+broken));
+ fill(summary,h('span',{},'전체 '+total+'개'),h('span',{class:needs?'late':''},'점검 필요 '+needs),h('span',{class:broken?'late':''},'고장 '+broken));
  fill(box,Object.keys(equipment).map(c=>{const mine=entries.filter(([,v])=>v.cat===c),owned=mine.filter(([,v])=>v.state!=='없음'),warn=mine.filter(([,v])=>v.state==='점검 필요'||v.state==='고장').length;return h('details',{class:'card equipment-category',open:eqOpen.has(c)?eqOpen.get(c):owned.length>0,ontoggle:e=>eqOpen.set(c,e.target.open)},h('summary',{},h('span',{class:'eq-name'},c),h('small',{class:warn?'late':'meta'},owned.length?owned.length+'종 보유'+(warn?' · 점검 '+warn:''):'없음')),h('table',{},h('thead',{},h('tr',{},['품목','수량'].map(t=>h('th',{},t)))),h('tbody',{},entries.filter(([,v])=>v.cat===c).map(([id,item])=>{
  const write=(key,value)=>save(churchPath(),{equipment:{[id]:{cat:item.cat,name:item.name,[key]:value}}});
  const qty=Number(item.qty)||0;
@@ -722,14 +770,16 @@ async function homeWord(box) {
   if(!item||!ref)throw new Error('말씀 없음');
   const bible=await fetch('./bible/'+String(ref.book).padStart(2,'0')+'.json').then(r=>r.json());
   if(!box.isConnected)return;
-  box.hidden=false;fill(box,foldHead('오늘의 말씀',item.ref),h('p',{class:'rail-verse'},bible[ref.chap-1]?.[(ref.v1||1)-1]||''),h('button',{class:'sub',onclick:()=>{wordMode='qt';show('word');}},'말씀 읽기'));
+  box.hidden=false;fill(box,foldHead('오늘의 말씀',item.ref),h('p',{class:'rail-verse'},bible[ref.chap-1]?.[(ref.v1||1)-1]||''),h('button',{class:'sub go',onclick:()=>{wordMode='qt';show('word');}},'말씀 읽기'));
  } catch {box.hidden=true;}
 }
 
 // 행사 색(자료 구분용 6색, 강조색 초록과 겹치지 않게). 흰 글자 대비 4.5:1 이상
 const dLabel = days => days < 0 ? '지남' : days === 0 ? 'D-day' : days < 100 ? 'D-' + days : Math.round(days / 30.4) + '달 뒤';
-const EVENT_COLORS = { epiphany:'#1f5f7a', lent:'#6a4c93', palm:'#8a3b2e', easter:'#8a6a00', pentecost:'#b23a1f', summerThanks:'#3d6b2f', retreat:'#1e6b8a', creation:'#2e7d5b', thanksgiving:'#b5520f', king:'#a3246b', advent:'#5b3a9b', christmas:'#b3202a', yearEnd:'#2c3e75' };
-const eventColor = id => EVENT_COLORS[id] || ['#4f5d94','#7a4f7c','#3a6c78','#4f6b3a','#8a4b3c','#7a6220'][([...id].reduce((n,c)=>n+c.charCodeAt(0),0))%6];
+const EVENT_TONES = { advent:['#EAE4EF','#5E486F'], christmas:['#F1E9D6','#6A5628'], epiphany:['#E1ECE9','#345F59'], lent:['#EBE2E7','#704B61'], palm:['#EEE2DE','#7A4A42'], easter:['#F1E4DC','#80533E'], pentecost:['#EFDFDB','#864B43'], summerThanks:['#E6EAD9','#53633E'], retreat:['#DFE9EC','#355F6B'], creation:['#E2EBE1','#41634A'], thanksgiving:['#F0E3D5','#80512F'], king:['#EFE0E6','#7A4560'], yearEnd:['#E2E5EE','#43506F'] };
+const CUSTOM_TONES = [['#E3E6F0','#4A5378'],['#ECE2EC','#6B4A6B'],['#DFEAEA','#3B6264'],['#E6EAD9','#53633E'],['#F0E3D9','#7A4E3A'],['#EFE8D6','#665628']];
+const eventTone = id => EVENT_TONES[id] || CUSTOM_TONES[([...id].reduce((n,c)=>n+c.charCodeAt(0),0))%6];
+const eventColor = id => eventTone(id)[1];
 async function moveEvent(ev,date,data){
  if(!date||date===ev.date)return;
  if(!ev.custom&&date.slice(0,4)!==ev.date.slice(0,4)){say('기본 절기는 같은 해 안에서 날짜를 골라 주세요');return;}
@@ -746,9 +796,9 @@ function showAbout(ev){
  document.body.append(box);box.showModal();
 }
 const aboutButton=(ev,small=false)=>ABOUT[ev.id]?h('button',{type:'button',class:'about-button'+(small?' small':''),'aria-label':ev.name+' 무슨 절기인가요?',title:'무슨 절기인가요?',onclick:()=>showAbout(ev)},small?'':'무슨 절기인가요?'):null;
-function eventEditor(ev,data,close=()=>{},title=true){
+function eventEditor(ev,data,close=()=>{},title=true,off=true){
  const date=h('input',{type:'date',value:ev.date,min:ev.custom?'':ev.date.slice(0,4)+'-01-01',max:ev.custom?'':ev.date.slice(0,4)+'-12-31',required:true,'aria-label':'행사 날짜 바꾸기'});
- return h('section',{class:'event-editor'},title&&h('h3',{},ev.name),title&&aboutButton(ev),title&&ev.custom&&h('small',{class:'event-tag'},'우리 교회 행사'),h('form',{class:'date-form',onsubmit:async e=>{e.preventDefault();await moveEvent(ev,date.value,data);close();}},h('label',{},h('span',{},'날짜 바꾸기'),date),h('button',{class:'primary'},'저장')),h('button',{class:'text-button',onclick:async()=>{if(ev.custom){if(!confirm('삭제하면 준비 체크 기록도 안 보여요'))return;if(await save(churchPath(),{customEvents:{[ev.id]:null}}))close();}else if(await save(churchPath(),{settings:{enabled:{[ev.id+'_'+ev.date.slice(0,4)]:false}}}))close();}},ev.custom?'삭제':'올해 끄기'));
+ return h('section',{class:'event-editor'},title&&h('h3',{},ev.name),title&&aboutButton(ev),title&&ev.custom&&h('small',{class:'event-tag'},'우리 교회 행사'),h('form',{class:'date-form',onsubmit:async e=>{e.preventDefault();await moveEvent(ev,date.value,data);close();}},h('label',{},h('span',{},'날짜 바꾸기'),date),h('button',{class:'primary'},'저장')),off&&h('button',{class:'text-button',onclick:async()=>{if(ev.custom){if(!confirm('삭제하면 준비 체크 기록도 안 보여요'))return;if(await save(churchPath(),{customEvents:{[ev.id]:null}}))close();}else if(await save(churchPath(),{settings:{enabled:{[ev.id+'_'+ev.date.slice(0,4)]:false}}}))close();}},ev.custom?'삭제':'올해 끄기'));
 }
 function addEventPanel(host,initialDate,close){
  if(document.getElementById('add-event-dialog'))return;
@@ -779,12 +829,14 @@ function addEventPanel(host,initialDate,close){
 function homeView(){
 
  const homeHeading=screenHeading('home','홈');
- const summary=h('section',{class:'home-summary'}),cal=h('section',{class:'card calendar'}),detail=h('section',{class:'card day-detail'}),agenda=foldCard('agenda',false,'agenda'),right=h('div',{class:'home-right'});
+ const nextBox=h('section',{class:'home-next'}),summary=h('section',{class:'home-summary'}),cal=h('section',{class:'card calendar'}),detail=h('section',{class:'card day-detail'}),agenda=foldCard('agenda',false,'agenda'),right=h('div',{class:'home-right'});
  let data={},selectedEvent=null,editing=null,adding=false; const sundayBox=foldCard('sunday',false,'rail-card'),wordBox=foldCard('word',false,'rail-card'),nowCard=foldCard('now',true,'now-card'),tipsCard=foldCard('tips',false,'tips-card');wordBox.hidden=true;
  // 주인공 버튼: 휴대폰에서는 탭바 위에 떠 있고, 컴퓨터에서는 화면 오른쪽 위에 붙는다
  const fab=h('button',{class:'primary fab',onclick:()=>{adding=true;editing=null;addEventPanel(right,selectedDay,()=>{adding=false;draw();});}},'+ 행사 추가');
- view.append(summary,h('div',{class:'home-layout'},h('div',{class:'home-main'},cal,detail),h('div',{class:'home-side'},agenda,right)),fab);
- watch(churchPath()+'/conti/'+nextSunday(todayIso()),d=>{const songs=(d?.songs||[]).filter(s=>s.title);fill(sundayBox,foldHead('이번 주일 찬양',songs.length?songs.length+'곡':'아직 없음'),songs.length?h('ol',{class:'sunday-songs'},songs.map(s=>h('li',{},s.title))):h('p',{class:'hint'},'아직 콘티가 없어요'),h('button',{class:'sub',onclick:()=>show('conti')},'콘티 열기'));});
+ view.append(summary,h('div',{class:'home-layout'},h('div',{class:'home-main'},nextBox,cal,detail),h('div',{class:'home-side'},agenda,right)),fab);
+ // 첫 자료가 오기 전에는 빈 상자 대신 '불러오는 중'
+ fill(cal,h('p',{class:'hint loading'},'일정을 불러오는 중이에요'));nextBox.hidden=detail.hidden=agenda.hidden=true;
+ watch(churchPath()+'/conti/'+nextSunday(todayIso()),d=>{const songs=(d?.songs||[]).filter(s=>s.title);fill(sundayBox,foldHead('이번 주일 찬양',songs.length?songs.length+'곡':'아직 없음'),songs.length?h('ol',{class:'sunday-songs'},songs.map(s=>h('li',{},s.title))):h('p',{class:'hint'},'아직 콘티가 없어요'),h('button',{class:'sub go',onclick:()=>show('conti')},'콘티 열기'));});
  homeWord(wordBox);
  const today=todayIso(); selectedDay ||= today;
  const edit=e=>{editing=e;adding=false;draw();right.scrollIntoView({behavior:'smooth',block:'nearest'});};
@@ -805,15 +857,25 @@ function homeView(){
  h('div',{class:'weekdays'},...'일월화수목금토'.split('').map(d=>h('div',{class:'weekday'},d))),grid.map(week=>h('div',{class:'calendar-week'},h('div',{class:'month-grid'},week.map(day=>{
  const cell=calendarCell(day,ts,evs), active=evs.filter(e=>occursOn(e,day)), starts=spans.filter(p=>p.start===day);
  const label=[fmt(day),...active.map(e=>e.name),...starts.map(p=>p.name+' 준비 시작')].join(' · ');
- return h('div',{style:(active[0]?'--ev:'+eventColor(active[0].id)+';':'')+(starts[0]?'--ps:'+eventColor(starts[0].eventId):''),ondragover:e=>{if(matchMedia('(pointer:fine)').matches){e.preventDefault();e.currentTarget.classList.add('drop-target');}},ondragleave:e=>e.currentTarget.classList.remove('drop-target'),ondrop:e=>{e.preventDefault();e.currentTarget.classList.remove('drop-target');const ev=evs.find(v=>v.id+'_'+v.date===e.dataTransfer.getData('text/plain'));if(ev)moveEvent(ev,day,data);},class:'day'+(active.length?' has-event':'')+(starts.length?' prep-day':'')+(day===today?' today':'')+(day===selectedDay?' selected':'')+(!day.startsWith(homeMonth)?' outside':'')},h('button',{class:'day-number','aria-label':label,'aria-pressed':String(day===selectedDay),onclick:()=>{selectedDay=day;selectedEvent=null;draw();}},String(+day.slice(8))),starts.map(p=>h('button',{class:'calendar-marker prep-start',style:'--ps:'+eventColor(p.eventId),onclick:()=>{selectedDay=day;selectedEvent=null;draw();}},p.name.replace(/주일$/,'')+' 준비 시작')),cell.items.filter(item=>item.event).map(item=>h('button',{style:'background:'+eventColor(item.event.id)+';color:white',class:'calendar-item sub event-title',draggable:matchMedia('(pointer:fine)').matches,ondragstart:e=>e.dataTransfer.setData('text/plain',item.event.id+'_'+item.event.date),title:item.event.name,onclick:()=>{selectedDay=day;selectedEvent=null;editing=item.event;adding=false;draw();detail.scrollIntoView({behavior:'smooth',block:'nearest'});}},item.event.name)),cell.extra>0&&h('button',{class:'calendar-more sub',onclick:()=>{selectedDay=day;selectedEvent=null;draw();}},'외 '+cell.extra+'개'));
- })),h('div',{class:'week-preps'},prepWeek(week,spans,homeMonth).map(p=>h('button',{class:'prep-ribbon'+(selectedEvent?.eventId===p.eventId?' chosen':'')+(p.starts?' starts':'')+(p.ends?' ends':''),style:'--event-color:'+eventColor(p.eventId)+';grid-column:'+p.column+' / span '+p.width,'aria-label':p.name+' 준비 '+md(p.start)+'~'+md(p.end),title:p.name+' 준비 '+md(p.start)+'~'+md(p.end),onclick:()=>choose(p)},p.name.replace(/주일$/,'')+' 준비'))))),
- h('div',{class:'calendar-legend'},h('span',{},h('i',{class:'key-event'}),'행사일'),h('span',{},h('i',{class:'key-prep'}),'준비 시작'),h('span',{class:'key-bar-item'},h('i',{class:'key-bar'}),'준비 기간')),
- h('ul',{class:'prep-links'},spans.filter(p=>p.start.startsWith(homeMonth)).map(p=>h('li',{style:'--ps:'+eventColor(p.eventId)},h('button',{type:'button',onclick:()=>choose(p)},h('i',{}),md(p.start)+' 준비 시작 → '+md(p.end)+' '+p.name)))));
+ return h('div',{style:(active[0]?'--ev:'+eventColor(active[0].id)+';':'')+(starts[0]?'--ps:'+eventColor(starts[0].eventId):''),ondragover:e=>{if(matchMedia('(pointer:fine)').matches){e.preventDefault();e.currentTarget.classList.add('drop-target');}},ondragleave:e=>e.currentTarget.classList.remove('drop-target'),ondrop:e=>{e.preventDefault();e.currentTarget.classList.remove('drop-target');const ev=evs.find(v=>v.id+'_'+v.date===e.dataTransfer.getData('text/plain'));if(ev)moveEvent(ev,day,data);},class:'day'+(active.length?' has-event':'')+(starts.length?' prep-day':'')+(day===today?' today':'')+(day===selectedDay?' selected':'')+(!day.startsWith(homeMonth)?' outside':'')},h('button',{class:'day-number','aria-label':label,'aria-pressed':String(day===selectedDay),onclick:()=>{selectedDay=day;selectedEvent=null;draw();}},String(+day.slice(8))),cell.items.filter(item=>item.event).map(item=>h('button',{style:'background:'+eventColor(item.event.id)+';color:white',class:'calendar-item sub event-title',draggable:matchMedia('(pointer:fine)').matches,ondragstart:e=>e.dataTransfer.setData('text/plain',item.event.id+'_'+item.event.date),title:item.event.name,onclick:()=>{selectedDay=day;selectedEvent=null;editing=item.event;adding=false;draw();detail.scrollIntoView({behavior:'smooth',block:'nearest'});}},item.event.name)),cell.extra>0&&h('button',{class:'calendar-more sub',onclick:()=>{selectedDay=day;selectedEvent=null;draw();}},'외 '+cell.extra+'개'));
+ })),h('div',{class:'week-preps'},prepWeek(week,spans,homeMonth).sort((a,b)=>a.start.localeCompare(b.start)||a.name.localeCompare(b.name)).map((p,i)=>h('button',{class:'prep-ribbon'+(selectedEvent?.eventId===p.eventId?' chosen':'')+(p.starts?' starts':'')+(p.ends?' ends':''),style:'--event-color:'+eventColor(p.eventId)+';--event-bg:'+eventTone(p.eventId)[0]+';grid-row:'+(i+1)+';grid-column:'+p.column+' / span '+p.width,'aria-label':p.name+' 준비 '+md(p.start)+'~'+md(p.end),title:p.name+' 준비 '+md(p.start)+'~'+md(p.end),onclick:()=>choose(p)},h('span',{},p.name.replace(/주일$/,'')+' 준비')))))),
+ h('div',{class:'calendar-legend'},h('span',{},h('i',{class:'key-event'}),'행사일'),h('span',{},h('i',{class:'key-prep'}),'준비 시작'),h('span',{class:'key-bar-item'},h('i',{class:'key-bar'}),'준비 기간')));
  const dayData=dayItems(selectedDay,s,done);
  if(homeMode==='day')fill(cal,h('h3',{},fmt(selectedDay)),dayData.events.map(e=>h('button',{class:'event-tag',onclick:()=>edit(e)},e.name)),dayData.tasks.length?taskList(dayData.tasks,done):h('div',{},h('p',{},'이날은 준비할 일이 없어요'),dayData.next&&h('p',{class:'meta'},'다음 할 일 · '+fmt(dayData.next.due)+' '+dayData.next.text)),dayData.preps.map(e=>h('div',{class:'daily-prep',style:'--ev:'+eventColor(e.id)},h('h4',{},e.name+' · D-'+Math.round((parse(e.date)-parse(selectedDay))/864e5)),h('progress',{max:e.total||1,value:e.completed,'aria-label':e.name+' 준비 진행'}),h('small',{class:'meta'},e.completed+' / '+e.total+'개 완료'))));
  if(homeMode==='week')fill(cal,h('h3',{},'이번 주 일정'),h('div',{class:'week-view'},weekDays(selectedDay).map(day=>{const items=dayItems(day,s,done);return h('section',{class:'week-column'+(day===today?' today':'')},h('h4',{},fmt(day)),items.events.map(e=>h('button',{class:'event-tag',onclick:()=>edit(e)},e.name)),items.tasks.length?taskList(items.tasks.slice(0,3),done,true):h('p',{class:'meta'},'할 일 없음'),items.tasks.length>3&&h('button',{class:'sub',onclick:()=>{selectedDay=day;homeMonth=day.slice(0,7);homeMode='day';draw();}},'외 '+(items.tasks.length-3)+'개'));})));
  if(homeMode==='year')fill(cal,h('h3',{},y+'년 월별 일정'),h('div',{class:'year-months'},Array.from({length:12},(_,i)=>{const prefix=y+'-'+String(i+1).padStart(2,'0'),preps=prepSpans(y,i+1,s).filter(p=>p.start.startsWith(prefix));return h('section',{class:'year-month'},h('button',{class:'sub',onclick:()=>{homeMonth=prefix;selectedDay=prefix+'-01';homeMode='month';draw();}},i+1+'월'),h('div',{},evs.filter(e=>e.date<=prefix+'-31'&&addDays(e.date,(e.days||1)-1)>=prefix+'-01').map(e=>h('button',{class:'event-tag',onclick:()=>edit(e)},e.name)),preps.map(p=>h('small',{class:'meta'},p.name+' 준비 시작 · '+md(p.start)))));})));
 
+ // 다음 행사: 이름·D-day를 가장 크게, 준비 진행과 [준비할 일 보기]
+ const nx=occurrences([+today.slice(0,4),+today.slice(0,4)+1],s).find(e=>e.date>=today);
+ if(!nx)fill(nextBox,h('p',{class:'next-label'},'다음 행사'),h('p',{class:'next-empty'},'등록된 행사가 없어요'),h('button',{type:'button',class:'sub',onclick:()=>fab.click()},'첫 행사 추가'));
+ if(nx){const mine=tasksAround(today,s).filter(t=>t.key.startsWith(nx.id+'_'+nx.date+'_')),nd=mine.filter(t=>done[t.key]).length,days=Math.round((parse(nx.date)-parse(today))/864e5),start=prepOf(nx);
+  nextBox.style.setProperty('--ev',eventColor(nx.id));
+  fill(nextBox,h('p',{class:'next-label'},'다음 행사'),h('div',{class:'next-row'},h('strong',{class:'next-name'},nx.name),h('span',{class:'next-dday'},dLabel(days))),
+   h('p',{class:'next-sub'},fmt(nx.date)+' · '+(mine.length?prepText(start,today)+' · '+nd+'/'+mine.length+' 완료':'등록된 준비 항목이 없어요')),
+   mine.length>0&&h('progress',{max:mine.length,value:nd,'aria-label':nx.name+' 준비 진행'}),
+   w.overdue.length>0&&h('button',{type:'button',class:'text-button next-late',onclick:()=>{const c=right.querySelector('.now-card');if(c){c.open=true;c.scrollIntoView({behavior:'smooth',block:'start'});}}},'기한 지난 준비 '+w.overdue.length+'건 보기'),
+   mine.length>0&&h('button',{type:'button',class:'sub next-go',onclick:()=>{homeMode='month';choose({eventId:nx.id,name:nx.name,start,end:nx.date});detail.scrollIntoView({behavior:'smooth',block:'nearest'});}},'준비할 일 보기'));}
+ nextBox.hidden=false;agenda.hidden=false;
  // 일정 목록: 이 달에 준비 기간이 걸친 행사(오늘 이후)마다 D-day·준비 기간·진행률
  const from=today>homeMonth+'-01'?today:homeMonth+'-01', tsFrom=tasksAround(from,s);
  let upcoming=evs.filter(e=>e.date>=from&&prepOf(e)<=homeMonth+'-31');
@@ -824,19 +886,19 @@ function homeView(){
   return h('li',{},h('button',{class:'agenda-item',style:'--ev:'+eventColor(e.id),'aria-pressed':String(selectedEvent?.eventId===e.id&&selectedEvent?.end===e.date),onclick:()=>{choose({eventId:e.id,name:e.name,start,end:e.date});detail.scrollIntoView({behavior:'smooth',block:'nearest'});}},
    h('span',{class:'agenda-dot'}),h('span',{class:'agenda-name'},e.name),h('span',{class:'agenda-dday'},dLabel(days)),
    h('span',{class:'agenda-when'},fmt(e.date)+(e.days>1?' · '+e.days+'일간':'')),
-   h('span',{class:'agenda-prep'},mine.length?'준비 '+md(start)+' ~ '+md(e.date)+' · '+state:'정해진 준비 일정이 없어요'),
+   h('span',{class:'agenda-prep'},mine.length?'준비 '+md(start)+' ~ '+md(e.date)+' · '+state:'등록된 준비 항목이 없어요'),
    mine.length>0&&h('span',{class:'agenda-progress'},h('progress',{max:mine.length,value:n,'aria-label':e.name+' 준비 진행'}),h('span',{},n+'/'+mine.length+' 완료'))));
  })):h('p',{class:'hint'},'다가오는 행사가 없어요'));
 
  detail.hidden=homeMode!=='month'||(selectedDay===today&&!selectedEvent&&!dayData.tasks.length);
  const selected=selectedEvent?ts.filter(t=>t.eventDate===selectedEvent.end&&t.event===selectedEvent.name):ts.filter(t=>t.due===selectedDay);
- fill(detail,h('h3',{},selectedEvent?selectedEvent.name+' 준비할 일':fmt(selectedDay)+' 할 일'),dayData.preps.map(e=>h('p',{class:'meta selected-prep'},e.name+' 준비 중 · '+e.completed+'/'+e.total+'개 완료')),spans.filter(p=>p.start===selectedDay).map(p=>h('p',{class:'prep-start'},p.name.replace(/주일$/,'')+' 준비 시작')),selected.length?taskList(selected,done):h('p',{class:'hint'},'정해진 준비 일정이 없어요'),evs.filter(e=>occursOn(e,selectedDay)).map(e=>h('button',{class:'sub',onclick:()=>edit(e)},e.name+' 날짜 바꾸기')));
+ fill(detail,h('h3',{},selectedEvent?selectedEvent.name+' 준비할 일':fmt(selectedDay)+' 할 일'),dayData.preps.map(e=>h('p',{class:'meta selected-prep'},e.name+' 준비 중 · '+e.completed+'/'+e.total+'개 완료')),spans.filter(p=>p.start===selectedDay).map(p=>h('p',{class:'prep-start'},p.name.replace(/주일$/,'')+' 준비 시작')),selected.length?taskList(selected,done):h('p',{class:'hint'},'등록된 준비 항목이 없어요'),evs.filter(e=>occursOn(e,selectedDay)).map(e=>h('button',{class:'sub',onclick:()=>edit(e)},e.name+' 날짜 바꾸기')));
  if(adding)return;
- fill(nowCard,foldHead('지금 준비할 일',w.overdue.length?'기한 지남 '+w.overdue.length+'건':w.week.length?'이번 주 '+w.week.length+'개':'할 일 없음',w.overdue.length?'late':''),w.overdue.length>0&&h('section',{class:'overdue'},h('h4',{class:'late-title'},'기한 지난 준비 '+w.overdue.length+'건'),h('ul',{class:'tasks overdue-actions'},w.overdue.map(t=>h('li',{},h('strong',{},t.text),h('small',{},'마감 '+md(t.due)+' · '+Math.round((parse(today)-parse(t.due))/864e5)+'일 지남'),h('div',{class:'row'},h('button',{class:'sub',onclick:()=>toggleTask(t.key,true)},'완료 처리'),h('button',{class:'sub',onclick:()=>changeTaskDue(t)},'기한 변경')))))),h('h4',{},'이번 주 할 일 '+w.week.length+'개'),w.week.length?taskList(w.week,done):h('p',{class:'hint'},'이번 주 예정된 준비는 없어요'),h('button',{class:'text-button more-link',onclick:()=>show('schedule')},'전체 준비 일정 보기'));
+ fill(nowCard,foldHead(w.overdue.length?'기한 지난 준비 '+w.overdue.length+'건':'이번 주 할 일',w.overdue.length?'':w.week.length?w.week.length+'개':'새 마감 없음'),w.overdue.length>0&&h('section',{class:'overdue'},h('ul',{class:'tasks overdue-actions'},w.overdue.map(t=>h('li',{},h('small',{class:'task-event'},t.event+' 준비'),h('strong',{},t.text),h('small',{},'마감 '+md(t.due)+' · ',h('span',{class:'late-days'},Math.round((parse(today)-parse(t.due))/864e5)+'일 지남')),h('div',{class:'row'},h('button',{class:'primary done-button',onclick:()=>toggleTask(t.key,true)},'✓ 완료 처리'),h('button',{class:'text-button due-button',onclick:()=>changeTaskDue(t)},'기한 변경')))))),w.week.length?[h('h4',{},'이번 주 할 일 '+w.week.length+'개'),taskList(w.week,done)]:h('p',{class:'hint'},'이번 주 새 마감 없음'),h('button',{class:'text-button more-link go',onclick:()=>show('schedule')},'전체 준비 일정 보기'));
  const tips=sizeTips(data.settings);fill(tipsCard,foldHead('부서 규모별 수련회 팁',deptsOf(data.settings).join(' · ')),tips.map(t=>h('p',{},t)));tipsCard.hidden=!tips.length;
  fill(right,nowCard,sundayBox,wordBox,tipsCard);
  if(editing)fill(right,h('section',{class:'card editor-card'},eventEditor(editing,data,()=>{editing=null;draw();})));
- }watch(churchPath(),d=>{data=d||{};draw();});
+ }watch(churchPath(),d=>{data=d||{};draw();},()=>fill(cal,h('div',{class:'empty-state'},h('p',{},'불러오지 못했어요'),h('button',{type:'button',class:'sub',onclick:()=>show('home')},'다시 시도'))));
 }
 const stepTitle=t=>h('h4',{class:'step-title'},h('span',{class:'step-number'},t.slice(0,1)),t.slice(2));
 // 심화: 매튜 헨리 주석(1706, 저작권 만료)을 AI가 한국어로 풀어 쓴 글. tools/gen_deep.py가 만든다.

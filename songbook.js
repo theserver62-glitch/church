@@ -77,3 +77,11 @@ export async function sheetId(title, key) {
   const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(title + '|' + (key || '')));
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
 }
+// 곡 보관함 순서: 즐겨찾기 → 악보 있는 곡 → 우리 교회 곡 → 기본 곡(같은 무리 안에서는 원래 순서).
+// only면 악보 있는 곡만, onlyFav면 즐겨찾기만(favorites: {[label]: true|false}).
+export function sheetFirst(list, sheets = {}, churchBook = {}, only = false, favorites = {}, onlyFav = false) {
+  const has = s => Object.values(sheets).some(v => v?.title === s.title && (v.key || '') === (s.key || ''));
+  const fav = s => favorites[label(s)] === true;
+  const rank = s => (fav(s) ? 0 : has(s) ? 1 : churchBook[label(s)] ? 2 : 3);
+  return list.filter(s => (!only || has(s)) && (!onlyFav || fav(s))).map((s, i) => [rank(s), i, s]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(r => r[2]);
+}
