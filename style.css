@@ -1663,7 +1663,7 @@ main[data-screen=viewer]{max-width:720px;padding-top:var(--s5)}
    .tour = 화면 전체를 덮는 투명한 탭 받이(누르면 다음)와 아래 버튼 줄, .tour-layer = 구멍·글·화살표(문서 기준 absolute라 대상과 같이 움직임) */
 .tour{position:fixed;inset:0;z-index:1000}
 .tour-layer{position:absolute;left:0;top:0;width:0;height:0;z-index:999;pointer-events:none}
-.tour-hole{position:absolute;border-radius:var(--r-sm);box-shadow:0 0 0 2px rgba(255,255,255,.9),0 0 0 9999px rgba(0,0,0,.86)}
+.tour-hole{position:absolute;border-radius:var(--r-sm);box-shadow:0 0 0 2px rgba(255,255,255,.9),0 0 0 9999px rgba(0,0,0,.92)}
 .tour-layer.ready:not(.calm) .tour-hole{transition:left 200ms ease-out,top 200ms ease-out,width 200ms ease-out,height 200ms ease-out}
 .tour-tip,.tour-arrow{position:absolute;color:#fff}
 .tour-tip{padding:var(--s2) var(--s1);background:none;text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 12px rgba(0,0,0,.8)} /* 검은 카드 없이 흰 글씨만 — 비침은 글자 그림자로 막는다 */
@@ -1688,8 +1688,8 @@ main[data-screen=viewer]{max-width:720px;padding-top:var(--s5)}
 body.tour-on .onb{display:none} /* 처음 3단계 띠는 투어가 끝난 뒤에 */
 /* 튜토리얼 글씨: 화살표와 같은 동글동글한 손글씨(개구체) + 형광 노랑 */
 
-.tour-arrow{color:#fff45c}
-.tour-title{font:700 26px/1.25 'Gaegu',var(--text);color:#fff45c;letter-spacing:0}
-.tour-text{font:700 20px/1.4 'Gaegu',var(--text);color:#fff45c;letter-spacing:0}
+.tour-arrow{color:#ffe08a}
+.tour-title{font:700 22px/1.35 var(--text);color:#ffe08a;letter-spacing:var(--ls-sub)}
+.tour-text{font:500 17px/1.6 var(--text);color:#fff;letter-spacing:0}
 @media(max-width:959px){.app-info{margin-bottom:calc(120px + env(safe-area-inset-bottom))}}
 .call-when{margin-left:var(--s2);font-size:var(--fs-14);color:var(--accent);font-weight:600}
