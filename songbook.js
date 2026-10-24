@@ -289,7 +289,8 @@ export function parseKakaoConti(text, { today = new Date().toISOString().slice(0
 }
 
 // 한 주일 여러 예배 콘티: 탭 순서 = 기본 예배 → 교회가 기억한 예배(settings.contiServices) → 그 날짜에 곡이 있는 다른 예배
-export const contiTabs = (doc, def, remembered = {}) => [...new Set([def, ...Object.keys(remembered || {}).filter(k => remembered[k]), ...Object.keys(doc?.services || {}).filter(k => doc.services[k])])];
+// 숨긴 예배(remembered[id] === false)는 그 날 곡이 있어도 탭에서 뺀다(데이터는 그대로)
+export const contiTabs = (doc, def, remembered = {}) => [...new Set([def, ...Object.keys(remembered || {}).filter(k => remembered[k]), ...Object.keys(doc?.services || {}).filter(k => doc.services[k] && remembered?.[k] !== false)])];
 // 짧은 예배 이름: '중고등부 예배' → '중고등부', '오후·찬양예배' → '오후·찬양'
 export const svcShort = name => String(name || '').replace(/\(.*\)/, '').replace(/\s예배$/, '').replace(/(찬양|수요)예배$/, '$1').trim();
 // '이번 주 콘티 모두 보내기' 카톡 글: 예배마다 ■ 이름 · 곡 목록 · 보기 링크. 곡 없는 예배는 뺀다

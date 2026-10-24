@@ -1,21 +1,21 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250211';
-import { TEMPLATES } from './templates.js?v=202610250211';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250211';
-import { elementsFor, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250211';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250223';
+import { TEMPLATES } from './templates.js?v=202610250223';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250223';
+import { elementsFor, sundayName, callRec, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250223';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250211';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250211';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610250211';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250211';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250211';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250211';
-import { docs } from './docs.js?v=202610250211';
-import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250211';
-import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610250211';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610250211';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250211';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250211';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250211';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250223';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250223';
+import { openStore, newChurchCode, NOW } from './store.js?v=202610250223';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250223';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250223';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250223';
+import { docs } from './docs.js?v=202610250223';
+import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250223';
+import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610250223';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610250223';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250223';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250223';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250223';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -290,16 +290,16 @@ async function enter(c, data) {
 }
 
 // ---------- 탭 ----------
-const MENUS = [['home','홈'],['events','교회 일정'],['schedule','절기·행사'],['seasons','절기'],['ourEvents','행사'],['conti','찬양 콘티'],['ccm','CCM'],['special','특송'],['hymn','찬송가'],['word','말씀'],['sermon','주일설교'],['qt','큐티'],['worship','예배'],['docs','자료실'],['equipment','장비'],['set','설정']];
+const MENUS = [['home','홈'],['events','교회 일정'],['schedule','절기·행사'],['seasons','절기'],['ourEvents','행사'],['conti','찬양 콘티'],['ccm','CCM'],['special','특송'],['hymn','찬송가'],['word','말씀'],['sermon','주일설교'],['qt','큐티'],['worship','예배'],['worshipOrder','순서'],['worshipGuide','안내'],['docs','자료실'],['equipment','장비'],['set','설정']];
 // 하위 메뉴 → 부모. 부모 메뉴를 누르면 첫 하위 화면으로 간다(한 메뉴 = 한 화면)
-const PARENT = {events:'home',seasons:'schedule',ourEvents:'schedule',ccm:'conti',special:'conti',hymn:'conti',sermon:'word',qt:'word'};
-const FIRST = {schedule:()=>'seasons',conti:()=>'ccm',word:()=>wordMode==='qt'?'qt':'sermon'};
+const PARENT = {events:'home',seasons:'schedule',ourEvents:'schedule',ccm:'conti',special:'conti',hymn:'conti',sermon:'word',qt:'word',worshipOrder:'worship',worshipGuide:'worship'};
+const FIRST = {schedule:()=>'seasons',conti:()=>'ccm',word:()=>wordMode==='qt'?'qt':'sermon',worship:()=>'worshipOrder'};
 const TABS = [['home','홈'],['schedule','절기·행사'],['conti','콘티'],['more','더보기']];
-const TOOLS = new Set(['word','sermon','qt','worship','docs','equipment','set']); // 사이드바 '도구' 묶음 · 폰은 더보기 안
+const TOOLS = new Set(['word','sermon','qt','worship','worshipOrder','worshipGuide','docs','equipment','set']); // 사이드바 '도구' 묶음 · 폰은 더보기 안
 const side = h('aside', { id:'sidebar', hidden:true }); document.body.prepend(side);
-const VIEWS = { seasons:()=>scheduleView('season'), ourEvents:()=>scheduleView('custom'), ccm:()=>contiView('book'), special:()=>contiView('special'), hymn:()=>contiView('hymn'), sermon:()=>{wordMode='sermon';wordView();}, qt:()=>{wordMode='qt';wordView();}, events:homeView, project:projectView, worship:worshipView, home:nowView, schedule:scheduleView, conti:contiView, word:wordView, docs:docsView, equipment:equipmentView, set:setView, more:moreView };
+const VIEWS = { worshipOrder:()=>{view.append(worshipSeg('worshipOrder'));worshipView();}, worshipGuide:()=>{view.append(worshipSeg('worshipGuide'));worshipGuideView();}, seasons:()=>scheduleView('season'), ourEvents:()=>scheduleView('custom'), ccm:()=>contiView('book'), special:()=>contiView('special'), hymn:()=>contiView('hymn'), sermon:()=>{wordMode='sermon';wordView();}, qt:()=>{wordMode='qt';wordView();}, events:homeView, project:projectView, worship:worshipView, home:nowView, schedule:scheduleView, conti:contiView, word:wordView, docs:docsView, equipment:equipmentView, set:setView, more:moreView };
 const GUIDES = {home:'밀린 일과 앞으로 2주 안에 할 일을 보여 줘요',schedule:'절기와 행사에 맞춰 준비할 일을 보여 줘요',conti:'이번 주일 찬양을 순서대로 준비해요',word:'주일설교 본문을 찾고 매일 말씀을 묵상해요',docs:'우리 교회에 필요한 준비 양식을 내려받아요',equipment:'장비의 수량과 상태를 함께 확인해요',set:'우리 교회에 맞게 설정해요',more:'자료실과 장비, 설정을 열어요'};
-const SCREEN_HELP = {"events":["◀ ▶로 기간을 옮기고, '월 보기'에서 일·주·월·년을 골라요","색 칸은 행사일, ○는 준비 시작일이에요","+ 행사 추가로 수련회·바자회·성경학교를 넣어요"],"worship":["예배를 고르면 순서와 담당, 메모가 나와요","▲▼·빼기·순서 추가로 우리 교회 순서로 고쳐요(기본값으로 되돌릴 수 있어요)","순서지 인쇄와 예배 PPT 만들기로 마무리해요"],"home":["할 일을 누르면 준비하는 방법이 옆(폰은 아래)에 나와요","끝냈으면 [다 했어요]나 왼쪽 네모를 눌러요","달력은 '달력으로 보기'나 [교회 일정]에서, 이번 주일 찬양·오늘의 말씀은 오른쪽 아래 한 줄에서 열어요"],"schedule":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"conti":["CCM 탭에서 키·주제·분위기로 곡을 찾아 [+ 담기]를 눌러요. 특송·찬송가 탭도 같아요","[순서 편집]으로 순서를 바꾸고, [⋯]에서 메모를 달아요","[공유·출력]에서 카톡·인쇄·PPT로 마무리해요"],"word":["주일설교: 본문(예: 막 4:1-9)을 검색하면 본문과 6단계 해설이 나와요","큐티: 매일 하나씩 순서대로 나와요","폰에서는 아래 [더보기] › 말씀에서 열어요"],"docs":["맨 위 '부서'를 눌러 우리 부서 자료를 골라요","서류 이름을 누르면 설명과 워드·한글 받기가 나와요","[커리큘럼·교재]·[나들이·수련회]·[링크] 탭에서 비교표와 추천 사이트를 봐요"],"equipment":["기본 장비 목록이 미리 있어요. 묶음 제목을 눌러 펼쳐요","−/+로 수량을 바꾸고, 문제가 있으면 [점검 필요]·[고장]을 눌러 메모해요","고장·점검이 있으면 맨 위 [확인하기]로 모아 봐요"],"set":["교회 이름·규모·부서를 바꿔요","초대 링크를 복사해 리더들에게 보내요","구글로 로그인하면 다른 기기에서도 바로 들어와요"],"seasons":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"ourEvents":["수련회·바자회처럼 우리 교회가 추가한 행사만 모여요","+ 행사 추가로 새 행사와 준비할 일을 넣어요","행사를 누르면 할 일·날짜 바꾸기·삭제가 있어요"],"sermon":["본문(예: 막 4:1-9)을 고르거나 검색하면 본문과 6단계 해설이 나와요","PPT로 내보내기에서 본문을 예배 화면용 PPT로 받아요","아래에 묵상을 적으면 리더들과 나눠져요"],"qt":["매일 하나씩 순서대로 큐티 본문과 해설이 나와요","날짜를 바꾸면 그날 큐티를 볼 수 있어요","아래에 묵상을 적으면 리더들과 나눠져요"]};
+const SCREEN_HELP = {"events":["◀ ▶로 기간을 옮기고, '월 보기'에서 일·주·월·년을 골라요","색 칸은 행사일, ○는 준비 시작일이에요","+ 행사 추가로 수련회·바자회·성경학교를 넣어요"],"worship":["[순서]: 예배를 고르면 순서·담당·메모가 나오고, 이름 옆 ⓘ로 그 순서 안내를 봐요","[순서 고치기]로 우리 교회 순서로 바꾸고, 순서지 인쇄·예배 PPT로 마무리해요","[안내]: 예배의 흐름, 예배로 부름 본문(이번 주 추천), 순서 사전, 평신도 인도 주의를 봐요"],"home":["할 일을 누르면 준비하는 방법이 옆(폰은 아래)에 나와요","끝냈으면 [다 했어요]나 왼쪽 네모를 눌러요","달력은 '달력으로 보기'나 [교회 일정]에서, 이번 주일 찬양·오늘의 말씀은 오른쪽 아래 한 줄에서 열어요"],"schedule":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"conti":["CCM 탭에서 키·주제·분위기로 곡을 찾아 [+ 담기]를 눌러요. 특송·찬송가 탭도 같아요","[순서 편집]으로 순서를 바꾸고, [⋯]에서 메모를 달아요","[공유·출력]에서 카톡·인쇄·PPT로 마무리해요"],"word":["주일설교: 본문(예: 막 4:1-9)을 검색하면 본문과 6단계 해설이 나와요","큐티: 매일 하나씩 순서대로 나와요","폰에서는 아래 [더보기] › 말씀에서 열어요"],"docs":["맨 위 '부서'를 눌러 우리 부서 자료를 골라요","서류 이름을 누르면 설명과 워드·한글 받기가 나와요","[커리큘럼·교재]·[나들이·수련회]·[링크] 탭에서 비교표와 추천 사이트를 봐요"],"equipment":["기본 장비 목록이 미리 있어요. 묶음 제목을 눌러 펼쳐요","−/+로 수량을 바꾸고, 문제가 있으면 [점검 필요]·[고장]을 눌러 메모해요","고장·점검이 있으면 맨 위 [확인하기]로 모아 봐요"],"set":["교회 이름·규모·부서를 바꿔요","초대 링크를 복사해 리더들에게 보내요","구글로 로그인하면 다른 기기에서도 바로 들어와요"],"seasons":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"ourEvents":["수련회·바자회처럼 우리 교회가 추가한 행사만 모여요","+ 행사 추가로 새 행사와 준비할 일을 넣어요","행사를 누르면 할 일·날짜 바꾸기·삭제가 있어요"],"sermon":["본문(예: 막 4:1-9)을 고르거나 검색하면 본문과 6단계 해설이 나와요","PPT로 내보내기에서 본문을 예배 화면용 PPT로 받아요","아래에 묵상을 적으면 리더들과 나눠져요"],"qt":["매일 하나씩 순서대로 큐티 본문과 해설이 나와요","날짜를 바꾸면 그날 큐티를 볼 수 있어요","아래에 묵상을 적으면 리더들과 나눠져요"]};
 // 화면 도움말: 제목 바로 옆 작은 원형 ? 버튼. 누르면 그 아래 말풍선(폰은 아래에서 올라오는 작은 시트). 본문을 밀지 않고, 바깥·Esc로 닫힘
 function screenHeading(id, title) {
  const key='church:guide:'+id;
@@ -513,7 +513,7 @@ function contiView(startPick = 'book') {
   let inflight = 0, saveErr = false; const statusEl = h('p', { class: 'conti-status', 'aria-live': 'polite' });
   const paintStatus = () => { const busy = inflight > 0 || pending.has('songs'), n = cur.filter(x => x.title.trim()).length; fill(statusEl, whichLabel() + ' · ' + n + '곡 · ', h('span', { class: busy ? 'saving' : saveErr ? 'err' : 'saved' }, busy ? '저장 중…' : saveErr ? '저장 못 했어요' : '저장됨 ✓')); };
   const saveConti = (p, patch) => { inflight++; paintStatus(); return save(p, patch).then(ok => { inflight--; saveErr = !ok; paintStatus(); }); };
-  const setSongs = songs => { flush(); document.activeElement?.blur(); cur = songs; saveConti(path, contiPatchOf(svc, defSvc, songs)); };
+  const setSongs = songs => { flush(); document.activeElement?.blur(); cur = songs; saveConti(path, contiPatchOf(svc, defSvc, songs)); if (svc !== defSvc && songs.some(x => x.title?.trim()) && remembered()[svc] !== true) rememberSvc(svc, true); };
   const swap = (i, j) => { const b = [...cur]; [b[i], b[j]] = [b[j], b[i]]; setSongs(b); };
   // shortcut: 칸 이름이 곡 순서 번호라, 남이 앞 곡을 지우는 순간 입력 중이던 글이 다음 곡 칸으로 옮겨질 수 있다. 자주 생기면 곡마다 id를 둔다.
   const field = (i, f, ph) => h('input', { class: f, placeholder: ph, value: cur[i][f] || '', k: f + i, maxLength: 100, 'aria-label': `${i + 1}번 곡 ${ph}`,
@@ -678,12 +678,13 @@ function contiView(startPick = 'book') {
   document.addEventListener?.('pointerdown',onDoc,true);
   var svcBar = h('div', { class: 'svc-tabs', role: 'group', 'aria-label': '이 날짜의 예배' });
   const remembered = () => churchDoc?.settings?.contiServices || {};
+  const rememberSvc = (id, on) => { save(churchPath(), { settings: { contiServices: { [id]: on } } }); churchDoc = { ...churchDoc, settings: { ...churchDoc.settings, contiServices: { ...remembered(), [id]: on } } }; };
   function drawSvc() { if (!svcBar) return; // var: 위에서 먼저 불려도 아직 없으면 그냥 넘어간다
-  fill(svcBar, contiTabs(curDoc, defSvc, remembered()).map(id => { const n = contiSongsOf(curDoc, id, defSvc).filter(x => x.title).length; return h('button', { type: 'button', class: 'chip svc-tab', 'aria-pressed': String(id === svc), onclick: () => { if (id !== svc) { svc = id; open(); } } }, svcName(id), h('small', {}, ' · ' + n + '곡')); }), h('button', { type: 'button', class: 'chip svc-add', onclick: () => addSvc() }, '+ 예배 추가')); }
+  fill(svcBar, contiTabs(curDoc, defSvc, remembered()).flatMap(id => { const n = contiSongsOf(curDoc, id, defSvc).filter(x => x.title).length; return [h('button', { type: 'button', class: 'chip svc-tab', 'aria-pressed': String(id === svc), onclick: () => { if (id !== svc) { svc = id; open(); } } }, svcName(id), h('small', {}, ' · ' + n + '곡')), id === svc && id !== defSvc && menu('svc-more', '⋯', svcName(id) + ' 탭 더보기', h('button', { type: 'button', class: 'menu-item', onclick: () => { closeMenus(); rememberSvc(id, false); svc = defSvc; open(); say(svcName(id) + ' 탭을 숨겼어요(곡은 그대로 있어요)'); } }, '이 예배 탭 숨기기'))].filter(Boolean); }), h('button', { type: 'button', class: 'chip svc-add', onclick: () => addSvc() }, '+ 예배 추가')); }
   // [+ 예배 추가]: 예배 이름에서 고르면 바로 빈 콘티 탭이 생기고 그 탭으로. 고른 조합은 교회 설정에 기억(다음 주에도 같은 탭)
   const addSvc = async () => { const W = await loadWorship().catch(() => null), have = new Set(contiTabs(curDoc, defSvc, remembered())), list = (W?.services || []).filter(x => ['정기', '교회학교'].includes(x.group) && !have.has(x.id));
     if (!list.length) return say('더 추가할 예배가 없어요');
-    const dlg = bigDialog('예배 추가', 'filter-dialog svc-dialog', h('p', { class: 'hint' }, '고른 예배는 다음 주에도 탭으로 나와요(곡은 비어 있어요).'), h('div', { class: 'svc-list' }, list.map(x => h('button', { type: 'button', class: 'sub', onclick: () => { dlg.close(); save(churchPath(), { settings: { contiServices: { [x.id]: true } } }); churchDoc = { ...churchDoc, settings: { ...churchDoc.settings, contiServices: { ...remembered(), [x.id]: true } } }; svc = x.id; open(); say(svcName(x.id) + ' 콘티 탭을 만들었어요'); } }, x.name)))); };
+    const dlg = bigDialog('예배 추가', 'filter-dialog svc-dialog', h('p', { class: 'hint' }, '고른 예배는 다음 주에도 탭으로 나와요(곡은 비어 있어요).'), h('div', { class: 'svc-list' }, list.map(x => h('button', { type: 'button', class: 'sub', onclick: () => { dlg.close(); rememberSvc(x.id, true); svc = x.id; open(); say(svcName(x.id) + ' 콘티 탭을 만들었어요'); } }, x.name)))); };
   view.append(h('h2', {}, '콘티'), (wrap.append(topBar, svcBar, panel, tabs,
   h('div',{class:'conti-layout'},(editor.append(editorTitle,box,list,h('p', { class: 'hint conti-hint' }, '곡명을 치면 교회 곡 목록에서 고를 수 있어요. 가사는 저작권이 있어 곡명만 적어요.'),h('button',{class:'sub mobile-browse','aria-expanded':'false',onclick:e=>{const open=browse.classList.toggle('expanded');e.currentTarget.setAttribute('aria-expanded',String(open));}},'곡 목록에서 고르기')),editor),pickCol),weekBar), wrap), printBox);
   let churchDoc = {};
@@ -1614,7 +1615,8 @@ function showElements(els, title) {
     el.how?.length > 0 && [h('h4', {}, '진행 순서'), h('ol', {}, el.how.map(x => h('li', {}, x)))],
     el.example && [h('h4', {}, isRef(el.example) ? '성경 장절' : '예시 멘트'), h('p', { class: 'el-example' }, el.example, isRef(el.example) && h('button', { type: 'button', class: 'text-button', onclick: () => { box.close(); show('sermon'); const i = $('scripture-input'); if (i) { i.value = el.example; i.closest('form')?.requestSubmit?.(); } } }, '말씀 보기'))],
     textBox(el),
-    el.tip && [h('h4', {}, '자주 하는 실수'), h('p', { class: 'el-tip' }, el.tip)]);
+    el.tip && [h('h4', {}, '자주 하는 실수'), h('p', { class: 'el-tip' }, el.tip)],
+    el.key === '예배로 부름' && h('p', {}, h('button', { type: 'button', class: 'sub', onclick: () => { box.close(); callOpen = true; show('worshipGuide'); } }, '본문 고르기')));
   const box = h('dialog', { class: 'event-dialog about-dialog element-dialog', 'aria-labelledby': 'el-title' }, h('div', { class: 'event-dialog-heading' }, h('h2', { id: 'el-title' }, title + ' 안내'), h('button', { type: 'button', onclick: () => box.close() }, '닫기')), els.map(part));
   box.addEventListener('click', e => { if (e.target !== box) return; const r = box.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) box.close(); });
   box.addEventListener('close', () => box.remove());
@@ -1685,6 +1687,56 @@ function openWorshipPpt(serviceId, data) {
     go));
   paintTheme(); paintPeople();
 }
+// 예배 › 순서 · 안내(폰은 화면 위 세그먼트, 컴퓨터는 사이드바 하위 메뉴)
+let worshipSel = '', callOpen = false;
+const worshipSeg = cur => h('div', { class: 'segments only-narrow' }, [['worshipOrder', '순서'], ['worshipGuide', '안내']].map(([id, t]) => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(id === cur), onclick: () => id !== cur && show(id) }, t)));
+// 예배 › 안내(배우는 곳): ① 예배의 흐름 4단계 ② 형식별 차이 ③ 예배로 부름 본문 모음 ④ 순서 사전 ⑤ 평신도 인도 주의
+function worshipGuideView() {
+  const box = h('div', { class: 'wg' }); view.append(box);
+  fill(box, h('p', { class: 'hint loading' }, '안내를 불러오는 중이에요'));
+  loadWorship().then(W => {
+    const S = W.structure || {}, list = W.callToWorship || [], today = todayIso(), sun = nextSunday(today), y = +today.slice(0, 4);
+    const rec = callRec(list, sun, occurrences([y - 1, y, y + 1], {}));
+    const stepBtn = name => { const els = elementsFor(name, W.elements); return els.length ? h('button', { type: 'button', class: 'text-button wg-step', onclick: () => showElements(els, name) }, name) : h('span', { class: 'wg-step plain' }, name); };
+    const callRow = x => h('li', {}, h('button', { type: 'button', class: 'call-row', onclick: () => openCall(x) }, h('span', { class: 'call-ref' }, x.ref), h('span', { class: 'call-mode' + (x.mode === '교독' ? ' antiphon' : '') }, x.mode), h('span', { class: 'call-why' }, x.why)));
+    let grp = '절기'; const callBox = h('div');
+    const drawCalls = () => { const names = [...new Set(list.filter(x => x.group === grp).map(x => x.name))];
+      fill(callBox, h('div', { class: 'browse-chips', role: 'group', 'aria-label': '본문 분류' }, ['절기', '평상시'].map(g => h('button', { type: 'button', class: 'chip', 'aria-pressed': String(g === grp), onclick: () => { grp = g; drawCalls(); } }, g))),
+        names.map(n => { const xs = list.filter(x => x.group === grp && x.name === n); return h('details', { class: 'doc-group' }, h('summary', {}, h('strong', { class: 'doc-group-title' }, n), h('small', { class: 'meta' }, xs.length + '개')), h('ul', { class: 'call-list' }, xs.map(callRow))); })); };
+    drawCalls();
+    const callSec = h('section', { class: 'wg-sec', id: 'wg-call' }, h('h3', {}, '예배로 부름 본문 모음 ' + list.length + '개'),
+      rec.items.length > 0 && h('div', { class: 'call-rec' }, h('p', { class: 'call-rec-title' }, '이번 주(' + md(sun) + ') 추천 · ' + rec.name + (rec.plain ? ' (평상시 주제)' : '')), h('ul', { class: 'call-list' }, rec.items.map(callRow))),
+      callBox);
+    fill(box,
+      h('section', { class: 'wg-sec' }, h('h3', {}, S.title || '예배의 흐름'), S.intro && h('p', { class: 'wg-intro' }, S.intro),
+        h('ol', { class: 'wg-flow' }, (S.parts || []).map(p => h('li', {}, h('h4', {}, p.name), h('p', {}, p.what), h('div', { class: 'wg-steps' }, (p.steps || []).map(stepBtn))))),
+        S.source && h('p', { class: 'meta wg-source' }, '출처: ' + S.source)),
+      (S.formats || []).length > 0 && h('section', { class: 'wg-sec' }, h('h3', {}, '형식별 차이'), h('dl', { class: 'wg-formats' }, S.formats.flatMap(f => [h('dt', {}, f.name), h('dd', {}, f.note)]))),
+      callSec,
+      (W.elements || []).length > 0 && h('section', { class: 'wg-sec' }, h('details', { class: 'el-guides' }, h('summary', {}, '순서 사전 ' + W.elements.length + '개'), h('ul', {}, W.elements.map(el => h('li', {}, h('button', { type: 'button', class: 'text-button', onclick: () => showElements([el], el.key) }, el.key)))))),
+      h('details', { class: 'lay-rules' }, h('summary', {}, '평신도가 인도할 때 주의 ' + W.layRules.length + '가지'), h('ul', {}, W.layRules.map(r => h('li', {}, r)))));
+    if (callOpen) { callOpen = false; callSec.scrollIntoView({ block: 'start' }); }
+  }).catch(() => fill(box, h('div', { class: 'empty-state' }, h('p', {}, '안내를 불러오지 못했어요'), h('button', { type: 'button', class: 'sub', onclick: () => show('worshipGuide') }, '다시 시도'))));
+}
+// 예배로 부름 본문 보기: 개역한글 본문(교독이면 절마다 사회자·회중 번갈아) · [복사] · [이번 주 순서지에 넣기]
+function openCall(x) {
+  const body = h('div', { class: 'call-text' }, h('p', { class: 'hint' }, '본문을 불러오는 중이에요')), copyBtn = h('button', { type: 'button', class: 'sub', disabled: true }, '복사');
+  const put = async () => { try { await loadWorship(); const d = await readOnce(churchPath()), id = worshipSel || 'sunday-main', sv = worshipData.services.find(s => s.id === id), steps = orderFor(sv, d?.worshipOrders || {}).map(s => ({ ...s }));
+      const i = steps.findIndex(s => elementsFor(s.name, worshipData.elements).some(e => e.key === '예배로 부름')); if (i < 0) return say(sv.name + ' 순서에 예배로 부름이 없어요');
+      steps[i].note = x.ref + ' (' + x.mode + ')'; if (await save(churchPath(), { worshipOrders: { [id]: steps } })) say(sv.name + ' 순서지의 예배로 부름에 ' + x.ref + '을(를) 넣었어요'); } catch { say('넣지 못했어요. 다시 해 주세요.'); } };
+  const box = h('dialog', { class: 'event-dialog about-dialog element-dialog call-dialog', 'aria-labelledby': 'call-title' }, h('div', { class: 'event-dialog-heading' }, h('h2', { id: 'call-title' }, x.ref + ' · ' + x.mode), h('button', { type: 'button', onclick: () => box.close() }, '닫기')),
+    h('p', { class: 'meta' }, x.name + ' · ' + x.why), body, h('div', { class: 'row' }, copyBtn, h('button', { type: 'button', class: 'sub', onclick: () => { box.close(); put(); } }, '이번 주 순서지에 넣기')), h('p', { class: 'meta' }, '개역한글'));
+  box.addEventListener('click', e => { if (e.target !== box) return; const r = box.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) box.close(); });
+  box.addEventListener('close', () => box.remove()); document.body.append(box); box.showModal();
+  (async () => { const index = await fetch('./bible/index.json').then(r => r.json()), r = refRange(x.ref, index); if (!r) throw new Error('ref');
+    const bible = await fetch('./bible/' + String(r.book).padStart(2, '0') + '.json').then(q => q.json()), lines = [];
+    for (let c = r.chap; c <= r.endChap; c++) { const vs = bible[c - 1] || [], from = c === r.chap ? (r.v1 || 1) : 1, to = c === r.endChap ? (r.v2 || vs.length) : vs.length; for (let v = from; v <= to; v++) if (vs[v - 1]) lines.push([c, v, vs[v - 1]]); }
+    if (!lines.length) throw new Error('empty');
+    const anti = x.mode === '교독';
+    fill(body, lines.map(([c, v, t], k) => h('p', { class: 'call-line' + (anti ? (k % 2 ? ' people' : ' leader') : '') }, anti && h('b', {}, k % 2 ? '회중 ' : '사회자 '), h('sup', {}, (r.endChap > r.chap ? c + ':' : '') + v), ' ' + t)));
+    copyBtn.disabled = false; copyBtn.onclick = () => copyText(x.ref + '\n' + lines.map(([, v, t], k) => (anti ? (k % 2 ? '(회중) ' : '(사회자) ') : v + ' ') + t).join('\n'));
+  })().catch(() => fill(body, h('p', { class: 'err' }, '본문을 불러오지 못했어요')));
+}
 function worshipView() {
   const top = h('div', { class: 'worship-top' }), detail = h('section', { class: 'worship-detail' }), printBox = h('section', { class: 'print-conti' });
   view.append(top, detail, printBox);
@@ -1693,7 +1745,7 @@ function worshipView() {
   const draw = () => {
     const W = worshipData; if (!W) return;
     const rec = recommendService(thisWeek(todayIso(), { ...data.settings, customEvents: data.customEvents }, {}).upcoming, W.services);
-    sel ||= rec?.service.id || 'sunday-main'; group ||= W.services.find(s => s.id === sel)?.group || '정기';
+    sel ||= rec?.service.id || 'sunday-main'; group ||= W.services.find(s => s.id === sel)?.group || '정기'; worshipSel = sel;
     const groups = [...new Set(W.services.map(s => s.group))];
     fill(top, rec && h('p', { class: 'special-note' }, h('span', {}, rec.event.name + (/[가-힣]$/.test(rec.event.name) && (rec.event.name.charCodeAt(rec.event.name.length - 1) - 0xAC00) % 28 ? '이' : '가') + ' 다가와요'), h('button', { type: 'button', class: 'text-button', onclick: () => { sel = rec.service.id; group = rec.service.group; draw(); } }, rec.service.name + ' 순서 보기')),
       h('div', { class: 'browse-chips' }, groups.map(g => h('button', { type: 'button', class: 'chip', 'aria-pressed': String(g === group), onclick: () => { group = g; if (W.services.find(s => s.id === sel)?.group !== g) { sel = W.services.find(s => s.group === g)?.id || sel; editing = false; } draw(); } }, g))),
@@ -1708,8 +1760,7 @@ function worshipView() {
         h('tbody', {}, steps.map((st, i) => h('tr', {}, h('td', { class: 'ws-num' }, String(i + 1)), h('th', { scope: 'row', class: 'ws-name' }, st.name, (els => els.length > 0 && h('button', { type: 'button', class: 'text-button ws-guide', 'aria-label': st.name + ' 안내 보기', onclick: () => showElements(els, st.name) }, 'ⓘ 안내'))(elementsFor(st.name, W.elements))), h('td', { class: 'ws-who' }, st.who, isPastorOnly(st) && h('span', { class: 'ws-tag' }, '목사')), h('td', { class: 'ws-note' }, st.note || ''),
           editing && h('td', { class: 'ws-acts' }, h('button', { type: 'button', class: 'sub', 'aria-label': st.name + ' 위로', disabled: i === 0, onclick: () => { const b = [...steps]; [b[i - 1], b[i]] = [b[i], b[i - 1]]; put(b); } }, '▲'), h('button', { type: 'button', class: 'sub', 'aria-label': st.name + ' 아래로', disabled: i === steps.length - 1, onclick: () => { const b = [...steps]; [b[i + 1], b[i]] = [b[i], b[i + 1]]; put(b); } }, '▼'), h('button', { type: 'button', class: 'danger', 'aria-label': st.name + ' 빼기', onclick: () => put(steps.filter((_, j) => j !== i)) }, '빼기')))))),
       editing && h('form', { class: 'ws-add', onsubmit: e => { e.preventDefault(); if (!name.value.trim()) return; put([...steps, { name: name.value.trim(), who: who.value.trim(), note: '' }]); } }, name, who, h('button', { class: 'sub' }, '+ 순서 추가')),
-      (W.elements || []).length > 0 && h('details', { class: 'el-guides' }, h('summary', {}, '예배 순서 하나하나 안내(' + W.elements.length + ')'), h('ul', {}, W.elements.map(el => h('li', {}, h('button', { type: 'button', class: 'text-button', onclick: () => showElements([el], el.key) }, el.key))))),
-      h('details', { class: 'lay-rules' }, h('summary', {}, '평신도가 인도할 때 주의 ' + W.layRules.length + '가지'), h('ul', {}, W.layRules.map(r => h('li', {}, r)))),
+      h('p', { class: 'meta ws-more' }, '순서 하나하나의 뜻·예배로 부름 본문·평신도 인도 주의는 ', h('button', { type: 'button', class: 'text-button', onclick: () => show('worshipGuide') }, '예배 › 안내'), '에서 봐요'),
       h('div', { class: 'worship-actions' }, h('button', { type: 'button', class: 'sub', onclick: () => { fill(printBox, h('h1', {}, sv.name), h('p', {}, [data.name, nextSunday(todayIso())].filter(Boolean).join(' · ')), h('table', { class: 'ws-print' }, h('thead', {}, h('tr', {}, ['', '순서', '담당', '메모'].map(t => h('th', {}, t)))), h('tbody', {}, steps.map((st, i) => h('tr', {}, [i + 1, st.name, st.who, st.note].map(t => h('td', {}, String(t || '')))))))); $('pagesize')?.remove(); document.head.append(h('style', { id: 'pagesize' }, '@page { size: A4 portrait; margin: 15mm }')); window.print(); } }, '순서지 인쇄'),
         h('button', { type: 'button', class: 'primary', onclick: () => openWorshipPpt(sel, data) }, '예배 PPT 만들기')));
   };

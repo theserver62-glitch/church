@@ -1,5 +1,5 @@
 // 예배 순서(worship.json)와 부서별 예배 PPT 장 구성. 화면·파일 만들기와 떼어 둔 순수 함수(테스트용).
-import { splitVerse, passageLabel } from './home.js?v=202610250211';
+import { splitVerse, passageLabel } from './home.js?v=202610250223';
 
 // 교회가 고친 순서가 있으면 그것, 없으면(null·빈 값) 기본 순서
 export const orderFor = (service, saved = {}) => (Array.isArray(saved?.[service.id]) && saved[service.id].length ? saved[service.id] : service.steps).map(s => ({ name: s.name || '', who: s.who || '', note: s.note || '' }));
@@ -92,4 +92,35 @@ export function elementsFor(name, elements = []) {
     if (hit && !out.includes(hit)) out.push(hit);
   }
   return out;
+}
+
+// ---------- 예배로 부름 본문 모음: 이번 주일의 교회력 이름(callToWorship.name과 맞춘다) ----------
+// evs = occurrences()의 기본 절기({id, date}). 대림절 n주·사순절 n주·주님의 세례주일·산상변모주일·승천주일·삼위일체주일·종교개혁주일·신년주일도 계산
+const dayN = s => Date.parse(s + 'T00:00:00Z') / 864e5, plus = (s, n) => new Date((dayN(s) + n) * 864e5).toISOString().slice(0, 10);
+export function sundayName(sun, evs = []) {
+  const at = id => evs.filter(e => e.id === id).map(e => e.date), near = id => at(id).sort((a, b) => Math.abs(dayN(a) - dayN(sun)) - Math.abs(dayN(b) - dayN(sun)))[0];
+  const exact = { palm: '종려·고난주일', easter: '부활절', pentecost: '성령강림주일', summerThanks: '맥추감사주일', thanksgiving: '추수감사주일', king: '왕 되신 그리스도 주일', epiphany: '주현절' };
+  for (const [id, name] of Object.entries(exact)) if (at(id).includes(sun)) return name;
+  const adv = near('advent'), xmas = near('christmas'), lent = near('lent'), palm = near('palm'), easter = near('easter'), pent = near('pentecost'), epi = near('epiphany');
+  if (adv && xmas && sun >= adv && sun < xmas) return '대림절 ' + Math.min(4, Math.floor((dayN(sun) - dayN(adv)) / 7) + 1) + '주';
+  if (xmas && sun === xmas) return '성탄절';
+  if (xmas && sun > xmas && sun <= plus(xmas, 7)) return '성탄 후 첫 주';
+  if (sun.slice(5) <= '01-07') return '신년주일';
+  if (epi && sun > epi && sun <= plus(epi, 7)) return '주님의 세례주일';
+  if (lent && sun === plus(lent, -3)) return '산상변모주일';
+  if (lent && palm && sun > lent && sun < palm) return '사순절 ' + Math.min(5, Math.ceil((dayN(sun) - dayN(lent)) / 7)) + '주';
+  if (pent && sun === plus(pent, -7)) return '승천주일';
+  if (easter && pent && sun > easter && sun < pent) return '부활절 2~7주';
+  if (pent && sun === plus(pent, 7)) return '삼위일체주일';
+  if (sun.slice(5, 7) === '10' && plus(sun, 7).slice(5, 7) === '11') return '종교개혁주일';
+  return '';
+}
+// 이번 주 추천: 교회력 이름이 맞는 본문들, 없으면 평상시 주제 하나를 주차로 돌려서
+export function callRec(list = [], sun, evs = []) {
+  const name = sundayName(sun, evs), hit = list.filter(x => x.name === name);
+  if (hit.length) return { name, items: hit };
+  const themes = [...new Set(list.filter(x => x.group === '평상시').map(x => x.name))];
+  if (!themes.length) return { name: '', items: [] };
+  const t = themes[Math.floor(dayN(sun) / 7) % themes.length];
+  return { name: t, items: list.filter(x => x.name === t), plain: true };
 }

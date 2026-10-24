@@ -1612,6 +1612,42 @@ main[data-screen=viewer]{max-width:720px;padding-top:var(--s5)}
 .app-info a{color:var(--accent)}
 @media(max-width:959px){.svc-tabs .chip{min-height:44px}}
 
+/* 예배 › 안내(배우는 곳): 흐름 4단계 · 형식별 차이 · 예배로 부름 본문(이번 주 추천) · 순서 사전 · 평신도 주의 */
+.wg{max-width:var(--col)}
+.wg-sec{margin:0 0 var(--s6)}
+.wg-sec>h3{margin:0 0 var(--s2);font:700 var(--fs-22)/var(--lh-title) var(--display);letter-spacing:-.02em}
+.wg-intro{margin:0 0 var(--s3);color:var(--ink-2)}
+.wg-flow{list-style:none;margin:0;padding:0;counter-reset:none}
+.wg-flow>li{position:relative;margin:0;padding:0 0 var(--s4) var(--s5);border-left:2px solid var(--line-2)}
+.wg-flow>li:last-child{border-left-color:transparent}
+.wg-flow>li::before{content:'';position:absolute;left:-7px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.wg-flow h4{margin:0 0 var(--s1);font-size:var(--fs-18)}
+.wg-flow p{margin:0 0 var(--s2);color:var(--ink-2)}
+.wg-steps{display:flex;flex-wrap:wrap;gap:0 var(--s1)}
+.wg-step{min-height:40px;padding:0 var(--s2);font-weight:400;color:var(--accent)}
+.wg-step.plain{display:inline-flex;align-items:center;color:var(--ink-2)}
+.wg-source{font-size:var(--fs-14)}
+.wg-formats dt{margin-top:var(--s3);font-weight:600}
+.wg-formats dd{margin:var(--s1) 0 0;color:var(--ink-2)}
+.call-rec{margin:0 0 var(--s4);padding:var(--s3);border-radius:var(--r-md);background:var(--accent-soft)}
+.call-rec-title{margin:0 0 var(--s1);font-weight:600;color:var(--accent)}
+.call-list{list-style:none;margin:0;padding:0}
+.call-row{display:grid;grid-template-columns:auto auto 1fr;align-items:baseline;gap:0 var(--s2);width:100%;min-height:44px;padding:var(--s2) 0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;font-weight:400;text-align:left}
+.call-row:hover{background:transparent}
+.call-row:hover .call-ref{text-decoration:underline}
+.call-ref{font-weight:600;color:var(--accent);white-space:nowrap}
+.call-mode{font-size:var(--fs-14);color:var(--ink-3);white-space:nowrap}
+.call-mode.antiphon{color:var(--ink-2);font-weight:600}
+.call-why{color:var(--ink-2);font-size:var(--fs-14)}
+.call-text{margin:var(--s3) 0;padding:var(--s3);border-radius:var(--r-md);background:var(--paper-2)}
+.call-line{margin:0 0 var(--s2)}
+.call-line b{display:inline-block;min-width:48px;font-size:var(--fs-14);color:var(--ink-3)}
+.call-line.people b{color:var(--accent)}
+.call-line sup{color:var(--ink-3)}
+.ws-more{margin:var(--s3) 0}
+.ws-more .text-button{display:inline;min-height:0;padding:0;color:var(--accent);text-decoration:underline}
+@media(max-width:639px){.call-row{grid-template-columns:auto 1fr}.call-why{grid-column:1/-1}}
+
 /* 화면 첫 방문 안내(tour.js): 코치마크. 어두운 덮개에 대상만 구멍처럼 밝히고, 옆 빈 곳에 흰 글씨와 화살표.
    .tour = 화면 전체를 덮는 투명한 탭 받이(누르면 다음)와 아래 버튼 줄, .tour-layer = 구멍·글·화살표(문서 기준 absolute라 대상과 같이 움직임) */
 .tour{position:fixed;inset:0;z-index:1000}
@@ -1644,3 +1680,4 @@ body.tour-on .onb{display:none} /* 처음 3단계 띠는 투어가 끝난 뒤에
 .tour-arrow{color:#fff45c}
 .tour-title{font:700 26px/1.25 'Gaegu',var(--text);color:#fff45c;letter-spacing:0}
 .tour-text{font:700 20px/1.4 'Gaegu',var(--text);color:#fff45c;letter-spacing:0}
+@media(max-width:959px){.app-info{margin-bottom:calc(120px + env(safe-area-inset-bottom))}}
