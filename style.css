@@ -1681,3 +1681,4 @@ body.tour-on .onb{display:none} /* 처음 3단계 띠는 투어가 끝난 뒤에
 .tour-title{font:700 26px/1.25 'Gaegu',var(--text);color:#fff45c;letter-spacing:0}
 .tour-text{font:700 20px/1.4 'Gaegu',var(--text);color:#fff45c;letter-spacing:0}
 @media(max-width:959px){.app-info{margin-bottom:calc(120px + env(safe-area-inset-bottom))}}
+.call-when{margin-left:var(--s2);font-size:var(--fs-14);color:var(--accent);font-weight:600}

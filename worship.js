@@ -1,5 +1,5 @@
 // 예배 순서(worship.json)와 부서별 예배 PPT 장 구성. 화면·파일 만들기와 떼어 둔 순수 함수(테스트용).
-import { splitVerse, passageLabel } from './home.js?v=202610250232';
+import { splitVerse, passageLabel } from './home.js?v=202610250239';
 
 // 교회가 고친 순서가 있으면 그것, 없으면(null·빈 값) 기본 순서
 export const orderFor = (service, saved = {}) => (Array.isArray(saved?.[service.id]) && saved[service.id].length ? saved[service.id] : service.steps).map(s => ({ name: s.name || '', who: s.who || '', note: s.note || '' }));
@@ -114,6 +114,14 @@ export function sundayName(sun, evs = []) {
   if (pent && sun === plus(pent, 7)) return '삼위일체주일';
   if (sun.slice(5, 7) === '10' && plus(sun, 7).slice(5, 7) === '11') return '종교개혁주일';
   return '';
+}
+// 절기 이름마다 앞으로 1년 안의 날짜(가장 가까운 것) — 본문 모음에서 '언제 쓰는지' 보여 주고 날짜 순으로 놓으려고
+export function nameDates(fromSun, evs = []) {
+  const out = {}, put = (n, d) => { if (n && !out[n]) out[n] = d; };
+  for (let k = 0; k < 53; k++) { const d = plus(fromSun, 7 * k); put(sundayName(d, evs), d); }
+  const next = id => evs.filter(e => e.id === id && e.date >= fromSun).map(e => e.date).sort()[0];
+  put('성탄절', next('christmas')); put('주현절', next('epiphany')); put('재의 수요일', next('lent')); put('성금요일', next('goodFriday') || next('goodfriday')); put('송구영신', next('yearEnd') || next('yearend'));
+  return out;
 }
 // 이번 주 추천: 교회력 이름이 맞는 본문들, 없으면 평상시 주제 하나를 주차로 돌려서
 export function callRec(list = [], sun, evs = []) {
