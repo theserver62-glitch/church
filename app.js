@@ -1,15 +1,15 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610241314';
-import { TEMPLATES } from './templates.js?v=202610241314';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610241318';
+import { TEMPLATES } from './templates.js?v=202610241318';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps } from './home.js?v=202610241314';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText } from './entry.js?v=202610241314';
-import { openStore, newChurchCode } from './store.js?v=202610241314';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610241314';
-import { EVENTS, RETREAT_FORMS } from './events.js?v=202610241314';
-import { docs } from './docs.js?v=202610241314';
-import { equipment, equipmentId, equipmentRows } from './equipment.js?v=202610241314';
-import { label, parseCsv, mergeLibrary, filterSongs } from './songbook.js?v=202610241314';
-import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610241314';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps } from './home.js?v=202610241318';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610241318';
+import { openStore, newChurchCode } from './store.js?v=202610241318';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610241318';
+import { EVENTS, RETREAT_FORMS } from './events.js?v=202610241318';
+import { docs } from './docs.js?v=202610241318';
+import { equipment, equipmentId, equipmentRows } from './equipment.js?v=202610241318';
+import { label, parseCsv, mergeLibrary, filterSongs } from './songbook.js?v=202610241318';
+import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610241318';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -109,9 +109,11 @@ function loginBox() {
   if (isKakaoInApp(navigator.userAgent)) return h('section', {class:'login-box'},
     h('p', {}, '카톡 안에서는 구글 로그인이 안 돼요. 기본 브라우저로 열어 주세요.'),
     h('button', {class:'primary', onclick: () => { location.href = kakaoExternalUrl(location.href); }}, '기본 브라우저로 열기'));
-  if (isInAppBrowser(navigator.userAgent)) return h('section', {class:'login-box'},
-    h('p', {}, '앱 안에서 연 화면에서는 구글이 로그인을 막아요. 오른쪽 위(또는 아래) 메뉴에서 "Safari로 열기"나 "Chrome으로 열기"를 눌러 주세요.'),
-    h('button', {class:'primary', onclick: () => copyText(location.href)}, '주소 복사해서 사파리·크롬에 붙여 넣기'));
+  if (isInAppBrowser(navigator.userAgent)) { const ios = /iPhone|iPad/.test(navigator.userAgent); return h('section', {class:'login-box'},
+    h('p', {}, '앱 안에서 연 화면에서는 구글이 로그인을 막아요. 아래 버튼으로 크롬이나 사파리에서 열어 주세요.'),
+    h('button', {class:'primary', onclick: () => { location.href = chromeUrl(location.href, navigator.userAgent); }}, '크롬으로 열기'),
+    ios && h('button', {class:'sub', onclick: () => { location.href = safariUrl(location.href); }}, '사파리로 열기'),
+    h('button', {class:'text-button', onclick: () => copyText(location.href)}, '안 열리면: 주소 복사')); }
   return h('section', {class:'login-box'}, h('button', {class:'primary google-login', onclick: googleLogin}, 'Google로 로그인'),
     h('p', {class:'hint'}, '한 번 로그인하면 어느 기기에서든 우리 교회가 바로 떠요.'));
 }

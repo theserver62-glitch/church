@@ -58,3 +58,10 @@ export function sizeTips(settings) {
     size === 'd' ? '대형 시설 · D-12주 장소 예약 · 교사 1:7~8' :
     size === 'c' ? '수련원 · 교사 1:5~6' : '교회 안/1박 2일 위주 · 교사 1:3~4'));
 }
+// 앱 안 화면에서 크롬·사파리로 바로 여는 주소. 아이폰: 크롬은 googlechromes://, 사파리는 x-safari-https:// / 안드로이드: 크롬 intent
+export function chromeUrl(url, ua) {
+  const u = new URL(url);
+  if (/Android/i.test(ua || '')) return `intent://${u.host}${u.pathname}${u.search}${u.hash}#Intent;scheme=https;package=com.android.chrome;end`;
+  return 'googlechromes://' + u.host + u.pathname + u.search + u.hash;
+}
+export const safariUrl = url => 'x-safari-' + url;
