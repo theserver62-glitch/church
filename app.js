@@ -163,7 +163,8 @@ async function enter(c, data) {
   const d = data || await readOnce('churches/'+c).catch(()=>null);
   if(!d) {showEntry('이 코드의 교회를 찾지 못했어요. 코드를 다시 확인해 주세요.');return;}
   localStorage.setItem('church:code', c);remember(c,d.name||'우리 교회');
-  if(location.hash.startsWith('#c=')) history.replaceState(null,'',location.pathname+location.search);
+  // 주소에 교회 코드를 남겨 둔다: 이 주소를 즐겨찾기·홈 화면에 추가하면 어느 브라우저(카톡 안 브라우저 포함)에서도 바로 들어온다. 해시라 서버로는 안 간다.
+  if(location.hash!=='#c='+c) history.replaceState(null,'',location.pathname+location.search+'#c='+c);
   nav.hidden = false;
   show('home');
 }
@@ -419,7 +420,7 @@ function setView() {
   const copy = h('button', { type: 'button', class: 'sub', onclick: () => (navigator.clipboard?.writeText(code) || Promise.reject())
     .then(() => (copy.textContent = '복사했어요'), () => say('복사가 안 돼요. 코드를 길게 눌러 복사해 주세요.')) }, '코드만 복사');
   view.append(h('div',{class:'settings-grid'},
- h('section',{class:'card'},h('h3',{},'교회 정보'),nameBox,sizeBox),h('section',{class:'card'},h('h3',{},'멤버 초대'),h('h4',{},'교회 코드'),h('p',{class:'code'},code),h('button',{class:'primary',onclick:()=>copyInvite(code)},'초대 링크 복사'),copy),h('section',{class:'card'},h('h3',{},'내 기기 설정'),h('label',{},h('span',{},'내 역할 이름 (이 기기에만 저장)'),h('input',{value:localStorage.getItem('church:role')||'',placeholder:'예: 찬양리더',maxLength:20,oninput:e=>localStorage.setItem('church:role',e.target.value.trim())})),h('button',{class:'danger',onclick:()=>{localStorage.removeItem('church:code');showEntry();}},'다른 교회로 바꾸기')),
+ h('section',{class:'card'},h('h3',{},'교회 정보'),nameBox,sizeBox),h('section',{class:'card'},h('h3',{},'멤버 초대'),h('h4',{},'교회 코드'),h('p',{class:'code'},code),h('button',{class:'primary',onclick:()=>copyInvite(code)},'초대 링크 복사'),copy),h('section',{class:'card'},h('h3',{},'내 기기 설정'),h('label',{},h('span',{},'내 역할 이름 (이 기기에만 저장)'),h('input',{value:localStorage.getItem('church:role')||'',placeholder:'예: 찬양리더',maxLength:20,oninput:e=>localStorage.setItem('church:role',e.target.value.trim())})),h('button',{class:'danger',onclick:()=>{localStorage.removeItem('church:code');history.replaceState(null,'',location.pathname+location.search);showEntry();}},'다른 교회로 바꾸기')),
  h('section',{class:'card'},evBox),
  h('section',{class:'card'},h('h3',{},'곡 목록·자료 옮기기'),bookBox,h('label',{},h('span',{},'CSV 파일로 곡 넣기'),csv),h('p',{class:'meta'},'제목, 키, 메모, 주제, 분위기, 악보 주소 순서'),sheetForm,transferCard())));
   watch(churchPath(), d => {
