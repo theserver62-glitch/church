@@ -1337,3 +1337,30 @@ input.check-circle:checked::after{content:'';width:7px;height:12px;margin-top:-3
 .buy-help .buy-links .sub-link:first-child{min-height:36px;margin-right:var(--s2);padding:0 var(--s3);border:1px solid var(--accent);border-radius:var(--r-sm);background:var(--surface)}
 .buy-help .buy-links .sub-link:first-child:hover{background:var(--accent-soft);text-decoration:none}
 .buy-help .buy-links .sub-link+.sub-link{color:var(--ink-3);font-weight:400}
+.memo-link{color:var(--accent);text-decoration:underline;overflow-wrap:anywhere}
+/* 추천 하나(화면마다 '지금 이걸 하세요' 한 곳만 채운 버튼) */
+a.primary{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);padding:0 var(--s4);border:1px solid var(--accent);border-radius:var(--r-sm);background:var(--accent);color:#fff;font-weight:600;text-decoration:none}
+.share-menu.rec>summary{background:var(--accent);border-color:var(--accent);color:#fff}
+input.rec{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.eq-rec{margin-right:var(--s2)}
+.doc-rec:not(:empty){display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin:0 0 var(--s4);color:var(--ink-2)}
+.doc-tabs{margin:0 0 var(--s3)}
+.link-rows{list-style:none;margin:0;padding:0}
+.link-rows li{display:grid;gap:2px;padding:var(--s2) 0;border-top:1px solid var(--line)}
+.link-name{display:inline-flex;align-items:center;min-height:32px;color:var(--accent);font-weight:600;text-decoration:none}
+.link-name:hover{text-decoration:underline}
+.link-list h3{margin:var(--s4) 0 var(--s2);font-size:var(--fs-18)}
+/* 설정 구역 제목: 작은 회색 */
+.set-group{margin:var(--s5) 0 var(--s1);font:600 var(--fs-14)/1.4 var(--text);color:var(--ink-3);letter-spacing:0}
+.settings-grid>.set-group:first-child{margin-top:0}
+/* 컴퓨터(마우스) 밀도: 콘티·설정·장비·자료실만 버튼 40px·접기 줄 44px·줄 여백 한 단계 줄임(폰은 그대로) */
+@media(min-width:960px) and (pointer:fine){
+ main:is([data-screen=conti],[data-screen=set],[data-screen=equipment],[data-screen=docs]){--tap:40px}
+ main:is([data-screen=set],[data-screen=docs]) .fold>summary,.settings-grid .fold>summary,.doc-row>summary,.doc-group>summary{min-height:44px;padding-top:0;padding-bottom:0}
+ .eq-head,.eq-fold{min-height:44px}
+ main[data-screen=conti] .browse li{min-height:52px;padding-top:var(--s1);padding-bottom:var(--s1)}
+ main[data-screen=conti] .conti-songs li.conti-song{padding-top:var(--s1);padding-bottom:var(--s1)}
+ .link-rows li{padding-top:var(--s1);padding-bottom:var(--s1)}
+ .set-group{margin-top:var(--s4)}
+}
+.doc-tabs{display:flex;width:max-content}

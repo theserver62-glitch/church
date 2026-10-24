@@ -194,3 +194,6 @@ export const fromKakao = (doc, day, code) => doc?.source === 'kakao' || (!doc?.s
 export const hymnLinks = x => { const q = t => 'https://www.google.com/search?q=' + encodeURIComponent(t); return { sheet: q(`새찬송가 ${x.no}장 ${x.title} 악보`), ppt: q(`새찬송가 ${x.no}장 ${x.title} ppt`) }; };
 // "123" · "123장"은 장 번호 앞자리로, 그 밖은 제목에 들어 있는지로 찾는다
 export const filterHymns = (list, q = '') => { q = q.trim(); const n = q.replace(/장$/, ''); return !q ? list : /^\d+$/.test(n) ? list.filter(x => String(x.no).startsWith(n)) : list.filter(x => x.title.includes(q)); };
+
+// 메모 속 주소를 링크로: [글자, 주소, 글자 …]로 나눈다(홀수 칸이 주소). http(s)만, 끝의 문장부호는 빼고
+export const splitLinks = (text = '') => String(text).split(/(https?:\/\/[^\s<>"']+[^\s<>"'.,!?)\]])/);
