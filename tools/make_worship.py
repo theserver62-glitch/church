@@ -120,5 +120,9 @@ out = {
                  '입교는 세례를 다시 하는 것이 아니에요.'],
     'services': W,
 }
+# 순서별 안내(elements)는 res-src/wguide.json(GPT 초안·본부 검토)에서 합친다 — 사도신경·주기도 본문은 본부가 넣은 것을 유지
+try:
+    out['elements'] = json.load(open('worship.json', encoding='utf-8')).get('elements', [])
+except Exception: pass
 json.dump(out, open('worship.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print(len(W))

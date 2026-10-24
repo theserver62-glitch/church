@@ -77,3 +77,19 @@ export function worshipSlides({ service, steps, dept, churchName = '', date = ''
   return S;
 }
 export const worshipFileName = (date, deptName, serviceName) => (date ? date + ' ' : '') + deptName + ' ' + serviceName + '.pptx';
+
+// 예배 순서 이름 → 순서별 안내(worship.json elements). 이름 전체가 key·match와 같으면 그것,
+// 아니면 '·'·'또는'으로 나눈 조각마다 같은 것 → 없으면 key 핵심어(괄호·'·'로 나눈 말)를 포함하는 것(긴 말 먼저). 겹치면 한 번만
+const squash = s => String(s || '').replace(/\([^)]*\)/g, '').replace(/\s+/g, '');
+const cores = el => [...new Set([...[el.key, ...String(el.key).replace(/[()]/g, '·').split('·')].map(squash).filter(w => w.length >= 2), ...(el.match || []).map(squash).filter(w => w.length >= 4)])]; // match 낱말은 4글자 이상만(흔한 말에 잘못 걸리지 않게)
+export function elementsFor(name, elements = []) {
+  const els = Array.isArray(elements) ? elements : [], same = (el, p) => [el.key, ...(el.match || [])].some(m => squash(m) === p);
+  const whole = els.find(el => same(el, squash(name)));
+  if (whole) return [whole];
+  const out = [];
+  for (const p of String(name || '').replace(/\([^)]*\)/g, '').split(/·|\s또는\s/).map(squash).filter(Boolean)) {
+    const hit = els.find(el => same(el, p)) || els.map(el => [el, cores(el).filter(c => p.includes(c)).sort((a, b) => b.length - a.length)[0]]).filter(([, c]) => c).sort((a, b) => b[1].length - a[1].length)[0]?.[0];
+    if (hit && !out.includes(hit)) out.push(hit);
+  }
+  return out;
+}

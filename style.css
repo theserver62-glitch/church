@@ -1580,3 +1580,19 @@ main[data-screen=viewer]{max-width:720px;padding-top:var(--s5)}
 .pj-start{display:inline-flex;align-items:center;min-height:40px;padding:0 var(--s4);border-radius:var(--r-sm);text-decoration:none}
 .pj-late-note{margin:var(--s2) 0 0;padding:var(--s2) var(--s3);border-left:3px solid var(--late,#b4532a);background:var(--paper-2);font-size:var(--fs-16)}
 .pj-start{background:var(--accent);color:#fff;font-weight:600;border:1px solid var(--accent)}.pj-start:hover{filter:brightness(.95)}
+/* 예배 순서 안내: 이름 옆 작은 'ⓘ 안내', 안내 창, 전체 목록 접기 */
+.ws-guide{min-height:32px;margin-left:var(--s1);padding:0 var(--s1);font-size:var(--fs-14);font-weight:400;color:var(--accent)}
+.element-dialog{max-width:640px}
+.element-dialog p,.element-dialog li{font-size:var(--fs-16);line-height:1.6;white-space:normal}
+.element-dialog h3{margin:var(--s4) 0 0;font-size:var(--fs-18)}
+.element-dialog h4{margin:var(--s3) 0 var(--s1);font-size:var(--fs-14);font-weight:600;color:var(--ink-3)}
+.element-dialog ul,.element-dialog ol{margin:0;padding-left:var(--s5)}
+.el-part+.el-part{margin-top:var(--s4);padding-top:var(--s2);border-top:1px solid var(--line)}
+.el-example{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+.el-full .segments{margin:0 0 var(--s2)}
+.el-text{padding:var(--s3);border-radius:var(--r-md);background:var(--paper-2);white-space:pre-wrap}
+.el-tip{color:var(--ink-2)}
+.el-guides{max-width:var(--col)}
+.el-guides ul{display:flex;flex-wrap:wrap;gap:0 var(--s2);list-style:none;margin:0 0 var(--s3);padding:0}
+.el-guides .text-button{min-height:40px;padding:0 var(--s2);font-weight:400;color:var(--accent)}
+@media(max-width:959px){.ws-guide{min-height:44px}}
