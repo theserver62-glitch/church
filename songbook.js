@@ -206,3 +206,84 @@ export function parseViewer(search = '') {
 }
 // 보기 장: 곡마다 한 장(악보 id 또는 null = '악보 없음' 장). 제목 없는 줄은 뺀다
 export const viewerPages = (songs = [], sheets = {}) => songs.filter(s => s?.title?.trim()).map(s => ({ title: s.title, key: s.key || '', sheet: pickSheet(s, sheets) }));
+
+// ---------- 카톡에서 가져오기(2026-10-25): 콘티 글 붙여 넣기 · 악보 사진 이름 맞추기 ----------
+// 곡명 비교용: 괄호 안 글자와 띄어쓰기·문장부호를 뺀 소문자
+const PAREN = /[(\[（【][^)\]）】]*[)\]）】]/g;
+const norm = t => String(t || '').replace(PAREN, '').replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
+// 곡 목록(배열)에서 같은 곡 → {title: 목록의 곡명, key: 그 곡의 키가 하나뿐이면 그 키}. 없으면 null
+export function matchSong(title, list = []) {
+  const n = norm(title), hits = n ? list.filter(s => s?.title && norm(s.title) === n) : [];
+  if (!hits.length) return null;
+  const keys = [...new Set(hits.map(s => s.key || '').filter(Boolean))];
+  return { title: hits[0].title, key: keys.length === 1 ? keys[0] : '' };
+}
+const K = '([A-Ga-g][#b♭♯]?m?)(?![A-Za-z#♭♯])', ARROW = String.raw`\s*(?:→|->|=>|⇒|➡|➔|>|~)\s*`;
+// 키 모양: 앞의 넷은 괄호·'키'·구분 기호가 있는 것(가장 앞에 나온 것을 쓴다), 마지막은 줄 끝(또는 한글 앞)의 맨 키 글자
+const KEY_FORMS = [
+  new RegExp(String.raw`[(\[（【]\s*(?:key|키)?\s*:?\s*${K}(?:(?:${ARROW}|\s*-\s*|\s*에서\s*)${K})?\s*(?:키|key|조)?\s*(?:전조)?(?:\s*[,/·]\s*([^)\]）】]*))?[)\]）】]`, 'i'),
+  new RegExp(String.raw`(?:key|키)\s*[:=]?\s*${K}(?:${ARROW}${K})?`, 'i'),
+  new RegExp(String.raw`\s*[-–—/|:,]\s*${K}(?:${ARROW}${K})?(?:\s*(?:키|key))?`, 'i'),
+  new RegExp(String.raw`\s${K}(?:${ARROW}${K})?\s*(?:키|key)`, 'i'),
+  new RegExp(String.raw`\s${K}(?:${ARROW}${K})?(?=\s*$|\s+[^A-Za-z\s])`),
+];
+const tidy = t => t.replace(/\s+/g, ' ').replace(/^[\s\-–—•·*▶▷►♪♬♩~>→➡:,.]+|[\s\-–—/|:,.·]+$/g, '').replace(/^["'“”‘’「」]+|["'“”‘’「」]+$/g, '').trim();
+const unparen = t => t.replace(/^[(\[（【](.*)[)\]）】]$/, '$1').trim();
+const LABEL = /^(오프닝|찬양|경배|결단|봉헌|헌금|기도|응답|특송|파송|마무리|선포|입례|말씀|엔딩|클로징)\s*[:：/]\s*/;
+const keyAt = s => { const first = rs => rs.map(r => s.match(r)).filter(m => m && m.index > 0).sort((a, b) => a.index - b.index)[0]; return first(KEY_FORMS.slice(0, 4)) || first(KEY_FORMS.slice(4)); };
+// 곡 하나 → [곡, 남은 글]. 키 뒤에 '/'·'→'로 키 있는 곡이 또 이어지면(한 줄에 여러 곡) 남은 글로 돌려준다
+function songAndRest(line, list) {
+  const s = tidy(line), m = keyAt(s);
+  let raw = m ? s.slice(0, m.index) : s, after = m ? unparen(tidy(s.slice(m.index + m[0].length))) : '', rest = '';
+  const chain = m && s.slice(m.index + m[0].length).trim().match(/^(?:\/|→|->|➡|\|)\s*(.+)$/);
+  if (chain && keyAt(tidy(chain[1]))) { rest = chain[1]; after = ''; }
+  const label = raw.match(LABEL); if (label) raw = raw.slice(label[0].length);
+  const k1 = m ? keyFix(m[1]) : '', k2 = m?.[2] ? keyFix(m[2]) : '';
+  const hit = matchSong(raw, list), extra = (raw.match(PAREN) || []).filter(p => !hit?.title.includes(p)).map(unparen).filter(Boolean);
+  const title = hit ? hit.title : tidy(raw.replace(PAREN, ' ')) || tidy(raw);
+  const memo = [label?.[1], ...extra, k2 && k1 + '→' + k2, m?.[3]?.trim(), after].filter(Boolean).join(' · ');
+  return [{ title: title.slice(0, 100), key: (k1 || hit?.key || '').slice(0, 10), memo: memo.slice(0, 100), known: !!hit }, rest];
+}
+const songsIn = (line, list) => { const out = []; for (let r = line, n = 0; r && n < 10; n++) { const [song, rest] = songAndRest(r, list); out.push(song); r = rest; } return out; };
+// 곡 한 줄 → {title, key, memo, known}. 키 뒤 글자·곡명 속 괄호·'오프닝:' 같은 순서 표시는 메모, 'G→A'는 키 G + 메모 'G→A'. known = 곡 목록에 있는 곡
+export const parseSongLine = (line, list = []) => songAndRest(line, list)[0];
+// 글 속 첫 날짜 → {iso, at, text}. 연도가 없으면 today에서 가장 가까운 해
+const DATE = /(?:(\d{4}|\d{2})\s*[.\/년-]\s*)?(?<!\d)(\d{1,2})\s*(?:\/|\.|월|-)\s*(\d{1,2})(?!\d)\s*일?/;
+function findDate(t, today) {
+  const m = t.match(DATE);
+  if (!m) return null;
+  const mo = +m[2], d = +m[3], ty = +today.slice(0, 4), pad = n => String(n).padStart(2, '0');
+  const ok = y => d >= 1 && new Date(Date.UTC(y, mo - 1, d)).getUTCMonth() === mo - 1 && mo >= 1 && mo <= 12;
+  const t0 = Date.parse(today + 'T00:00:00Z'), dist = y => Math.abs(Date.UTC(y, mo - 1, d) - t0);
+  const y = (m[1] ? [m[1].length === 2 ? 2000 + +m[1] : +m[1]] : [ty - 1, ty, ty + 1]).filter(ok).sort((a, b) => dist(a) - dist(b))[0];
+  return y ? { iso: `${y}-${pad(mo)}-${pad(d)}`, at: m.index, text: m[0] } : null;
+}
+// 카톡 콘티 글 → {date: 'YYYY-MM-DD' 또는 '', songs: [{title, key, memo, known}]}.
+// 번호 있는 곡(한 줄에 여러 곡도)과, 인사·공지 같지 않은 곡 줄을 글 순서대로. list = 곡 목록(같은 곡이면 목록의 곡명으로)
+export function parseKakaoConti(text, { today = new Date().toISOString().slice(0, 10), list = [] } = {}) {
+  let date = '';
+  const items = [], MARK = /(?:^|\s|(?<=[)\]）】]))(?:\d{1,2}\s*[.)．]|[①-⑳])\s*(?=\D)/g;
+  for (let line of String(text).split(/\r?\n/)) {
+    line = line.replace(/^\d{4}[.년]\s*\d{1,2}[.월]\s*\d{1,2}[.일]?\s*(?:오전|오후)\s*\d{1,2}:\d{2},?\s*[^:]{1,30}?\s:\s/, '') // 카톡 내보내기 '2026. 10. 24. 오후 9:13, 이름 : '
+      .replace(/^\[[^\]]{1,30}\]\s*\[(?:오전|오후)\s*\d{1,2}:\d{2}\]\s*/, '') // PC 카톡 '[이름] [오후 9:13] '
+      .replace(/(\d)\uFE0F?\u20E3/gu, '$1.').replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, ' ').trim();
+    if (!line || /^[-=─]{3,}|https?:\/\/|^\d{4}년 \d{1,2}월 \d{1,2}일 [월화수목금토일]요일$/.test(line)) continue; // 구분선·주소·카톡 날짜 머리줄
+    let marks = [...line.matchAll(MARK)];
+    const d = findDate(line, today);
+    // 날짜는 첫 번호보다 앞에 있을 때만. '3. 10,000 Reasons'처럼 번호와 겹치면 번호로 본다('10/25'·'10월'은 날짜)
+    if (d && (!marks.length || d.at < marks[0].index || (d.at === marks[0].index && /[\/월년-]/.test(d.text)))) { date ||= d.iso; line = line.replace(d.text, ' '); marks = [...line.matchAll(MARK)]; }
+    if (marks.length) { marks.forEach((x, i) => items.push({ text: line.slice(x.index + x[0].length, marks[i + 1]?.index ?? line.length), num: true })); continue; }
+    const lead = line.match(/^\d{1,2}\s+(?=[^\d\s])/); // '1 곡명 E'
+    if (lead) items.push({ text: line.slice(lead[0].length), num: true });
+    else if (!d) items.push({ text: line, num: false });
+  }
+  // 번호 없는 줄: 키가 있고 문장(요·니다·!?~)이 아니면 곡. 키가 없으면 번호 있는 곡이 하나도 없을 때만, 짧고 인사·'이름:'·머리줄 같지 않은 줄을 곡으로
+  const prose = t => /[.,!?~]$|요$|니다$|[〈《]/.test(t);
+  const chat = t => prose(t) || t.replace(LABEL, '').length > 40 || /[:：]|콘티|찬양\s*(?:리스트|목록|순서)|연습|공지|^[#@[]|(?:주일|예배|찬양)$/.test(t.replace(LABEL, ''));
+  const hasNum = items.some(x => x.num);
+  const songs = items.flatMap(({ text, num }) => {
+    const found = songsIn(text, list);
+    return num ? found : found[0].key && !prose(text) ? found.filter(s => s.key) : !hasNum && !chat(text) ? found : [];
+  });
+  return { date, songs: songs.filter(s => s.title).slice(0, 30) };
+}

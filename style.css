@@ -1538,3 +1538,9 @@ main[data-screen=viewer]{max-width:720px;padding-top:var(--s5)}
 .doc-tabs button{padding:0 var(--s3)}
 @media(max-width:639px){.doc-tabs{width:100%;overflow-x:auto;scrollbar-width:none}.doc-tabs button{flex:none}}
 .doc-tabs button{flex:none}
+/* 콘티: 카톡 글 붙여 넣기 */
+.kakao-dialog textarea{min-height:144px;resize:vertical}
+.kakao-target{margin:var(--s4) 0 var(--s2);font-weight:600}
+.kakao-songs{margin:0;padding-left:var(--s5)}
+.kakao-songs li{min-height:48px;padding:var(--s2) 0;border-bottom:1px solid var(--line)}
+.kakao-songs .meta{display:block;font-size:var(--fs-14);color:var(--ink-3)}
