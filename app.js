@@ -1,19 +1,19 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250001';
-import { TEMPLATES } from './templates.js?v=202610250001';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250001';
-import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250001';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250010';
+import { TEMPLATES } from './templates.js?v=202610250010';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250010';
+import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250010';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250001';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250001';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610250001';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap } from './season.js?v=202610250001';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250001';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250001';
-import { docs } from './docs.js?v=202610250001';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610250001';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250001';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink } from './songbook.js?v=202610250001';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250001';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250010';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250010';
+import { openStore, newChurchCode, NOW } from './store.js?v=202610250010';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap } from './season.js?v=202610250010';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250010';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250010';
+import { docs } from './docs.js?v=202610250010';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610250010';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250010';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink } from './songbook.js?v=202610250010';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250010';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -406,7 +406,7 @@ function contiView(startPick = 'book') {
   const useSheets=()=>onlySheets===null?Object.keys(sheets).length>0:onlySheets;
   const filters={key:'',theme:'',mood:''}; let count=20, groupBy='', openGroups=new Set(); // 묶어 보기(악보 있는 곡만일 때)
   const options={key:['C','D','E','F','G','A','B','Ab','Bb','Eb','단조'],theme:['경배와 찬양','은혜와 사랑','회개와 고백','기도와 간구','축복과 교제','선교와 승리'],mood:['신나게','보통','잔잔하게']};
-  const NAMES={key:'키',theme:'주제',mood:'분위기'};
+  const NAMES={key:'키',theme:'주제',mood:'빠르기'};
   const wide=()=>!!globalThis.matchMedia?.('(min-width: 1024px)').matches;
   const chips=h('div',{class:'browse-chips'}), tags=h('div',{class:'browse-tags'}), countLine=h('div',{class:'browse-count'});
   const query=()=>({sheets,churchBook:churchSongs,favorites,onlySheets:useSheets(),onlyFav,...filters,q:search.value,sort});
@@ -423,6 +423,8 @@ function contiView(startPick = 'book') {
   };
   const drawChips=()=>fill(chips,
     Object.keys(sheets).length>0&&h('button',{type:'button',class:'chip','aria-pressed':String(useSheets()),onclick:()=>{onlySheets=!useSheets();count=20;drawBrowse();}},'악보 있는 곡만'),
+    // 빠르기: 곡 데이터의 분위기(신나게/잔잔하게, AI 추정)를 빠른/느린 찬양으로 바로 거른다
+    [['신나게','빠른 찬양'],['잔잔하게','느린 찬양']].map(([v,t])=>h('button',{type:'button',class:'chip','aria-pressed':String(filters.mood===v),onclick:()=>{filters.mood=filters.mood===v?'':v;count=20;drawBrowse();}},t)),
     h('button',{type:'button',class:'chip','aria-pressed':String(onlyFav),onclick:()=>{onlyFav=!onlyFav;count=20;drawBrowse();}},'즐겨찾기만'),
     h('button',{type:'button',class:'chip','aria-pressed':String(nFilters()>0),'aria-haspopup':'dialog',onclick:openFilters},'필터'+(nFilters()?' '+nFilters():'')));
   const drawBrowse=()=>{
