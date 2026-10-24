@@ -1,20 +1,20 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250102';
-import { TEMPLATES } from './templates.js?v=202610250102';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250102';
-import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250102';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250126';
+import { TEMPLATES } from './templates.js?v=202610250126';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250126';
+import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250126';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250102';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250102';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610250102';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap } from './season.js?v=202610250102';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250102';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250102';
-import { docs } from './docs.js?v=202610250102';
-import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250102';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610250102';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250102';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250102';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250102';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250126';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250126';
+import { openStore, newChurchCode, NOW } from './store.js?v=202610250126';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250126';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250126';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250126';
+import { docs } from './docs.js?v=202610250126';
+import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250126';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610250126';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250126';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250126';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250126';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -895,7 +895,7 @@ function setView() {
   const copy = h('button', { type: 'button', class: 'sub', onclick: () => (navigator.clipboard?.writeText(code) || Promise.reject())
     .then(() => (copy.textContent = '복사했어요'), () => say('복사가 안 돼요. 코드를 길게 눌러 복사해 주세요.')) }, '코드만 복사');
   const fold=(id,title,note,...kids)=>{const d=foldCard(id);d.append(foldHead(title,note),...kids.filter(Boolean));return d;};
-  const permBox=h('div',{class:'perm-box'}), adminBox=h('div');
+  const permBox=h('div',{class:'perm-box'}), adminBox=h('div'), skipBox=h('div',{class:'skip-box'});
   let latest = null;
   const snapF = store.mode === 'shared' && recordsFold('set-snap', '이전 상태로 되돌리기', '/snap', 30, (box, list) => drawSnaps(box, list, () => latest));
   const logF = store.mode === 'shared' && recordsFold('set-log', '변경 기록', '/log', 50, drawLog);
@@ -903,7 +903,7 @@ function setView() {
   const inviteBtn=h('button',{class:'sub',onclick:()=>copyInvite(code)},'초대 링크 복사'), inviteF=fold('set-invite','멤버 초대',code,h('h4',{},'교회 코드'),h('p',{class:'code'},code),inviteBtn,copy);
   view.append(permBox,h('div',{class:'settings-grid'},
  h('h3',{class:'set-group'},'사람'),inviteF,store.mode==='shared'&&fold('set-admin','관리자','',adminBox),
- h('h3',{class:'set-group'},'우리 교회'),fold('set-church','교회 정보','',nameBox),fold('set-dept','부서·규모','',sizeBox),fold('set-events','절기·행사 켜고 끄기','',evBox),
+ h('h3',{class:'set-group'},'우리 교회'),fold('set-church','교회 정보','',nameBox),fold('set-dept','부서·규모','',sizeBox),fold('set-events','절기·행사 켜고 끄기','',evBox),fold('set-skip','계획서·보고 생략할 절기','',skipBox),
  h('h3',{class:'set-group'},'데이터'),fold('set-songs','곡 목록·자료 옮기기','',bookBox,
   h('section',{class:'song-tool'},h('h4',{},'곡 한꺼번에 넣기'),h('p',{class:'hint'},"한 줄에 한 곡씩 '곡명 키' 또는 '곡명 (키)'로 붙여 넣어요"),bulk,bulkInfo,bulkBtn),
   h('section',{class:'song-tool'},h('h4',{},'악보 사진 올리기'),h('p',{class:'hint'},"사진을 고르고 곡명과 키를 적어요. 파일 이름이 '곡명 (키).jpg'면 저절로 채워져요. 교회 안 공유도 악보 저작권 허락(CCLI 등)이 필요할 수 있어요."),h('label',{class:'photo-pick'},h('span',{},'사진 고르기'),photoInput),photoList),
@@ -937,6 +937,12 @@ function setView() {
     const u = store.auth?.user?.(), uid = u?.uid || '', editable = canEditSettings(d, uid, store.mode), today2 = todayIso();
     for (const el of [...nameBox.querySelectorAll('input'), ...sizeBox.querySelectorAll('button'), ...evBox.querySelectorAll('input[type=checkbox]')]) el.disabled = !editable;
     const doIt = async (patch, done) => { if (await save(churchPath(), patch) && done) say(done); };
+    { // 계획서·보고 생략: 프로젝트(할 일 있는 절기·행사)마다 체크. 잠긴 것은 회색 '꼭 필요해요'
+      const ss = { ...d?.settings, customEvents: d?.customEvents }, yy = +todayIso().slice(0, 4), seen = new Set();
+      const evs = occurrences([yy, yy + 1], ss).filter(e => e.tasks.length && !seen.has(e.id) && seen.add(e.id)), skip = d?.settings?.skipReport || {};
+      const row = (id, name, locked) => h('label', { class: 'skip-row' + (locked ? ' locked' : '') }, h('input', { type: 'checkbox', checked: !locked && !!skip[id], disabled: locked || !editable, 'aria-label': name + ' 계획서·보고 생략', onchange: e => save(churchPath(), { settings: { skipReport: { [id]: e.target.checked } } }) }), h('span', {}, name), locked && h('small', { class: 'meta' }, '꼭 필요해요'));
+      fill(skipBox, h('p', { class: 'hint' }, '체크한 절기는 홈·절기 화면에서 계획서 작성·보고와 결과 보고 할 일이 빠져요.'), row('annual', '연간 사역계획서', true), evs.map(e => row(e.id, e.name, reportLocked(e, ss))));
+    }
     const requested = !!d?.adminRequests?.[uid];
     fill(permBox, !editable && h('div', { class: 'special-note perm-note' }, h('span', {}, '설정은 리더가 승인한 사람만 바꿀 수 있어요'),
       !u ? h('button', { type: 'button', class: hasAdmins(d) ? 'sub' : 'primary', onclick: async () => { try { await store.auth.signIn(); } catch (e) { say(loginErrorText(e?.code)); return; } const me = store.auth.user(); if (me) doIt(hasAdmins(d) ? requestPatch(me, today2) : claimFirstPatch(me, today2), hasAdmins(d) ? '요청했어요 · 리더 승인을 기다려요' : '이 교회의 첫 관리자가 됐어요'); } }, hasAdmins(d) ? '구글로 로그인하고 권한 요청' : '구글로 로그인하고 첫 관리자 되기')
@@ -965,7 +971,7 @@ const prepText = (start, today) => start > today ? Math.round((parse(start) - pa
 // 앱은 묻지 않고 알려 준다: 교회의 결정을 입력받지 않고(기록용 3줄 메모만), 화면마다 채운 버튼은 1개
 let G = new Map(), guidesLoad = null;
 const loadGuides = () => (guidesLoad ??= fetch('./task-guides.json').then(r => r.ok ? r.json() : []).then(guideMap).catch(() => new Map())).then(m => (G = m));
-const tTitle = t => G.get(t.text)?.title || t.text;
+const tTitle = t => guideFor(G, t)?.title || t.text;
 const daysTo = (d, today) => Math.round((parse(d) - parse(today)) / 864e5);
 const fmtLong = d => mdLong(d) + '(' + '일월화수목금토'[parse(d).getUTCDay()] + ')';
 const pjChevron = (down = false) => { const ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'), p = document.createElementNS(ns, 'path'); for (const [k, v] of Object.entries({ viewBox: '0 0 20 20', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.8, class: 'pj-go', 'aria-hidden': 'true' })) svg.setAttribute(k, v); p.setAttribute('d', down ? 'm5 8 5 5 5-5' : 'm8 5 5 5-5 5'); svg.append(p); return svg; };
@@ -995,7 +1001,7 @@ const memoFields = (key, data) => h('div', { class: 'pj-facts' }, MEMO.map(([f, 
 // 준비 안내 카드(베테랑의 방법). 안내가 없으면 원문 할 일 + 담당 + 관련 서류만
 function focusCard(t, c) {
   if (!t) return null;
-  const g = G.get(t.text), isDone = !!c.data.done?.[t.key], skip = !isDone && !!c.data.skipped?.[t.key], late = !isDone && !skip && t.due < c.today, doc = pjDoc(t.doc);
+  const g = guideFor(G, t), isDone = !!c.data.done?.[t.key], skip = !isDone && !!c.data.skipped?.[t.key], late = !isDone && !skip && t.due < c.today, doc = pjDoc(t.doc);
   const row = (dt, dd) => dd && [h('dt', {}, dt), h('dd', {}, dd)];
   const list = (tag, xs) => xs?.length ? h(tag, {}, xs.map(x => h('li', {}, x))) : null;
   return h('article', { class: 'pj-focus', id: 'pj-focus' },
@@ -1011,7 +1017,9 @@ function focusCard(t, c) {
       row('관련 서류', doc && h('div', { class: 'pj-doc' }, h('span', {}, doc.title, h('span', { class: 'meta' }, ' · 워드')), h('span', {}, h('button', { type: 'button', class: 'text-button', onclick: () => showPreview(doc) }, '미리보기'), h('a', { class: 'pj-btn', href: doc.file, download: true, 'aria-label': doc.title + ' 워드 받기' }, '받기')))),
       g && row('자주 놓치는 것', g.tip),
       t.phase === 5 && row('3줄 정리', [memoFields(t.key.slice(0, t.key.lastIndexOf('_')), c.data), h('p', { class: 'meta' }, '적어 두면 끝난 절기 기록과 내년 이맘때 상세 화면에 보여요')])].flat(3)),
-    !isDone && !skip && h('div', { class: 'pj-focus-foot' }, [h('button', { type: 'button', class: 'text-button', onclick: () => changeTaskDue(t) }, '기한 바꾸기'), h('button', { type: 'button', class: 'text-button', onclick: () => skipTask(t.key, true) }, '이번엔 건너뛰기')]));
+    !isDone && !skip && h('div', { class: 'pj-focus-foot' }, [h('button', { type: 'button', class: 'text-button', onclick: () => changeTaskDue(t) }, '기한 바꾸기'), h('button', { type: 'button', class: 'text-button', onclick: () => skipTask(t.key, true) }, '이번엔 건너뛰기')]),
+    // 계획서 할 일 카드 맨 아래: 보고가 필요 없는 절기는 설정에서 끈다
+    t.guide === 'PLAN' && h('p', { class: 'pj-skip-note' }, '보고가 필요 없는 절기는 ', h('button', { type: 'button', class: 'text-button', onclick: () => { try { localStorage.setItem('church:open:set-skip', '1'); } catch { /* 그냥 연다 */ } show('set'); } }, '설정 > 계획서·보고 생략'), '에서 끌 수 있어요'));
 }
 // 절기 한 줄: 이름 · D-day · 6칸 막대 · 지금 구간(밀린 일) · n/m 완료
 function pjProj(ev, st, today) {
