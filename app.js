@@ -1,15 +1,15 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610241501';
-import { TEMPLATES } from './templates.js?v=202610241501';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610241528';
+import { TEMPLATES } from './templates.js?v=202610241528';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps } from './home.js?v=202610241501';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610241501';
-import { openStore, newChurchCode } from './store.js?v=202610241501';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610241501';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610241501';
-import { docs } from './docs.js?v=202610241501';
-import { equipment, equipmentId, equipmentRows } from './equipment.js?v=202610241501';
-import { label, parseCsv, mergeLibrary, filterSongs } from './songbook.js?v=202610241501';
-import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610241501';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps } from './home.js?v=202610241528';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610241528';
+import { openStore, newChurchCode } from './store.js?v=202610241528';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610241528';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610241528';
+import { docs } from './docs.js?v=202610241528';
+import { equipment, equipmentId, equipmentRows } from './equipment.js?v=202610241528';
+import { label, parseCsv, mergeLibrary, filterSongs } from './songbook.js?v=202610241528';
+import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610241528';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -307,12 +307,13 @@ function contiView() {
   const result=h('p',{'aria-live':'polite'});
   const options={key:['C','D','E','F','G','A','B','Ab','Bb','Eb','단조'],theme:['경배와 찬양','은혜와 사랑','회개와 고백','기도와 간구','축복과 교제','선교와 승리'],mood:['신나게','보통','잔잔하게']};
   const chips=h('div',{class:'song-filters'});
-  let openRow=''; // 목록을 펼친 줄: ''(접힘) · 'q'(검색) · key/theme/mood
+  const wide=()=>!!globalThis.matchMedia?.('(min-width: 1024px)').matches;
+  let openRow=wide()?'all':''; // 목록을 펼친 줄: ''(접힘) · 'all'(컴퓨터 첫 화면) · 'q'(검색) · key/theme/mood
   let shown=''; // 칩을 펼쳐 보인 줄(한 번에 한 줄만, 처음엔 모두 접힘)
   const listBox=h('div',{class:'browse-box'},result,groups);
   const chipButtons=()=>[...chips.querySelectorAll('.song-filter button')];
-  const drawChips=()=>fill(chips,search,openRow==='q'&&listBox,Object.entries(options).flatMap(([field,values])=>[h('div',{class:'song-filter '+field,role:'group','aria-label':{key:'키',theme:'주제',mood:'분위기'}[field]},h('button',{type:'button',class:'filter-head','aria-expanded':String(shown===field),onclick:()=>{shown=shown===field?'':field;drawChips();}},h('strong',{}, {key:'키',theme:'주제',mood:'분위기'}[field]),h('span',{},filters[field]||'전체')),shown===field&&['',...values].map(value=>h('button',{type:'button',class:'sub','aria-pressed':String(filters[field]===value),'aria-expanded':String(openRow===field&&filters[field]===value),onclick:e=>{const index=chipButtons().indexOf(e.currentTarget);if(filters[field]===value&&openRow===field)openRow='';else{filters[field]=value;openRow=field;}count=8;drawChips();drawBrowse();chipButtons()[index]?.focus();}},value||'전체'))),openRow===field&&listBox]));
-  const search=h('input',{type:'search',k:'song-search',placeholder:'곡명 검색','aria-label':'곡명 검색',oninput:()=>{const want=search.value.trim()?'q':openRow==='q'?'':openRow;count=8;if(want!==openRow){openRow=want;drawChips();}drawBrowse();}});
+  const drawChips=()=>fill(chips,search,openRow==='q'&&listBox,Object.entries(options).flatMap(([field,values])=>[h('div',{class:'song-filter '+field,role:'group','aria-label':{key:'키',theme:'주제',mood:'분위기'}[field]},h('button',{type:'button',class:'filter-head','aria-expanded':String(shown===field),onclick:()=>{shown=shown===field?'':field;drawChips();}},h('strong',{}, {key:'키',theme:'주제',mood:'분위기'}[field]),h('span',{},filters[field]||'전체')),shown===field&&['',...values].map(value=>h('button',{type:'button',class:'sub','aria-pressed':String(filters[field]===value),'aria-expanded':String(openRow===field&&filters[field]===value),onclick:e=>{const index=chipButtons().indexOf(e.currentTarget);if(filters[field]===value&&openRow===field)openRow='';else{filters[field]=value;openRow=field;}count=8;drawChips();drawBrowse();chipButtons()[index]?.focus();}},value||'전체'))),openRow===field&&listBox]),openRow==='all'&&listBox);
+  const search=h('input',{type:'search',k:'song-search',placeholder:'곡명 검색','aria-label':'곡명 검색',oninput:()=>{const want=search.value.trim()?'q':openRow==='q'?(wide()?'all':''):openRow;count=8;if(want!==openRow){openRow=want;drawChips();}drawBrowse();}});
   const drawBrowse=()=>{
     const songs=filterSongs(Object.values(book),{...filters,q:search.value});
     result.textContent=([filters.key && (filters.key==='단조'?'단조':filters.key+'키'),filters.theme,filters.mood].filter(Boolean).join(' · ')||'전체')+' — '+songs.length+'곡';
@@ -407,7 +408,7 @@ function qtView() {
   const drawDaily = () => {
     const item = archive[qtIndex(date.value, archive.length)]; daily.hidden = !item; if(item)scripture(passageBox,item.ref,false);
     fill(daily, item && [h('h3', {}, '오늘의 큐티'), h('h4', {}, item.ref + ' · ' + item.title),
-      ...[['meaning', '1 이 말씀의 뜻'], ['context', '2 앞뒤 맥락'], ['people', '3 인물들의 입장과 생각'], ['why', '4 성경에 실린 이유'], ['theology', '5 신학적 의미와 본문의 역할'], ['apply', '6 오늘의 적용']].map(([key, title]) => h('div', {}, stepTitle(title), h('p', { class: 'qt-copy' }, item[key] || '')))]);
+      ...[['meaning', '1 이 말씀의 뜻'], ['context', '2 앞뒤 맥락'], ['people', '3 인물들의 입장과 생각'], ['why', '4 성경에 실린 이유'], ['theology', '5 신학적 의미와 본문의 역할'], ['apply', '6 오늘의 적용']].map(([key, title]) => h('div', {}, stepTitle(title), h('p', { class: 'qt-copy' }, item[key] || ''))), deepBox(item)]);
     const passage = box.querySelector('[data-k=passage]'); if (passage) passage.placeholder = item?.ref || '예: 요 3:1-16';
   };
   const box = h('div');
@@ -587,7 +588,9 @@ function docsView() {
  const draw = () => {
   const { mine, common } = docsFor(docs, dept);
   fill(picker, h('summary', {}, '부서: ' + dept), h('div', { class: 'row', role: 'group', 'aria-label': '부서 고르기' }, DOC_DEPTS.map(d => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(d === dept), onclick: () => { dept = d; picker.open = false; draw(); } }, d))));
-  fill(mineBox, h('h3', {}, (dept === '전체' ? '모든 자료 ' : dept + ' 자료 ') + mine.length + '개'), mine.length ? mine.map(row) : h('p', { class: 'empty' }, '이 부서용 자료가 아직 없어요'));
+  // 분류(행정·안내/교육·행사/수련회·MT/순례)별로 접어 묶는다. 자료가 적으면 처음부터 펼친다.
+  const groups = [...new Set(['행정·안내', '교육·행사', '수련회·MT', '순례', ...mine.map(d => d.group)])].map(g => [g, mine.filter(d => d.group === g)]).filter(([, list]) => list.length);
+  fill(mineBox, h('h3', {}, (dept === '전체' ? '모든 자료 ' : dept + ' 자료 ') + mine.length + '개'), mine.length ? groups.map(([g, list]) => h('details', { class: 'doc-group', open: mine.length <= 8 }, h('summary', {}, h('strong', { class: 'doc-group-title' }, g), h('small', { class: 'meta' }, list.length + '개')), list.map(row))) : h('p', { class: 'empty' }, '이 부서용 자료가 아직 없어요'));
   fill(commonBox, ...(common.length ? [h('h3', {}, '공통 자료 ' + common.length + '개'), ...common.map(row)] : []));
   commonBox.hidden = !common.length;
  };
@@ -764,6 +767,8 @@ function homeView(){
  }watch(churchPath(),d=>{data=d||{};draw();});
 }
 const stepTitle=t=>h('h4',{class:'step-title'},h('span',{class:'step-number'},t.slice(0,1)),t.slice(2));
+// 심화: 매튜 헨리 주석(1706, 저작권 만료)을 AI가 한국어로 풀어 쓴 글. tools/gen_deep.py가 만든다.
+const deepBox=a=>a.deep&&h('details',{class:'qt-deep'},h('summary',{},'심화 · 매튜 헨리 주석'),h('p',{class:'qt-copy'},a.deep),h('p',{class:'bible-credit'},'매튜 헨리 성경 주석 요약판(1706, 저작권 만료)을 AI가 한국어로 풀어 썼어요'));
 const STEPS=[['meaning','1 이 말씀의 뜻'],['context','2 앞뒤 맥락'],['people','3 인물들의 입장과 생각'],['why','4 성경에 실린 이유'],['theology','5 신학적 의미와 본문의 역할'],['apply','6 오늘의 적용']];
 const BIBLE_CODES='gen exo lev num deu jos jdg rut 1sa 2sa 1ki 2ki 1ch 2ch ezr neh est job psa pro ecc sng isa jer lam ezk dan hos jol amo oba jnh mic nam hab zep hag zec mal mat mrk luk jhn act rom 1co 2co gal eph php col 1th 2th 1ti 2ti tit phm heb jas 1pe 2pe 1jn 2jn 3jn jud rev'.split(' ');
 let wordMode='sermon';
@@ -779,7 +784,7 @@ async function scripture(box,text,commentary=true){
  if(!bible[ref.chap-1]||!bible[ref.endChap-1]||ref.v1>bible[ref.chap-1].length||ref.v2>bible[ref.endChap-1].length){fill(box,h('p',{class:'err'},'본문을 찾지 못했어요. 책 이름과 장·절을 확인해 주세요'));return;}
  const verses=[];for(let c=ref.chap;c<=ref.endChap;c++)for(let v=(c===ref.chap?ref.v1||1:1);v<=(c===ref.endChap?ref.v2||bible[c-1].length:bible[c-1].length);v++)verses.push(h('p',{},h('sup',{},c+':'+v+' '),bible[c-1][v-1]));
  fill(box,h('h3',{},text),...verses,h('p',{class:'bible-credit'},'개역한글(1961) · 저작재산권 보호기간 만료(대한성서공회 안내)'),h('a',{href:'https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book='+BIBLE_CODES[ref.book-1]+'&chap='+ref.chap,target:'_blank',rel:'noopener'},'개역개정으로 보기'));
- if(commentary){const matches=archive.filter(a=>{const r=refRange(a.ref,index);return r&&overlaps(ref,r);});box.append(...(matches.length?matches.map(a=>h('section',{class:'card'},h('h3',{},a.ref+' · '+a.title),...STEPS.map(([k,t])=>h('div',{},stepTitle(t),h('p',{class:'qt-copy'},a[k]))))):[h('p',{},'이 본문의 해설은 준비 중이에요')]));}
+ if(commentary){const matches=archive.filter(a=>{const r=refRange(a.ref,index);return r&&overlaps(ref,r);});box.append(...(matches.length?matches.map(a=>h('section',{class:'card'},h('h3',{},a.ref+' · '+a.title),...STEPS.map(([k,t])=>h('div',{},stepTitle(t),h('p',{class:'qt-copy'},a[k]))),deepBox(a))):[h('p',{},'이 본문의 해설은 준비 중이에요')]));}
  }catch{if(box.request!==request)return;fill(box,h('p',{class:'err'},'본문을 불러오지 못했어요. 본문 범위와 인터넷 연결을 확인해 주세요.'));}
 }
 function wordView(){
