@@ -952,3 +952,37 @@ body:has(.event-dialog[open]){overflow:hidden}
 .ppt-cover input{width:20px;height:20px;min-height:20px}
 .export-tools .ppt-cover{grid-column:1/-1;order:5}
 .ppt-cover>span{margin:0;font-weight:400}
+
+/* ---------- 예배 ---------- */
+.worship-top .special-note{margin-bottom:var(--s3)}
+.worship-list{list-style:none;margin:0 0 var(--s5);padding:0}
+.worship-pick{display:flex;justify-content:space-between;align-items:center;gap:var(--s3);width:100%;min-height:var(--tap);padding:0 var(--s2);border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;font-weight:400;text-align:left}
+.worship-pick strong{font-weight:600}
+.worship-pick[aria-pressed=true]{box-shadow:inset 0 0 0 1.5px var(--accent);border-radius:var(--r-sm);background:transparent;color:var(--ink)}
+.worship-title{margin:0;font:700 var(--fs-22)/var(--lh-title) var(--display)}
+.worship-source{font-size:var(--fs-12);max-width:48em}
+.worship-steps{list-style:none;margin:var(--s3) 0;padding:0;max-width:760px}
+.worship-steps li{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:var(--s2);align-items:center;padding:var(--s2) 0;border-bottom:1px solid var(--line)}
+.ws-num{font:700 var(--fs-18)/1 var(--display);text-align:center;color:var(--ink-2)}
+.ws-main{display:grid;gap:2px}
+.ws-main strong{font-size:var(--fs-18);font-weight:600}
+.ws-who{color:var(--ink-2)}
+.ws-tag{display:inline-block;margin-left:var(--s2);padding:0 var(--s2);border:1px solid var(--line-2);border-radius:var(--r-pill);font-size:var(--fs-12);color:var(--ink-2)}
+.ws-acts{display:flex;gap:var(--s1)}
+.ws-acts button{min-width:40px;padding:0 var(--s2);font-size:var(--fs-14)}
+@media(max-width:959px){.ws-acts button{min-width:44px}}
+.ws-add{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:var(--s2);max-width:760px;margin:var(--s3) 0}
+.lay-rules{max-width:760px}
+.lay-rules ul{margin:var(--s2) 0;padding-left:var(--s5)}
+.worship-actions{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s4)}
+.wp-form{display:grid;gap:var(--s2)}
+.wp-form label>span{margin:var(--s2) 0 var(--s1)}
+.wp-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.wp-theme{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s2)}
+.wp-theme .segments{margin:0}
+.wp-form .people label>span{font-weight:400}
+.wp-form>.primary{margin-top:var(--s3)}
+.ppt-template{grid-template-columns:minmax(0,1fr) auto;align-items:center}
+.ppt-template .meta{grid-column:1}
+.ppt-template button{grid-row:1/span 2;grid-column:2}
+@media(max-width:559px){.ws-add{grid-template-columns:1fr 1fr}.ws-add button{grid-column:1/-1}}

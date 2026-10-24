@@ -1,7 +1,7 @@
 // 저장소. config.js에 Firebase 설정이 있으면 Firestore(리더끼리 실시간 공유),
 // 없으면 이 기기 localStorage(체험 모드, 같은 브라우저의 다른 탭끼리만 공유).
 // 쓰기는 늘 "깊게 합치기"라서 두 사람이 다른 칸을 동시에 고쳐도 서로 지우지 않는다(배열은 통째로 바뀜).
-import { firebaseConfig } from './config.js?v=202610242013';
+import { firebaseConfig } from './config.js?v=202610242027';
 
 const FB = 'https://www.gstatic.com/firebasejs/10.12.2/';
 
