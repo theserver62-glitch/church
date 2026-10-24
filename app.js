@@ -1,15 +1,15 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js';
-import { TEMPLATES } from './templates.js';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610241251';
+import { TEMPLATES } from './templates.js?v=202610241251';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps } from './home.js';
-import { formatCodeInput, validCode, nameKey, recentChurches, inviteText } from './entry.js';
-import { openStore, newChurchCode } from './store.js';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js';
-import { EVENTS, RETREAT_FORMS } from './events.js';
-import { docs } from './docs.js';
-import { equipment, equipmentId, equipmentRows } from './equipment.js';
-import { label, parseCsv, groupSongs } from './songbook.js';
-import { parseBackup, backupSundays, previousSundays } from './backup.js';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps } from './home.js?v=202610241251';
+import { formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl } from './entry.js?v=202610241251';
+import { openStore, newChurchCode } from './store.js?v=202610241251';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610241251';
+import { EVENTS, RETREAT_FORMS } from './events.js?v=202610241251';
+import { docs } from './docs.js?v=202610241251';
+import { equipment, equipmentId, equipmentRows } from './equipment.js?v=202610241251';
+import { label, parseCsv, groupSongs } from './songbook.js?v=202610241251';
+import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610241251';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -81,6 +81,28 @@ function getRecent() {
 }
 function remember(c, name) {
   try { localStorage.setItem('church:recent', JSON.stringify(recentChurches(getRecent(), {code:c,name}))); } catch { /* 입장은 계속한다 */ }
+  // 구글로 로그인했으면 내 계정의 교회 목록에도 남긴다(다른 기기에서 바로 뜨게)
+  const u = store.auth?.user();
+  if (u) store.update('users/' + u.uid, { churches: { [c]: { name, at: todayIso() } }, last: c }).catch(() => {});
+}
+const myChurches = async () => { const u = store.auth?.user(); return u ? mineList((await readOnce('users/' + u.uid).catch(() => null))?.churches) : []; };
+async function googleLogin() {
+  try { await store.auth.signIn(); }
+  catch (e) { if (e?.code !== 'auth/popup-closed-by-user' && e?.code !== 'auth/cancelled-popup-request') say('구글 로그인을 하지 못했어요. 다시 시도해 주세요.'); return; }
+  const mine = await myChurches();
+  if (mine.length === 1) await enter(mine[0].code); else showEntry();
+}
+// 로그인 영역: 카톡 안 브라우저는 구글이 로그인을 막으므로 기본 브라우저로 열게 한다
+function loginBox() {
+  if (!store.auth) return null;
+  const u = store.auth.user();
+  if (u) return h('section', {class:'login-box'}, h('p', {class:'hint'}, (u.email || u.displayName || '구글 계정') + '로 로그인했어요'),
+    h('button', {class:'text-button', onclick: async () => { await store.auth.signOut(); showEntry(); }}, '로그아웃'));
+  if (isKakaoInApp(navigator.userAgent)) return h('section', {class:'login-box'},
+    h('p', {}, '카톡 안에서는 구글 로그인이 안 돼요. 기본 브라우저로 열어 주세요.'),
+    h('button', {class:'primary', onclick: () => { location.href = kakaoExternalUrl(location.href); }}, '기본 브라우저로 열기'));
+  return h('section', {class:'login-box'}, h('button', {class:'primary google-login', onclick: googleLogin}, 'Google로 로그인'),
+    h('p', {class:'hint'}, '한 번 로그인하면 어느 기기에서든 우리 교회가 바로 떠요.'));
 }
 function showEntry(message = '') {
   reset(); view.dataset.screen = 'entry';
@@ -99,8 +121,9 @@ function showEntry(message = '') {
     } catch {err.textContent='불러오지 못했어요. 인터넷 연결을 확인해 주세요.';}
     finally {busy=false;submit.disabled=!validCode(code.value);}
   }
-  const recent=getRecent();
-  view.append(h('h1',{},'교회 사역앱'),h('p',{class:'hint'},'우리 교회의 사역을 함께 준비해요.'),
+  const recent=getRecent(), mineBox=h('section');
+  myChurches().then(mine=>{ if(mine.length) fill(mineBox,h('h2',{},'내 교회'),mine.map(item=>h('div',{class:'recent-row'},h('button',{class:'recent-church',onclick:()=>join(item.code)},item.name)))); });
+  view.append(h('h1',{},'교회 사역앱'),h('p',{class:'hint'},'우리 교회의 사역을 함께 준비해요.'),loginBox(),mineBox,
     recent.length > 0 && h('section',{},h('h2',{},'최근 들어간 교회'),recent.map(item=>h('div',{class:'recent-row'},
       h('button',{class:'recent-church',onclick:()=>join(item.code)},item.name),
       h('button',{class:'text-button', 'aria-label':item.name+' 목록에서 빼기',onclick:()=>{localStorage.setItem('church:recent',JSON.stringify(getRecent().filter(x=>x.code!==item.code)));showEntry();}},'목록에서 빼기')))),
@@ -420,7 +443,7 @@ function setView() {
   const copy = h('button', { type: 'button', class: 'sub', onclick: () => (navigator.clipboard?.writeText(code) || Promise.reject())
     .then(() => (copy.textContent = '복사했어요'), () => say('복사가 안 돼요. 코드를 길게 눌러 복사해 주세요.')) }, '코드만 복사');
   view.append(h('div',{class:'settings-grid'},
- h('section',{class:'card'},h('h3',{},'교회 정보'),nameBox,sizeBox),h('section',{class:'card'},h('h3',{},'멤버 초대'),h('h4',{},'교회 코드'),h('p',{class:'code'},code),h('button',{class:'primary',onclick:()=>copyInvite(code)},'초대 링크 복사'),copy),h('section',{class:'card'},h('h3',{},'내 기기 설정'),h('label',{},h('span',{},'내 역할 이름 (이 기기에만 저장)'),h('input',{value:localStorage.getItem('church:role')||'',placeholder:'예: 찬양리더',maxLength:20,oninput:e=>localStorage.setItem('church:role',e.target.value.trim())})),h('button',{class:'danger',onclick:()=>{localStorage.removeItem('church:code');history.replaceState(null,'',location.pathname+location.search);showEntry();}},'다른 교회로 바꾸기')),
+ h('section',{class:'card'},h('h3',{},'교회 정보'),nameBox,sizeBox),h('section',{class:'card'},h('h3',{},'멤버 초대'),h('h4',{},'교회 코드'),h('p',{class:'code'},code),h('button',{class:'primary',onclick:()=>copyInvite(code)},'초대 링크 복사'),copy),h('section',{class:'card'},h('h3',{},'내 기기 설정'),loginBox(),h('label',{},h('span',{},'내 역할 이름 (이 기기에만 저장)'),h('input',{value:localStorage.getItem('church:role')||'',placeholder:'예: 찬양리더',maxLength:20,oninput:e=>localStorage.setItem('church:role',e.target.value.trim())})),h('button',{class:'danger',onclick:()=>{localStorage.removeItem('church:code');history.replaceState(null,'',location.pathname+location.search);showEntry();}},'다른 교회로 바꾸기')),
  h('section',{class:'card'},evBox),
  h('section',{class:'card'},h('h3',{},'곡 목록·자료 옮기기'),bookBox,h('label',{},h('span',{},'CSV 파일로 곡 넣기'),csv),h('p',{class:'meta'},'제목, 키, 메모, 주제, 분위기, 악보 주소 순서'),sheetForm,transferCard())));
   watch(churchPath(), d => {
@@ -629,8 +652,10 @@ store = await openStore().catch(() => null);
 if (!store) msg.textContent = '저장소에 연결하지 못했어요. 새로고침해 주세요.';
 else {
   $('band').hidden = store.mode !== 'local'; $('band').textContent='체험 모드 · 이 기기에 저장';
+  await store.auth?.ready; // 로그인 상태를 먼저 확인(구글 로그인한 기기면 내 교회로 바로)
   if (location.hash.startsWith('#c=')) await openInvite();
-  else if (localStorage.getItem('church:code')) await enter(localStorage.getItem('church:code')); else showEntry();
+  else if (localStorage.getItem('church:code')) await enter(localStorage.getItem('church:code'));
+  else { const mine = await myChurches(); if (mine.length) await enter(mine[0].code); else showEntry(); }
 }
 
 async function openInvite() {

@@ -15,3 +15,11 @@ export function inviteText(name, code, address) {
   const url = new URL(address); url.hash = 'c=' + code;
   return name + ' 사역 웹에 함께해요! 아래 링크를 누르면 바로 들어와요.\n' + url.href;
 }
+// 구글 계정에 저장된 교회 목록 {코드: {name, at}} → 최근 들어간 순 배열
+export function mineList(churches) {
+  return Object.entries(churches || {}).filter(([c, v]) => validCode(c) && v && typeof v.name === 'string')
+    .map(([code, v]) => ({ code, name: v.name, at: v.at || '' })).sort((a, b) => b.at.localeCompare(a.at));
+}
+// 카톡 안 브라우저(구글이 로그인을 막음) 알아보기와, 기본 브라우저로 여는 주소
+export const isKakaoInApp = ua => /KAKAOTALK/i.test(ua || '');
+export const kakaoExternalUrl = url => 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url);

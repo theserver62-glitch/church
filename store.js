@@ -1,7 +1,7 @@
 // 저장소. config.js에 Firebase 설정이 있으면 Firestore(리더끼리 실시간 공유),
 // 없으면 이 기기 localStorage(체험 모드, 같은 브라우저의 다른 탭끼리만 공유).
 // 쓰기는 늘 "깊게 합치기"라서 두 사람이 다른 칸을 동시에 고쳐도 서로 지우지 않는다(배열은 통째로 바뀜).
-import { firebaseConfig } from './config.js';
+import { firebaseConfig } from './config.js?v=202610241251';
 
 const FB = 'https://www.gstatic.com/firebasejs/10.12.2/';
 
@@ -9,9 +9,19 @@ export async function openStore() {
   if (firebaseConfig) {
     const { initializeApp } = await import(FB + 'firebase-app.js');
     const { getFirestore, doc, onSnapshot, setDoc } = await import(FB + 'firebase-firestore.js');
-    const db = getFirestore(initializeApp(firebaseConfig));
+    const A = await import(FB + 'firebase-auth.js');
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = A.getAuth(app);
     return {
       mode: 'shared',
+      // 구글 로그인(선택). 로그인한 사람은 users/{uid}에 "내 교회 목록"을 둔다 — 본인만 읽고 쓴다(firestore.rules).
+      auth: {
+        ready: new Promise(r => { const off = A.onAuthStateChanged(auth, u => { off(); r(u); }); }),
+        user: () => auth.currentUser,
+        signIn: () => A.signInWithPopup(auth, new A.GoogleAuthProvider()),
+        signOut: () => A.signOut(auth),
+      },
       // cb(data) — 문서가 없으면 null
       watch: (path, cb, onErr) => onSnapshot(doc(db, path), s => cb(s.exists() ? s.data() : null), onErr),
       update: (path, data) => setDoc(doc(db, path), data, { merge: true }),
@@ -37,6 +47,7 @@ function localStore() {
   addEventListener('storage', e => e.key?.startsWith('church:') && notify(e.key.slice(7)));
   return {
     mode: 'local',
+    auth: null, // 체험 모드에는 로그인이 없다
     watch(path, cb) {
       const s = { path, cb };
       subs.add(s);

@@ -344,3 +344,6 @@ body{line-height:1.5}
 .year-month small{font-size:16px;line-height:24px}
 /* 월 달력: 준비 띠는 색 막대만(이름은 위 범례와 "준비 시작" 표시에 있음, 겹침 방지) */
 .calendar[data-mode=month] .prep-ribbon span{display:none}
+/* 구글 로그인 영역 */
+.login-box{display:flex;flex-direction:column;gap:8px;margin:24px 0}
+.login-box .google-login{min-height:52px;font-size:18px}
