@@ -1,21 +1,21 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250223';
-import { TEMPLATES } from './templates.js?v=202610250223';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250223';
-import { elementsFor, sundayName, callRec, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250223';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250232';
+import { TEMPLATES } from './templates.js?v=202610250232';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250232';
+import { elementsFor, sundayName, callRec, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250232';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250223';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250223';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610250223';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250223';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250223';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250223';
-import { docs } from './docs.js?v=202610250223';
-import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250223';
-import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610250223';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610250223';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250223';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250223';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250223';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250232';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250232';
+import { openStore, newChurchCode, NOW } from './store.js?v=202610250232';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250232';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250232';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250232';
+import { docs } from './docs.js?v=202610250232';
+import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250232';
+import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610250232';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610250232';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250232';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250232';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250232';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -1698,7 +1698,7 @@ function worshipGuideView() {
     const S = W.structure || {}, list = W.callToWorship || [], today = todayIso(), sun = nextSunday(today), y = +today.slice(0, 4);
     const rec = callRec(list, sun, occurrences([y - 1, y, y + 1], {}));
     const stepBtn = name => { const els = elementsFor(name, W.elements); return els.length ? h('button', { type: 'button', class: 'text-button wg-step', onclick: () => showElements(els, name) }, name) : h('span', { class: 'wg-step plain' }, name); };
-    const callRow = x => h('li', {}, h('button', { type: 'button', class: 'call-row', onclick: () => openCall(x) }, h('span', { class: 'call-ref' }, x.ref), h('span', { class: 'call-mode' + (x.mode === '교독' ? ' antiphon' : '') }, x.mode), h('span', { class: 'call-why' }, x.why)));
+    const callRow = x => h('li', {}, h('button', { type: 'button', class: 'call-row', onclick: () => openCall(x) }, h('span', { class: 'call-ref' }, x.ref), h('span', { class: 'call-mode' + (x.mode === '교독' ? ' antiphon' : '') }, x.mode === '교독' ? '낭독 · 교독 가능' : '낭독'), h('span', { class: 'call-why' }, x.why)));
     let grp = '절기'; const callBox = h('div');
     const drawCalls = () => { const names = [...new Set(list.filter(x => x.group === grp).map(x => x.name))];
       fill(callBox, h('div', { class: 'browse-chips', role: 'group', 'aria-label': '본문 분류' }, ['절기', '평상시'].map(g => h('button', { type: 'button', class: 'chip', 'aria-pressed': String(g === grp), onclick: () => { grp = g; drawCalls(); } }, g))),
@@ -1723,7 +1723,7 @@ function openCall(x) {
   const body = h('div', { class: 'call-text' }, h('p', { class: 'hint' }, '본문을 불러오는 중이에요')), copyBtn = h('button', { type: 'button', class: 'sub', disabled: true }, '복사');
   const put = async () => { try { await loadWorship(); const d = await readOnce(churchPath()), id = worshipSel || 'sunday-main', sv = worshipData.services.find(s => s.id === id), steps = orderFor(sv, d?.worshipOrders || {}).map(s => ({ ...s }));
       const i = steps.findIndex(s => elementsFor(s.name, worshipData.elements).some(e => e.key === '예배로 부름')); if (i < 0) return say(sv.name + ' 순서에 예배로 부름이 없어요');
-      steps[i].note = x.ref + ' (' + x.mode + ')'; if (await save(churchPath(), { worshipOrders: { [id]: steps } })) say(sv.name + ' 순서지의 예배로 부름에 ' + x.ref + '을(를) 넣었어요'); } catch { say('넣지 못했어요. 다시 해 주세요.'); } };
+      steps[i].note = x.ref; if (await save(churchPath(), { worshipOrders: { [id]: steps } })) say(sv.name + ' 순서지의 예배로 부름에 ' + x.ref + '을(를) 넣었어요'); } catch { say('넣지 못했어요. 다시 해 주세요.'); } };
   const box = h('dialog', { class: 'event-dialog about-dialog element-dialog call-dialog', 'aria-labelledby': 'call-title' }, h('div', { class: 'event-dialog-heading' }, h('h2', { id: 'call-title' }, x.ref + ' · ' + x.mode), h('button', { type: 'button', onclick: () => box.close() }, '닫기')),
     h('p', { class: 'meta' }, x.name + ' · ' + x.why), body, h('div', { class: 'row' }, copyBtn, h('button', { type: 'button', class: 'sub', onclick: () => { box.close(); put(); } }, '이번 주 순서지에 넣기')), h('p', { class: 'meta' }, '개역한글'));
   box.addEventListener('click', e => { if (e.target !== box) return; const r = box.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) box.close(); });
@@ -1732,9 +1732,13 @@ function openCall(x) {
     const bible = await fetch('./bible/' + String(r.book).padStart(2, '0') + '.json').then(q => q.json()), lines = [];
     for (let c = r.chap; c <= r.endChap; c++) { const vs = bible[c - 1] || [], from = c === r.chap ? (r.v1 || 1) : 1, to = c === r.endChap ? (r.v2 || vs.length) : vs.length; for (let v = from; v <= to; v++) if (vs[v - 1]) lines.push([c, v, vs[v - 1]]); }
     if (!lines.length) throw new Error('empty');
-    const anti = x.mode === '교독';
-    fill(body, lines.map(([c, v, t], k) => h('p', { class: 'call-line' + (anti ? (k % 2 ? ' people' : ' leader') : '') }, anti && h('b', {}, k % 2 ? '회중 ' : '사회자 '), h('sup', {}, (r.endChap > r.chap ? c + ':' : '') + v), ' ' + t)));
-    copyBtn.disabled = false; copyBtn.onclick = () => copyText(x.ref + '\n' + lines.map(([, v, t], k) => (anti ? (k % 2 ? '(회중) ' : '(사회자) ') : v + ' ') + t).join('\n'));
+    // 기본은 사회자 낭독(채플처럼). 교독에 알맞은 시편이면 '교독으로 보기'로 바꿔 볼 수 있다
+    let anti = false;
+    const paint = () => {
+      fill(body, x.mode === '교독' && h('button', { type: 'button', class: 'text-button call-toggle', onclick: () => { anti = !anti; paint(); } }, anti ? '낭독으로 보기' : '교독으로 보기(사회자·회중)'), lines.map(([c, v, t], k) => h('p', { class: 'call-line' + (anti ? (k % 2 ? ' people' : ' leader') : '') }, anti && h('b', {}, k % 2 ? '회중 ' : '사회자 '), h('sup', {}, (r.endChap > r.chap ? c + ':' : '') + v), ' ' + t)));
+      copyBtn.onclick = () => copyText(x.ref + '\n' + lines.map(([, v, t], k) => (anti ? (k % 2 ? '(회중) ' : '(사회자) ') : v + ' ') + t).join('\n'));
+    };
+    paint(); copyBtn.disabled = false;
   })().catch(() => fill(body, h('p', { class: 'err' }, '본문을 불러오지 못했어요')));
 }
 function worshipView() {
