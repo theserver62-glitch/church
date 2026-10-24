@@ -59,9 +59,10 @@ export const equipment = {
 // 분류와 품목명으로 고정 ID를 만든다. Firestore 필드 경로 문자는 인코딩한다.
 export const equipmentId=(cat,name)=>'eq_'+[cat,name].map(part=>Array.from(part,c=>c.codePointAt(0).toString(16)).join('_')).join('__');
 export function equipmentRows(saved={}) {
- const rows=Object.entries(saved).filter(([,v])=>v).map(([id,v])=>[id,{qty:0,state:'없음',memo:'',...v}]);
- for(const [cat,names] of Object.entries(equipment))for(const name of names)if(!rows.some(([,v])=>v.cat===cat&&v.name===name))rows.push([equipmentId(cat,name),{cat,name,qty:0,state:'없음',memo:''}]);
- return rows;
+ const rows=Object.entries(saved).filter(([,v])=>v).map(([id,v])=>[id,{qty:0,state:'없음',memo:'',...v}]),used=new Set(),out=[];
+ // 순서는 기본 목록 순서로 고정(수량을 바꿔 저장돼도 줄이 움직이지 않게). 직접 넣은 품목은 그 뒤에 이름순
+ for(const [cat,names] of Object.entries(equipment))for(const name of names){const hit=rows.filter(([,v])=>v.cat===cat&&v.name===name);hit.forEach(r=>used.add(r));out.push(...(hit.length?hit:[[equipmentId(cat,name),{cat,name,qty:0,state:'없음',memo:''}]]));}
+ return [...out,...rows.filter(r=>!used.has(r)).sort((x,y)=>String(x[1].name||'').localeCompare(String(y[1].name||''),'ko'))];
 }
 
 // ---------- 구매 도움(equip-products.json: {cat, name, why, price, url, partner}) ----------
