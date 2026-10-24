@@ -1,4 +1,5 @@
-import { addDays, parse, occurrences } from './calendar.js';
+import { addDays, parse } from './calendar.js';
+import { occurrences, tasksAround, occursOn } from './custom-events.js';
 export function monthGrid(year, month) {
  const first = new Date(Date.UTC(year, month - 1, 1)).toISOString().slice(0,10);
  const start = addDays(first, -parse(first).getUTCDay());
@@ -43,7 +44,18 @@ export function prepWeek(week, spans, month) {
  });
 }
 export function calendarCell(day,tasks,events,limit=2){
- const items=[...events.filter(e=>e.date===day).map(event=>({type:'event',event})),...tasks.filter(t=>t.due===day).map(task=>({type:'task',task}))];
+ const items=[...events.filter(e=>occursOn(e,day)).map(event=>({type:'event',event})),...tasks.filter(t=>t.due===day).map(task=>({type:'task',task}))];
  return {items:items.slice(0,limit),extra:Math.max(0,items.length-limit)};
 }
 export const shortTask = text => text.replace(/\s*[(（].*?[)）]/g,'').split(/[:：]/).pop().trim();
+
+// 월요일 시작 한 주. UTC 계산으로 연도·윤년 경계를 보존한다.
+export function weekDays(dateIso) {
+ const monday=addDays(dateIso,-((parse(dateIso).getUTCDay()+6)%7));
+ return Array.from({length:7},(_,i)=>addDays(monday,i));
+}
+export function dayItems(dateIso,settings={},done={}) {
+ const tasks=tasksAround(dateIso,settings), year=+dateIso.slice(0,4);
+ return {tasks:tasks.filter(t=>t.due===dateIso),events:occurrences([year-1,year],settings).filter(e=>occursOn(e,dateIso)),next:tasks.find(t=>t.due>dateIso&&!done[t.key])||null,
+ preps:occurrences([year-1,year,year+1],settings).filter(e=>e.tasks.length&&e.date>=dateIso&&addDays(e.date,-7*Math.max(...e.tasks.map(t=>t[0])))<=dateIso).map(e=>{const mine=tasks.filter(t=>t.key.startsWith(e.id+'_'+e.date+'_'));return {...e,total:mine.length,completed:mine.filter(t=>done[t.key]).length};})};
+}

@@ -55,3 +55,11 @@ export const equipment = {
     "클리닝 티슈"
   ]
 };
+
+// 분류와 품목명으로 고정 ID를 만든다. Firestore 필드 경로 문자는 인코딩한다.
+export const equipmentId=(cat,name)=>'eq_'+[cat,name].map(part=>Array.from(part,c=>c.codePointAt(0).toString(16)).join('_')).join('__');
+export function equipmentRows(saved={}) {
+ const rows=Object.entries(saved).filter(([,v])=>v).map(([id,v])=>[id,{qty:0,state:'없음',memo:'',...v}]);
+ for(const [cat,names] of Object.entries(equipment))for(const name of names)if(!rows.some(([,v])=>v.cat===cat&&v.name===name))rows.push([equipmentId(cat,name),{cat,name,qty:0,state:'없음',memo:''}]);
+ return rows;
+}

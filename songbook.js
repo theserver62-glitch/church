@@ -18,13 +18,13 @@ export function parseCsv(text) {
 
 // 보기별로 묶기. by: 'key' | 'mood' | 'theme'. [[묶음 이름, [곡...]], ...] 정해진 순서로.
 const ORDER = {
-  key: ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'Ab', 'Bb', 'Eb', 'F#m', 'Am', 'Bm', 'Dm', 'Em'],
+  key: ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'Ab', 'Bb', 'Eb', '단조'],
   mood: ['신나게', '보통', '잔잔하게'],
   theme: ['경배와 찬양', '은혜와 사랑', '회개와 고백', '기도와 간구', '축복과 교제', '선교와 승리'],
 };
 export function groupSongs(book, by) {
   const g = {};
-  for (const s of Object.values(book)) (g[s[by] || '기타'] ||= []).push(s);
+  for (const s of Object.values(book)) (g[(by === 'key' && /m$/.test(s.key || '') ? '단조' : s[by]) || '기타'] ||= []).push(s);
   const rank = k => (ORDER[by].indexOf(k) + 1 || 99);
   return Object.entries(g).sort(([a], [b]) => rank(a) - rank(b) || a.localeCompare(b))
     .map(([k, list]) => [k, list.sort((a, b) => a.title.localeCompare(b.title))]);
