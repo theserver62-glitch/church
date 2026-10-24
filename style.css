@@ -1538,3 +1538,26 @@ main[data-screen=viewer]{max-width:720px;padding-top:var(--s5)}
 .doc-tabs button{padding:0 var(--s3)}
 @media(max-width:639px){.doc-tabs{width:100%;overflow-x:auto;scrollbar-width:none}.doc-tabs button{flex:none}}
 .doc-tabs button{flex:none}
+/* 사이드바: 주인공(홈·절기·행사·찬양 콘티) 아래 얇은 선 + 작은 회색 '도구' */
+#sidebar .side-group{margin:var(--s3) var(--s3) var(--s1);padding-top:var(--s3);border-top:1px solid var(--line);font-size:var(--fs-14);font-weight:600;color:var(--ink-3)}
+#sidebar button.tool:not([aria-current]){color:var(--ink-2)}
+/* 처음 3단계 안내(접을 수 있는 한 줄 띠) */
+.onb{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3);margin:0 0 var(--s4);padding:var(--s1) var(--s1) var(--s1) var(--s3);border:1px solid var(--line-2);border-radius:var(--r-md)}
+.onb-title{font-size:var(--fs-14);font-weight:600;color:var(--ink-3)}
+.onb-steps{display:flex;flex-wrap:wrap;gap:0 var(--s2);flex:1;margin:0;padding:0;list-style:none}
+.onb-step{gap:var(--s2);min-height:44px;padding:0 var(--s2);border:0;background:transparent;font-weight:400;color:var(--ink)}
+.onb-step:hover{background:var(--paper-2)}
+.onb-mark{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1.5px solid var(--ink-3);border-radius:50%;font-size:var(--fs-12);font-weight:600}
+.onb li.done .onb-step{color:var(--ink-3);text-decoration:line-through}
+.onb li.done .onb-mark{border-color:var(--accent);background:var(--accent);color:#fff}
+.onb-close{margin-left:auto;font-size:var(--fs-14)}
+/* 홈 오른쪽 아래 작은 한 줄(이번 주일 찬양 · 오늘의 말씀) */
+.home-mini{margin-top:var(--s4)}
+.home-mini p{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);margin:0;border-top:1px solid var(--line);font-size:var(--fs-14);color:var(--ink-2)}
+.home-mini .text-button{min-height:40px;font-size:var(--fs-14)}
+.onb-step{justify-content:flex-start;text-align:left;white-space:normal}
+@media(max-width:959px){
+ .onb{display:grid;grid-template-columns:1fr auto;padding:var(--s1) var(--s1) var(--s1) var(--s3)}
+ .onb-steps{grid-column:1/-1;grid-row:2;flex-direction:column}
+ .onb-close{grid-column:2;grid-row:1}
+}

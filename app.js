@@ -1,19 +1,20 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250026';
-import { TEMPLATES } from './templates.js?v=202610250026';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250026';
-import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250026';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250034';
+import { TEMPLATES } from './templates.js?v=202610250034';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250034';
+import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250034';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250026';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250026';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610250026';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap } from './season.js?v=202610250026';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250026';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250026';
-import { docs } from './docs.js?v=202610250026';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610250026';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250026';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink } from './songbook.js?v=202610250026';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250026';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250034';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250034';
+import { openStore, newChurchCode, NOW } from './store.js?v=202610250034';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap } from './season.js?v=202610250034';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250034';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250034';
+import { docs } from './docs.js?v=202610250034';
+import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250034';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610250034';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250034';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink } from './songbook.js?v=202610250034';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250034';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -250,7 +251,7 @@ function showCreate() {
     h('button',{class:'text-button',onclick:()=>showEntry()},'입장 화면으로'));
 }
 async function copyInvite(c) {
-  try {const d=await readOnce('churches/'+c);if(d)await copyText(inviteText(d.name,c,location.href));}
+  try {const d=await readOnce('churches/'+c);if(d){await copyText(inviteText(d.name,c,location.href));onbSet('invite');}}
   catch {say('초대 링크를 불러오지 못했어요. 다시 시도해 주세요.');}
 }
 
@@ -292,11 +293,12 @@ const MENUS = [['home','홈'],['events','교회 일정'],['schedule','절기·�
 // 하위 메뉴 → 부모. 부모 메뉴를 누르면 첫 하위 화면으로 간다(한 메뉴 = 한 화면)
 const PARENT = {events:'home',seasons:'schedule',ourEvents:'schedule',ccm:'conti',special:'conti',hymn:'conti',sermon:'word',qt:'word'};
 const FIRST = {schedule:()=>'seasons',conti:()=>'ccm',word:()=>wordMode==='qt'?'qt':'sermon'};
-const TABS = [['home','홈'],['schedule','절기·행사'],['conti','콘티'],['word','말씀'],['more','더보기']];
+const TABS = [['home','홈'],['schedule','절기·행사'],['conti','콘티'],['more','더보기']];
+const TOOLS = new Set(['word','sermon','qt','worship','docs','equipment','set']); // 사이드바 '도구' 묶음 · 폰은 더보기 안
 const side = h('aside', { id:'sidebar', hidden:true }); document.body.prepend(side);
 const VIEWS = { seasons:()=>scheduleView('season'), ourEvents:()=>scheduleView('custom'), ccm:()=>contiView('book'), special:()=>contiView('special'), hymn:()=>contiView('hymn'), sermon:()=>{wordMode='sermon';wordView();}, qt:()=>{wordMode='qt';wordView();}, events:homeView, project:projectView, worship:worshipView, home:nowView, schedule:scheduleView, conti:contiView, word:wordView, docs:docsView, equipment:equipmentView, set:setView, more:moreView };
 const GUIDES = {home:'밀린 일과 앞으로 2주 안에 할 일을 보여 줘요',schedule:'절기와 행사에 맞춰 준비할 일을 보여 줘요',conti:'이번 주일 찬양을 순서대로 준비해요',word:'주일설교 본문을 찾고 매일 말씀을 묵상해요',docs:'우리 교회에 필요한 준비 양식을 내려받아요',equipment:'장비의 수량과 상태를 함께 확인해요',set:'우리 교회에 맞게 설정해요',more:'자료실과 장비, 설정을 열어요'};
-const SCREEN_HELP = {"events":["◀ ▶로 기간을 옮기고, '월 보기'에서 일·주·월·년을 골라요","색 칸은 행사일, ○는 준비 시작일이에요","+ 행사 추가로 수련회·바자회·성경학교를 넣어요"],"worship":["예배를 고르면 순서와 담당, 메모가 나와요","▲▼·빼기·순서 추가로 우리 교회 순서로 고쳐요(기본값으로 되돌릴 수 있어요)","순서지 인쇄와 예배 PPT 만들기로 마무리해요"],"home":["할 일을 누르면 준비하는 방법이 옆(폰은 아래)에 나와요","끝냈으면 [다 했어요]나 왼쪽 네모를 눌러요","달력은 '달력으로 보기'나 [교회 일정]에서 봐요"],"schedule":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"conti":["CCM 탭에서 키·주제·분위기로 곡을 찾아 [+ 담기]를 눌러요. 특송·찬송가 탭도 같아요","[순서 편집]으로 순서를 바꾸고, [⋯]에서 메모를 달아요","[공유·출력]에서 카톡·인쇄·PPT로 마무리해요"],"word":["주일설교: 본문(예: 막 4:1-9)을 검색하면 본문과 6단계 해설이 나와요","큐티: 매일 하나씩 순서대로 나와요","아래에 묵상을 적으면 리더들과 나눠져요"],"docs":["맨 위 '부서'를 눌러 우리 부서 자료를 골라요","서류 이름을 누르면 설명과 워드·한글 받기가 나와요","빈칸을 채워 바로 쓰면 돼요"],"equipment":["기본 장비 목록이 미리 있어요","수량과 상태를 바꾸면 바로 저장돼요","'점검 필요'·'고장'은 맨 위에 모여요"],"set":["교회 이름·규모·부서를 바꿔요","초대 링크를 복사해 리더들에게 보내요","구글로 로그인하면 다른 기기에서도 바로 들어와요"],"seasons":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"ourEvents":["수련회·바자회처럼 우리 교회가 추가한 행사만 모여요","+ 행사 추가로 새 행사와 준비할 일을 넣어요","행사를 누르면 할 일·날짜 바꾸기·삭제가 있어요"],"sermon":["본문(예: 막 4:1-9)을 고르거나 검색하면 본문과 6단계 해설이 나와요","PPT로 내보내기에서 본문을 예배 화면용 PPT로 받아요","아래에 묵상을 적으면 리더들과 나눠져요"],"qt":["매일 하나씩 순서대로 큐티 본문과 해설이 나와요","날짜를 바꾸면 그날 큐티를 볼 수 있어요","아래에 묵상을 적으면 리더들과 나눠져요"]};
+const SCREEN_HELP = {"events":["◀ ▶로 기간을 옮기고, '월 보기'에서 일·주·월·년을 골라요","색 칸은 행사일, ○는 준비 시작일이에요","+ 행사 추가로 수련회·바자회·성경학교를 넣어요"],"worship":["예배를 고르면 순서와 담당, 메모가 나와요","▲▼·빼기·순서 추가로 우리 교회 순서로 고쳐요(기본값으로 되돌릴 수 있어요)","순서지 인쇄와 예배 PPT 만들기로 마무리해요"],"home":["할 일을 누르면 준비하는 방법이 옆(폰은 아래)에 나와요","끝냈으면 [다 했어요]나 왼쪽 네모를 눌러요","달력은 '달력으로 보기'나 [교회 일정]에서, 이번 주일 찬양·오늘의 말씀은 오른쪽 아래 한 줄에서 열어요"],"schedule":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"conti":["CCM 탭에서 키·주제·분위기로 곡을 찾아 [+ 담기]를 눌러요. 특송·찬송가 탭도 같아요","[순서 편집]으로 순서를 바꾸고, [⋯]에서 메모를 달아요","[공유·출력]에서 카톡·인쇄·PPT로 마무리해요"],"word":["주일설교: 본문(예: 막 4:1-9)을 검색하면 본문과 6단계 해설이 나와요","큐티: 매일 하나씩 순서대로 나와요","폰에서는 아래 [더보기] › 말씀에서 열어요"],"docs":["맨 위 '부서'를 눌러 우리 부서 자료를 골라요","서류 이름을 누르면 설명과 워드·한글 받기가 나와요","[커리큘럼·교재]·[나들이·수련회]·[링크] 탭에서 비교표와 추천 사이트를 봐요"],"equipment":["기본 장비 목록이 미리 있어요. 묶음 제목을 눌러 펼쳐요","−/+로 수량을 바꾸고, 문제가 있으면 [점검 필요]·[고장]을 눌러 메모해요","고장·점검이 있으면 맨 위 [확인하기]로 모아 봐요"],"set":["교회 이름·규모·부서를 바꿔요","초대 링크를 복사해 리더들에게 보내요","구글로 로그인하면 다른 기기에서도 바로 들어와요"],"seasons":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"ourEvents":["수련회·바자회처럼 우리 교회가 추가한 행사만 모여요","+ 행사 추가로 새 행사와 준비할 일을 넣어요","행사를 누르면 할 일·날짜 바꾸기·삭제가 있어요"],"sermon":["본문(예: 막 4:1-9)을 고르거나 검색하면 본문과 6단계 해설이 나와요","PPT로 내보내기에서 본문을 예배 화면용 PPT로 받아요","아래에 묵상을 적으면 리더들과 나눠져요"],"qt":["매일 하나씩 순서대로 큐티 본문과 해설이 나와요","날짜를 바꾸면 그날 큐티를 볼 수 있어요","아래에 묵상을 적으면 리더들과 나눠져요"]};
 // 화면 도움말: 제목 바로 옆 작은 원형 ? 버튼. 누르면 그 아래 말풍선(폰은 아래에서 올라오는 작은 시트). 본문을 밀지 않고, 바깥·Esc로 닫힘
 function screenHeading(id, title) {
  const key='church:guide:'+id;
@@ -322,7 +324,7 @@ function foldCard(id, open = false, cls = '') {
 function foldHead(title, note = '', tone = '') { return h('summary', {}, h('span', { class: 'fold-title' }, title), note && h('span', { class: 'fold-note ' + tone }, note)); }
 // 지금 위치: 사이드바는 그 메뉴 하나만 aria-current(하위 화면이면 부모는 옅은 표시), 폰 아래 탭은 부모
 function markNav(tab) {
- const par=PARENT[tab],navKey=['docs','equipment','set','worship'].includes(tab)?'more':par||tab;
+ const par=PARENT[tab],navKey=TOOLS.has(tab)?'more':par||tab;
  for(const b of side.querySelectorAll('button')){b.removeAttribute('aria-current');b.classList.toggle('parent-current',b.dataset.k===par);if(b.dataset.k===tab)b.setAttribute('aria-current','page');}
  for(const b of nav.children){b.removeAttribute('aria-current');if(b.dataset.k===navKey)b.setAttribute('aria-current','page');}
 }
@@ -1004,13 +1006,17 @@ const pjLink = (text, onclick) => h('button', { type: 'button', class: 'text-but
 // 홈: 지금 할 일(밀린 일 + 앞으로 14일)
 function nowView() {
   const box = h('div', { class: 'pj' }); view.append(box);
-  let data = {};
+  let data = {}, ready = false, contiN = 0, qtRef = '';
+  // 처음 3단계 안내의 각 단계로 가기: ① 오른쪽 할 일 카드의 [다 했어요] ② 콘티 ③ 설정의 멤버 초대
+  const goStep = id => { if (id === 'conti') return show('ccm'); if (id === 'invite') { try { localStorage.setItem('church:open:set-invite', '1'); } catch { /* 그냥 연다 */ } return show('set'); } const b = box.querySelector('.pj-focus-area button.primary') || box.querySelector('.pj-chk input'); b?.scrollIntoView({ behavior: 'smooth', block: 'center' }); b?.focus({ preventScroll: true }); };
   fill(box, h('p', { class: 'hint loading' }, '할 일을 불러오는 중이에요'));
   const draw = () => {
     const p = projects(data), { today, tasks, done } = p, r = nowTasks(tasks, today, done), all = [...r.now, ...r.later];
     const sel = all.find(t => t.key === pickHome) || all[0], c = { data, done, today, sel: sel?.key, showEvent: true, pick: t => { pickHome = t.key; draw(); if (!matchMedia('(min-width:960px)').matches) $('pj-focus')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
     const next = all.find(t => t.due >= today), reqN = store.mode === 'shared' && isAdmin(data, store.auth?.user?.()?.uid) ? requestList(data).length : 0;
+    const ob = onboardSteps({ anyDone: Object.values(data.done || {}).some(Boolean), contiSongs: contiN, invited: onbGet('invite'), closed: onbGet('off') });
     fill(box,
+      ob.show && h('div', { class: 'onb', role: 'region', 'aria-label': '처음 쓰는 분 안내' }, h('span', { class: 'onb-title' }, '처음이라면'), h('ol', { class: 'onb-steps' }, ob.steps.map(([id, t, ok], i) => h('li', { class: ok ? 'done' : '' }, h('button', { type: 'button', class: 'onb-step', 'aria-label': (i + 1) + '단계 ' + t + (ok ? ' (했어요)' : ''), onclick: () => goStep(id) }, h('span', { class: 'onb-mark', 'aria-hidden': 'true' }, ok ? '✓' : String(i + 1)), h('span', {}, t))))), h('button', { type: 'button', class: 'text-button onb-close', onclick: () => { onbSet('off'); draw(); } }, '닫기')),
       h('div', { class: 'pj-head' }, h('div', {}, h('p', { class: 'pj-eyebrow num' }, mdLong(today) + ' ' + '일월화수목금토'[parse(today).getUTCDay()] + '요일 · ' + deptsOf(data.settings).join(' · ')), h('h1', {}, '지금 할 일'),
         h('p', { class: 'pj-sub' }, all.length ? [all.length + '개', r.overdue > 0 && ' · ', r.overdue > 0 && h('span', { class: 'late' }, r.overdue + '개는 기한이 지났어요'), next && ' · 다음 기한 ' + fmt(next.due)] : '앞으로 2주 안에 할 일이 없어요')),
         all.length > 0 && h('button', { type: 'button', onclick: () => shareText(tasksShare((data.name || '우리 교회') + ' 지금 할 일', all)) }, '할 일 ' + all.length + '개 카톡으로 보내기')),
@@ -1022,10 +1028,15 @@ function nowView() {
         h('div', { class: 'pj-focus-area' }, focusCard(sel, { ...c, first: sel === all[0] })),
         h('div', { class: 'pj-rest' },
           h('section', {}, secHead('준비 중인 절기·행사', pjLink('달력으로 보기', () => show('events'))), p.active.length ? h('div', { class: 'pj-box' }, p.active.slice(0, 4).map(([ev, st]) => pjProj(ev, st, today))) : h('p', { class: 'hint' }, '다가오는 절기가 없어요')),
-          p.past.length > 0 && h('section', {}, secHead('지난 절기 기록', pjLink('모두 보기', () => show('seasons'))), h('div', { class: 'pj-box' }, p.past.slice(0, 3).map(([ev, st]) => pjRec(ev, st, data)))))));
+          p.past.length > 0 && h('section', {}, secHead('지난 절기 기록', pjLink('모두 보기', () => show('seasons'))), h('div', { class: 'pj-box' }, p.past.slice(0, 3).map(([ev, st]) => pjRec(ev, st, data)))),
+          // 예전 홈 카드는 작은 한 줄씩(지금 할 일보다 눈에 띄지 않게)
+          h('section', { class: 'home-mini' }, h('p', {}, h('span', {}, '이번 주일 찬양 ' + (contiN ? contiN + '곡' : '아직 없음')), h('button', { type: 'button', class: 'text-button', onclick: () => show('ccm') }, '콘티 열기')), qtRef && h('p', {}, h('span', {}, '오늘의 말씀 ' + qtRef), h('button', { type: 'button', class: 'text-button', onclick: () => show('qt') }, '열기'))))));
   };
-  loadGuides().then(() => box.isConnected && draw());
-  watch(churchPath(), d => { data = d || {}; draw(); }, () => fill(box, h('div', { class: 'empty-state' }, h('p', {}, '불러오지 못했어요'), h('button', { type: 'button', class: 'sub', onclick: () => show('home') }, '다시 시도'))));
+  const redraw = () => ready && box.isConnected && draw();
+  loadGuides().then(redraw);
+  watch(churchPath() + '/conti/' + nextSunday(todayIso()), d => { contiN = (d?.songs || []).filter(s => s?.title).length; redraw(); });
+  fetch('./qt-archive.json').then(r => r.json()).then(items => { const it = items[qtIndex(todayIso(), items.length)]; qtRef = it?.ref || ''; redraw(); }).catch(() => {});
+  watch(churchPath(), d => { data = d || {}; ready = true; draw(); }, () => fill(box, h('div', { class: 'empty-state' }, h('p', {}, '불러오지 못했어요'), h('button', { type: 'button', class: 'sub', onclick: () => show('home') }, '다시 시도'))));
 }
 
 // 절기·행사 > 절기 / 행사: 진행 중·다가오는 목록(→ 상세) + 끝난 기록(→ 기록)
@@ -1103,7 +1114,7 @@ function recordBody(ev, st, data, done, crumb, others) {
 }
 // 홈 하위 탭 [홈 | 교회 일정]
 const homeTabs = cur => h('div', { class: 'segments home-tabs', role: 'group', 'aria-label': '홈 화면 고르기' }, [['home', '홈'], ['events', '교회 일정']].map(([id, t]) => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(id === cur), onclick: () => id !== cur && show(id) }, t)));
-function moreView(){ view.append(h('div',{class:'more-list'},[['worship','예배'],['docs','자료실'],['equipment','장비'],['set','설정']].map(([id,t])=>h('button',{class:'sub',onclick:()=>show(id)},t)))); }
+function moreView(){ view.append(h('div',{class:'more-list'},[['word','말씀'],['worship','예배'],['docs','자료실'],['equipment','장비'],['set','설정']].map(([id,t])=>h('button',{class:'sub',onclick:()=>show(id)},t)))); }
 // 절기 줄을 펼쳤을 때 할 일 아래에 붙는 것: 준비물 사기, 수련회 팁·양식, 관련 서류
 // 행사 이름의 낱말(두 글자 이상)이 서류 제목에 있으면 관련 서류. 여름수련회는 수련회 규모별 준비도
 function relatedDocs(ev, list) {
@@ -1648,7 +1659,7 @@ function glyph(id) {
   path.setAttribute('d', GLYPHS[id]); svg.append(path); return svg;
 }
 nav.append(...TABS.map(([id, label]) => h('button', { type: 'button', k: id, onclick: () => show(id) }, glyph(id), h('span', {}, label))));
-side.append(h('p',{id:'church-title'},'교회 사역앱'),...MENUS.map(([id,t])=>h('button',{k:id,class:PARENT[id]?'sub-menu':'',onclick:()=>show(id)},PARENT[id]?null:glyph(id),h('span',{},t))));
+side.append(h('p',{id:'church-title'},'교회 사역앱'),...MENUS.flatMap(([id,t])=>[id==='word'&&h('p',{class:'side-group'},'도구'),h('button',{k:id,class:[PARENT[id]&&'sub-menu',TOOLS.has(id)&&'tool'].filter(Boolean).join(' '),onclick:()=>show(id)},PARENT[id]?null:glyph(id),h('span',{},t))].filter(Boolean)));
 defaultSongs = await fetch('./songs-default.json').then(r => { if (!r.ok) throw new Error('곡 목록'); return r.json(); }).catch(() => { say('기본 곡을 불러오지 못했어요. 새로고침해 주세요.'); return []; });
 store = await openStore().catch(() => null);
 if (!store) msg.textContent = '저장소에 연결하지 못했어요. 새로고침해 주세요.';
