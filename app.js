@@ -1,17 +1,17 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610242137';
-import { TEMPLATES } from './templates.js?v=202610242137';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610242137';
-import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610242137';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610242144';
+import { TEMPLATES } from './templates.js?v=202610242144';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610242144';
+import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610242144';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610242137';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610242137';
-import { openStore, newChurchCode } from './store.js?v=202610242137';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610242137';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610242137';
-import { docs } from './docs.js?v=202610242137';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610242137';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink } from './songbook.js?v=202610242137';
-import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610242137';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610242144';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610242144';
+import { openStore, newChurchCode } from './store.js?v=202610242144';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610242144';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610242144';
+import { docs } from './docs.js?v=202610242144';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610242144';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink } from './songbook.js?v=202610242144';
+import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610242144';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -504,7 +504,7 @@ function contiView() {
       if (request !== historyRequest || !history.isConnected || date.value !== selected) return;
       const rows = weeks.map(w => ({ ...w, data: { ...w.data, songs: contiSongsOf(w.data, svc, defSvc) } })).filter(w => w.data.songs.length);
       fill(historyList, rows.length ? rows.map(({ day, data }) => h('details', {},
-        h('summary', {}, fmt(day) + ' · ' + (data.songs[0].title || '제목 없는 곡') + (data.songs.length > 1 ? ' 외 ' + (data.songs.length - 1) + '곡' : ''), fromKakao(data, day) && h('small', { class: 'from-kakao' }, '카톡에서 가져옴')),
+        h('summary', {}, fmt(day) + ' · ' + (data.songs[0].title || '제목 없는 곡') + (data.songs.length > 1 ? ' 외 ' + (data.songs.length - 1) + '곡' : ''), fromKakao(data, day, localStorage.getItem('church:code')) && h('small', { class: 'from-kakao' }, '카톡에서 가져옴')),
         h('ol', { class: 'history-songs' }, data.songs.map(s => h('li', {}, h('span', {}, label(s), s.memo ? ' · ' + s.memo : ''), sheetButton(s.title, s.key)))),
         h('button', { class: 'sub', onclick: () => {
           if (date.value !== selected || churchPath() !== base) return;

@@ -187,8 +187,8 @@ export function groupFor(songs, by, sheets = {}) {
   return [...g].sort((a, b) => { const ia = order.indexOf(a[0]), ib = order.indexOf(b[0]); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a[0].localeCompare(b[0], 'ko'); });
 }
 
-// 지난 콘티 꼬리표: source가 'kakao'이거나, source 없이 2026-10-24 전 날짜면 카톡 백업에서 가져온 것
-export const fromKakao = (doc, day) => doc?.source === 'kakao' || (!doc?.source && day < '2026-10-24');
+// 지난 콘티 꼬리표: source가 'kakao'이거나, 월계성도교회에서 source 없이 2026-10-24 전 날짜면 카톡 백업에서 가져온 것
+export const fromKakao = (doc, day, code) => doc?.source === 'kakao' || (!doc?.source && day < '2026-10-24' && code === '7XWAJ-25432');
 
 // 찬송가: 악보·PPT는 앱에 넣지 않고(한국찬송가공회 저작권) 구글 검색으로 연결
 export const hymnLinks = x => { const q = t => 'https://www.google.com/search?q=' + encodeURIComponent(t); return { sheet: q(`새찬송가 ${x.no}장 ${x.title} 악보`), ppt: q(`새찬송가 ${x.no}장 ${x.title} ppt`) }; };
