@@ -50,3 +50,30 @@ export function filterSongs(list, { key = '', theme = '', mood = '', q = '' } = 
     && (!query || s.title.toLocaleLowerCase().includes(query)))
     .sort((a, b) => a.title.localeCompare(b.title, 'ko') || (a.key || '').localeCompare(b.key || ''));
 }
+
+// 키 글자: C, F#, Bb, Am, C#m 같은 것(♭·♯도 받는다)
+const KEY = '[A-Ga-g][#b♭♯]?m?';
+const keyFix = k => k ? k[0].toUpperCase() + k.slice(1).replace('♭', 'b').replace('♯', '#') : '';
+// 한 줄을 곡명·키로: '곡명 (키)' 또는 '곡명 키'. 키가 없으면 곡명만.
+export function splitTitleKey(line) {
+  const t = line.trim().replace(/\s+/g, ' ');
+  const m = t.match(new RegExp(String.raw`^(.+?)\s*[(（\[]\s*(${KEY})\s*[)）\]]$`)) || t.match(new RegExp(String.raw`^(.+?)\s+(${KEY})$`));
+  return m ? { title: m[1].trim().slice(0, 100), key: keyFix(m[2]) } : { title: t.slice(0, 100), key: '' };
+}
+// "곡 한꺼번에 넣기": 한 줄에 한 곡. 빈 줄은 건너뛰고 같은 곡(제목+키)은 한 번만.
+export function parseBulk(text) {
+  const book = {};
+  for (const line of String(text).split(/\r?\n/)) { const s = splitTitleKey(line); if (s.title) book[label(s)] = s; }
+  return book;
+}
+// 파일 이름 '곡명 (키).jpg' → {title, key}. 밑줄은 띄어쓰기로.
+export function nameFromFile(name) {
+  const s = splitTitleKey(String(name).replace(/\.[^.]+$/, '').replace(/_/g, ' '));
+  // 카메라·카톡이 붙인 이름(IMG 2031, KakaoTalk 2026…, 숫자만)은 곡명으로 쓰지 않는다
+  return /^(img|dsc|pxl|kakaotalk|screenshot|image|photo)\b/i.test(s.title) || /^[\d\s-]+$/.test(s.title) ? { title: '', key: s.key } : s;
+}
+// 악보 id: 제목+'|'+키의 SHA-1 앞 16자리(소문자 hex)
+export async function sheetId(title, key) {
+  const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(title + '|' + (key || '')));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+}

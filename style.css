@@ -267,7 +267,7 @@ main[data-screen=home]{padding-bottom:168px}
 
 /* ---------- 접히는 카드(홈·설정): 머리줄 56px = 제목 · 한 줄 요약 · 화살표 ---------- */
 .card.fold{padding:0 var(--s4)}
-.fold>summary{min-height:56px;gap:var(--s3)}
+.fold>summary{min-height:52px;gap:var(--s3)}
 .fold>summary::before{order:3;margin-left:auto;transform:rotate(45deg)}
 .fold[open]>summary::before{transform:rotate(-135deg)}
 .fold-title{flex:none;font-size:var(--fs-18);font-weight:600;letter-spacing:var(--ls-sub)}
@@ -287,7 +287,10 @@ main[data-screen=home]{padding-bottom:168px}
 .event-list .card{margin:0}
 .past-events{grid-column:1/-1;border:0;margin-top:var(--s5)}
 .past-events>summary{color:var(--ink-2)}
-.event-head{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s3)}
+.event-card{padding:var(--s3) var(--s4)}
+.event-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s2)}
+.event-head .event-date{color:var(--ink-2)}
+.event-head .dday{margin-left:auto}
 .event-head h3{display:flex;align-items:center;gap:var(--s2);margin:0}
 .event-head h3::before{content:'';flex:none;width:12px;height:12px;border-radius:var(--r-pill);background:var(--ev)}
 .dday{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -297,11 +300,14 @@ main[data-screen=home]{padding-bottom:168px}
 .about-button{flex:none;min-height:44px;padding:0 var(--s2);border:0;background:transparent;color:var(--ink-2);font-weight:400;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line-2)}
 .about-button::before{content:'?';display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1.5px solid currentColor;border-radius:var(--r-pill);font-size:var(--fs-14);font-weight:600}
 .event-editor>.about-button{margin:0 0 var(--s2)}
+.about-button.small{width:var(--tap);height:var(--tap);min-width:var(--tap);padding:0;border:1px solid var(--line-2);border-radius:var(--r-pill);background:var(--surface);text-decoration:none}
+.about-button.small::before{width:auto;height:auto;border:0;font-size:var(--fs-16)}
 .about-dialog p{margin:0;font-size:var(--fs-18);line-height:1.6;white-space:pre-wrap}
-.progress-row{display:flex;align-items:center;gap:var(--s3);margin:var(--s3) 0 0 20px;font-variant-numeric:tabular-nums}
+.progress-row{display:flex;align-items:center;gap:var(--s3);margin:var(--s1) 0 0 20px;font-variant-numeric:tabular-nums}
+.progress-row .grow{flex:1}
 .progress-row progress{flex:1;margin:0}
 .progress-row span{white-space:nowrap}
-.event-card details{margin-top:var(--s3)}
+.event-card details{margin-top:var(--s1)}
 .event-card .event-editor{padding-bottom:var(--s3);border-bottom:1px solid var(--line)}
 .event-docs{display:grid;gap:var(--s4)}
 .event-card details li a{display:inline-flex;align-items:center;min-height:44px}
@@ -401,6 +407,31 @@ sup{font-size:var(--fs-12);color:var(--ink-3);margin-right:var(--s1)}
 [data-screen=word]>.row{align-items:flex-end;margin-bottom:var(--s4)}
 [data-screen=word]>.row label{flex:1 1 160px}
 
+/* 말씀: 성경·장·절 고르기 */
+.bible-pick{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:var(--s2);margin-bottom:var(--s2)}
+.direct-input{border:0;margin:0}
+.direct-input>summary{color:var(--ink-2);font-weight:400}
+/* 큰 창: 서류 미리보기·악보 보기(휴대폰은 전체 화면) */
+.event-dialog.big-dialog{max-width:960px;width:calc(100% - 48px);height:calc(100dvh - 48px);max-height:none;display:flex;flex-direction:column}
+.event-dialog.big-dialog:not([open]){display:none}
+.preview-dialog iframe{flex:1;width:100%;border:1px solid var(--line);border-radius:var(--r-sm);background:#fff}
+.sheet-dialog{overflow:auto}
+.sheet-img{display:block;width:100%;height:auto;border-radius:var(--r-sm);background:#fff}
+.sheet-keys{align-self:flex-start}
+.preview-button{width:100%;margin-bottom:var(--s2)}
+.sheet-button{padding:0 var(--s3)}
+/* 설정: 곡 한꺼번에 넣기·악보 사진 올리기 */
+.song-tool{margin:var(--s4) 0;padding-top:var(--s4);border-top:1px solid var(--line)}
+.song-tool h4{margin:0 0 var(--s1)}
+.song-tool .hint{margin-bottom:var(--s2)}
+.song-tool textarea{margin-bottom:var(--s2)}
+.photo-pick>span{margin-top:0}
+.photo-list{display:grid;gap:var(--s2);margin-top:var(--s3)}
+.photo-row{display:grid;grid-template-columns:minmax(0,1fr) 72px;gap:var(--s1) var(--s2)}
+.photo-row small{grid-column:1/-1}
+.advanced{margin-top:var(--s4)}
+.advanced>summary{color:var(--ink-2)}
+
 /* ---------- 자료실 ---------- */
 /* 부서 고르기: "부서: 유치부" 한 줄, 누르면 펼쳐서 고른다 */
 .dept-picker{border:0;margin:0 0 var(--s4)}
@@ -441,7 +472,7 @@ sup{font-size:var(--fs-12);color:var(--ink-3);margin-right:var(--s1)}
 .equipment-grid{display:grid;gap:var(--s4);align-items:start}
 .equipment-category{margin:0}
 .equipment-category{padding-top:0;padding-bottom:0}
-.equipment-category>summary{min-height:56px}
+.equipment-category>summary{min-height:52px}
 .equipment-category>summary .eq-name{flex:1;font-size:var(--fs-18);font-weight:600}
 .equipment-category>summary small{flex:none}
 .equipment-category[open]>summary{border-bottom:1px solid var(--line)}
@@ -449,25 +480,32 @@ sup{font-size:var(--fs-12);color:var(--ink-3);margin-right:var(--s1)}
 .equipment-category table{width:100%;border-collapse:collapse}
 .equipment-category th,.equipment-category td{padding:0;text-align:left;font-weight:400;vertical-align:middle}
 /* 휴대폰: 품목 | 수량 | 상태 한 줄, 메모는 아래 줄(없는 장비의 빈 메모는 숨김) */
-.equipment-category tr{display:grid;grid-template-columns:minmax(0,1fr) 72px 120px;gap:var(--s2);align-items:center}
+.equipment-category tr{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name step" "memo state";gap:var(--s2);align-items:center}
+.equipment-category tbody th{grid-area:name}
+/* [− 수 +]: 누르기만 해서 수량 기록 */
+.stepper{grid-area:step;display:flex;align-items:center;gap:var(--s1)}
+.stepper button{width:var(--tap);padding:0;font-size:var(--fs-22);font-weight:400}
+.stepper input{width:56px;padding:0 var(--s1);text-align:center;font-weight:600;font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+.stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.eq-memo{grid-area:memo}
+.eq-state{grid-area:state}
+.eq-state select{width:100%}
+.equipment-category tbody tr:not(.has-qty) th{color:var(--ink-2);font-weight:400}
+.equipment-add-title{margin:var(--s5) 0 var(--s2)}
+.equipment-add{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:var(--s2);margin:0 0 var(--s4)}
 .equipment-category thead tr{padding:var(--s2) 0;border-bottom:1px solid var(--line);font-size:var(--fs-14);color:var(--ink-3)}
-.equipment-category thead th:nth-child(4){display:none}
 .equipment-category tbody tr{padding:var(--s2) 0;border-bottom:1px solid var(--line)}
 .equipment-category tbody tr:last-child{border-bottom:0}
 .equipment-category tbody th{font-weight:600}
-.equipment-category tbody td:nth-child(4){grid-column:1/-1}
-.equipment-category tbody tr:has(select.absent) td:nth-child(4):has(input:placeholder-shown){display:none}
 .equipment-category select{padding:0 var(--s2)}
 .equipment-warning{background:var(--alert-bg);margin:0 calc(-1 * var(--s2));padding-left:var(--s2)!important;padding-right:var(--s2)!important;border-radius:var(--r-sm)}
 .absent{color:var(--ink-3)}
-.equipment-add{margin:var(--s4) 0}
-.equipment-add>*{flex:1 1 120px}
-.equipment-add button{flex:none}
 
 /* ---------- 설정 ---------- */
 .settings-grid{display:grid;gap:var(--s2)}
 .settings-grid>.card{margin:0}
-.settings-grid h3{margin:var(--s5) 0 var(--s3)}
+.settings-grid h3,.settings-grid h4{margin:var(--s5) 0 var(--s2);font-size:var(--fs-16);font-weight:600}
+.settings-grid .fold>summary{min-height:56px}
 .settings-grid .card>h3:first-child{margin-top:0}
 .settings-grid h4{margin-top:0}
 .settings-grid label{margin-bottom:var(--s4)}
@@ -513,6 +551,7 @@ dialog .row{margin-top:var(--s4)}
 .event-editor form{margin-bottom:var(--s2)}
 body:has(.event-dialog[open]){overflow:hidden}
 @media(max-width:639px){
+ .event-dialog.big-dialog{width:100%;height:100dvh;max-height:none;margin:0;border-radius:0;padding:var(--s3) var(--s4) calc(var(--s3) + env(safe-area-inset-bottom));animation:none}
  .event-dialog{width:100%;max-width:none;max-height:90dvh;margin:auto 0 0;border-radius:var(--r-lg) var(--r-lg) 0 0;padding:var(--s5) var(--s4) calc(var(--s5) + env(safe-area-inset-bottom));animation:event-sheet-in 200ms ease-out}
  .template-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
@@ -521,14 +560,13 @@ body:has(.event-dialog[open]){overflow:hidden}
 /* 아주 좁은 휴대폰(360px 안팎) */
 @media(max-width:379px){
  .period-year{display:none}
- .equipment-category tr{grid-template-columns:minmax(0,1fr) 64px 112px}
 }
 
 /* ---------- 컴퓨터(960px 이상): 사이드바 + 넓은 배치 ---------- */
 @media(min-width:960px){
  #sidebar{display:flex;flex-direction:column;gap:var(--s1);width:240px;position:fixed;inset:0 auto 0 0;padding:var(--s6) var(--s4);background:var(--surface);border-right:1px solid var(--line)}
  #church-title{margin:0 var(--s2) var(--s5);font:700 var(--fs-22)/var(--lh-title) var(--display);letter-spacing:-.02em}
- #sidebar button{justify-content:flex-start;padding:0 var(--s4);border:0;background:transparent;color:var(--ink-2);font-weight:400}
+ #sidebar button{justify-content:flex-start;gap:var(--s3);padding:0 var(--s3);border:0;background:transparent;color:var(--ink-2);font-weight:400}
  #sidebar button:hover{background:var(--paper)}
  #sidebar button[aria-current=page]{background:var(--accent-soft);color:var(--accent);font-weight:600}
  nav{display:none}
@@ -537,8 +575,16 @@ body:has(.event-dialog[open]){overflow:hidden}
  #band{margin-left:240px}
  #msg{left:256px;bottom:var(--s5)}
  body:has(.fab) #msg{bottom:var(--s5)}
- .card{padding:var(--s5);margin-bottom:var(--s5)}
- .card .card{padding-top:var(--s5);margin-top:var(--s5)}
+ .card{padding:var(--s4);margin-bottom:var(--s4)}
+ .card .card{padding-top:var(--s4);margin-top:var(--s4)}
+ h3{margin:var(--s4) 0 var(--s2)}
+ .card.fold,.equipment-category{padding:0 var(--s4)}
+ .event-card{padding:var(--s2) var(--s4)}
+ .event-card details>summary{min-height:32px}
+ .event-card details{margin-top:0}
+ .event-card .progress-row{margin-top:0}
+ .about-button.small{width:32px;height:32px;min-width:32px;min-height:32px}
+ .progress-row{min-height:32px}
 
  .home-top,.home-bar{padding-right:176px}
  .home-bar{gap:var(--s3)}
@@ -546,12 +592,13 @@ body:has(.event-dialog[open]){overflow:hidden}
  .view-select{margin-left:auto}
  .period-label{font-size:var(--fs-28);padding:0 var(--s2)}
  .fab{position:absolute;top:var(--s6);right:var(--s6);bottom:auto;min-height:var(--tap);box-shadow:none}
- .home-layout{grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:var(--s5)}
- .home-main,.home-side,.home-right{gap:var(--s5)}
+ .home-layout{grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:var(--s4)}
+ .home-main,.home-side,.home-right{gap:var(--s3)}
  .calendar{padding:var(--s4)}
  .calendar[data-mode=month] .month-grid{border-top:1px solid var(--line)}
  .calendar[data-mode=month] .calendar-week{border-left:1px solid var(--line)}
- .calendar[data-mode=month] .day{align-items:stretch;gap:2px;min-height:120px;padding:var(--s1) var(--s1) 28px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+ .calendar[data-mode=month] .day{align-items:stretch;gap:2px;min-height:56px;padding:var(--s1);border-right:1px solid var(--line)}
+ .calendar[data-mode=month] .calendar-week:has(+ .calendar-legend){border-bottom:1px solid var(--line)}
  .calendar[data-mode=month] .day.selected{background:var(--accent-soft)}
  .calendar[data-mode=month] .outside{background:var(--paper)}
  .calendar[data-mode=month] .day-number{align-self:flex-start;margin:-4px 0 -4px -4px}
@@ -566,9 +613,14 @@ body:has(.event-dialog[open]){overflow:hidden}
  .calendar .calendar-marker.prep-start{display:flex;align-items:flex-start;gap:var(--s1);width:100%;min-height:0;padding:0 var(--s1);border:0;background:transparent;color:var(--ink-2);font-size:var(--fs-14);font-weight:400;line-height:1.4;text-align:left}
  .calendar .calendar-marker.prep-start::before{content:'';flex:none;width:10px;height:10px;margin-top:5px;border-radius:var(--r-pill);box-shadow:inset 0 0 0 2px var(--ps)}
  .calendar-more{display:block;min-height:0;padding:0 var(--s1);border:0;background:transparent;font-size:var(--fs-14);font-weight:400;color:var(--ink-2);text-align:left}
- .week-preps{display:grid;position:absolute;left:0;right:0;bottom:var(--s1);gap:2px 0;pointer-events:none}
- .prep-ribbon{min-height:6px;height:6px;padding:0;border:0;border-radius:0;background:var(--event-color);opacity:.55;pointer-events:auto}
- .prep-ribbon:hover,.prep-ribbon.chosen{background:var(--event-color);opacity:1}
+ /* 준비 기간 띠: 주 줄 아래에 띠 개수만큼 자리를 만들고, 불투명 20px 띠 안에 이름 */
+ .week-preps{display:grid;grid-auto-rows:20px;gap:2px 0;padding:0 0 var(--s1)}
+ .week-preps:empty{display:none}
+ .prep-ribbon{display:block;min-width:0;min-height:20px;height:20px;padding:0 6px;border:0;border-radius:0;background:var(--event-color);color:#fff;font-size:var(--fs-14);font-weight:600;line-height:20px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .prep-ribbon.starts{margin-left:var(--s1);border-radius:4px 0 0 4px}
+ .prep-ribbon.ends{margin-right:var(--s1);border-top-right-radius:4px;border-bottom-right-radius:4px}
+ .prep-ribbon:hover{background:var(--event-color);filter:brightness(1.12)}
+ .prep-ribbon.chosen{outline:2px solid var(--ink);outline-offset:1px}
  .calendar-legend .key-bar-item{display:inline-flex}
  .week-view{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
  .week-column{padding:var(--s2);border-bottom:0;border-right:1px solid var(--line)}
@@ -603,10 +655,8 @@ body:has(.event-dialog[open]){overflow:hidden}
 
  .docs-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4)}
  .dept-picker,.doc-list{max-width:760px}
+ .bible-pick{grid-template-columns:minmax(0,2fr) repeat(3,minmax(0,1fr));max-width:760px}
  .equipment-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
- .equipment-category tr{grid-template-columns:minmax(0,1fr) 72px 120px minmax(0,1fr)}
- .equipment-category thead th:nth-child(4){display:block}
- .equipment-category tbody td:nth-child(4){grid-column:auto;display:block!important}
  .settings-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
 }
 /* 작은 컴퓨터(960~1279px): 홈은 한 줄로 쌓고, 콘티 곡 줄은 휴대폰처럼 두 줄 */
