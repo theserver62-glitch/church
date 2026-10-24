@@ -97,7 +97,7 @@ export function replacePatch(cur, target) {
 const count = o => Object.values(o || {}).filter(Boolean).length;
 // 되돌리기 미리보기 한 줄
 export const snapSummary = snap => ['콘티 ' + count(snap?.conti) + '주', '장비 ' + count(snap?.church?.equipment) + '종', '우리 교회 곡 ' + count(snap?.church?.songbook) + '곡', '행사 ' + count(snap?.church?.customEvents) + '개', '체크한 일 ' + count(snap?.church?.done) + '개'].join(' · ');
-export const KEY_LABEL = { name: '교회 이름', createdAt: '만든 날', settings: '설정', songbook: '곡 목록', equipment: '장비', customEvents: '행사', done: '할 일 체크', skipped: '할 일 건너뛰기', favorites: '즐겨찾기', retreatForms: '수련회 서류', worshipOrders: '예배 순서', sheets: '악보 사진', admins: '관리자', adminRequests: '관리자 요청' };
+export const KEY_LABEL = { name: '교회 이름', createdAt: '만든 날', settings: '설정', songbook: '곡 목록', equipment: '장비', customEvents: '행사', done: '할 일 체크', skipped: '할 일 건너뛰기', favorites: '즐겨찾기', retreatForms: '수련회 서류', records: '절기 기록', worshipOrders: '예배 순서', sheets: '악보 사진', admins: '관리자', adminRequests: '관리자 요청' };
 const SETTING_LABEL = { dates: '일정 날짜 변경', enabled: '절기·행사 켜고 끄기', depts: '부서·규모', deptSize: '부서·규모', churchSize: '부서·규모', taskDue: '할 일 기한', creeds: '신앙고백 문안' };
 // 변경 기록 한 줄(최상위 칸 기준). 교회 문서와 콘티만 남기고, 그 밖(악보 그림·큐티 묵상)은 ''
 export function changeLabel(path, patch) {
