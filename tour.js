@@ -123,14 +123,31 @@ export function pickTour(screen, isShown, { again = false, seen = tourSeen } = {
 }
 export const liveSteps = (steps, isShown) => steps.filter(s => isShown(s.sel));
 
+// ---------- 코치마크 자리 계산(순수 함수) ----------
+// r: 대상 사각형, vis: 지금 보이는 화면 {l,t,r,b}(아래 버튼 줄 위까지), tw·th: 설명 글 크기. 모두 같은 화면 좌표.
+// 구멍은 화면 안(가장자리 8px)으로 자르고, 글은 대상 위·아래 중 넓은 쪽에. 둘 다 모자라면(대상이 화면만 하면) 구멍 위쪽만 남기고 글을 그 아래에.
+export const ARROW = 48;
+export function coachLayout(r, vis, tw, th, { pad = 6, m = 8, gap = 8, minHole = 96 } = {}) {
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(v, hi));
+  const hole = { left: clamp(r.left - pad, vis.l + m, vis.r - m), right: clamp(r.right + pad, vis.l + m, vis.r - m), top: clamp(r.top - pad, vis.t + m, vis.b - m), bottom: clamp(r.bottom + pad, vis.t + m, vis.b - m) };
+  const need = gap + ARROW + th, above = hole.top - (vis.t + m) - need, below = vis.b - m - hole.bottom - need;
+  let side = below >= above ? 'below' : 'above';
+  if (above < 0 && below < 0) { side = 'below'; hole.bottom = Math.max(hole.top + minHole, vis.b - m - need); hole.bottom = Math.min(hole.bottom, vis.b - m); }
+  const cx = (hole.left + hole.right) / 2;
+  const left = clamp(cx - tw / 2, vis.l + 24, vis.r - 24 - tw);
+  const arrowX = clamp(cx, left + 12, left + tw - 12);
+  const top = side === 'below' ? Math.min(hole.bottom + gap + ARROW, vis.b - m - th) : hole.top - gap - ARROW - th;
+  return { hole, side, left, top, arrowX, arrowY: side === 'below' ? hole.bottom + gap : hole.top - gap - ARROW };
+}
+
 // ---------- 화면 ----------
 const find = sel => { try { return [...document.querySelectorAll(sel)].find(el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; }) || null; } catch { return null; } };
 const shown = sel => !!find(sel);
 const busy = () => !!document.querySelector('dialog[open], .guide-pop:not([hidden]), .viewer-stage');
-let cur = '', running = null, timer = 0, tries = 0;
+let cur = '', running = null, stopRun = null, timer = 0, tries = 0;
 
 // show()가 부른다: 화면이 바뀌면 새 화면의 투어를 기다린다(자료가 늦게 와도 최대 8초)
-export function tourScreen(tab) { cur = screenOf(tab); tries = 0; poll(32); }
+export function tourScreen(tab) { cur = screenOf(tab); if (running && running.screen !== cur) stopRun(false); tries = 0; poll(32); } // 안내 중에 화면이 바뀌면 그 안내는 접는다(본 것으로 치지 않음)
 // 0.25초마다 확인. 여러 번 불려도 기다릴 횟수는 큰 쪽을 따른다(화면 이동 직후 클릭 확인이 짧게 덮어쓰지 않게)
 function poll(n) { tries = Math.max(tries, n); if (!timer) timer = setTimeout(tick, 250); }
 function tick() {
@@ -150,48 +167,61 @@ function runTour(t) {
   if (!steps.length) return markSeen(t.id);
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const h = (tag, cls, text) => { const el = document.createElement(tag); if (cls) el.className = cls; if (text) el.textContent = text; return el; };
-  const root = h('div', 'tour' + (calm ? ' calm' : '')), hole = h('div', 'tour-hole'), tip = h('div', 'tour-tip');
-  const count = h('p', 'tour-count'), title = h('h2', 'tour-title'), text = h('p', 'tour-text'), row = h('div', 'tour-row');
-  const skip = h('button', 'text-button tour-skip', '이 화면만 건너뛰기'), next = h('button', 'primary tour-next'), off = h('button', 'tour-off', '튜토리얼 건너뛰기');
-  for (const b of [skip, next, off]) b.type = 'button';
+  // 덮개(fixed, 탭 받기·아래 버튼 줄)와 그림층(body 아래 absolute)을 나눈다: 구멍·글을 대상과 같은 좌표계에 두어 iOS 사파리의 fixed 좌표 어긋남을 피한다
+  const root = h('div', 'tour'), layer = h('div', 'tour-layer' + (calm ? ' calm' : '')), hole = h('div', 'tour-hole');
+  const tip = h('div', 'tour-tip'), title = h('h2', 'tour-title'), text = h('p', 'tour-text');
+  const arrow = h('div', 'tour-arrow'); arrow.innerHTML = '<svg viewBox="0 0 32 48" width="32" height="48" aria-hidden="true"><path d="M21 46C11 38 10 22 16 4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M8 12l8-9 7 10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const bar = h('div', 'tour-bar'), skip = h('button', 'tour-skip', '건너뛰기'), count = h('p', 'tour-count'), next = h('button', 'tour-next');
+  const ask = h('div', 'tour-ask'), askText = h('p', 'tour-ask-text', '다른 화면 안내도 끌까요?'), justHere = h('button', 'tour-skip', '이 화면만 끄기'), off = h('button', 'tour-next tour-off', '모든 안내 끄기');
+  for (const b of [skip, next, justHere, off]) b.type = 'button';
   title.id = 'tour-title'; text.id = 'tour-text';
-  Object.assign(tip, { role: 'dialog' }); tip.setAttribute('aria-modal', 'true'); tip.setAttribute('aria-labelledby', 'tour-title'); tip.setAttribute('aria-describedby', 'tour-text');
-  const live = h('div', 'tour-live'); live.setAttribute('aria-live', 'polite'); live.append(count, title, text);
-  row.append(skip, next); tip.append(live, row); root.append(hole, tip, off);
+  bar.setAttribute('role', 'dialog'); bar.setAttribute('aria-modal', 'true'); bar.setAttribute('aria-labelledby', 'tour-title'); bar.setAttribute('aria-describedby', 'tour-text');
+  tip.setAttribute('aria-live', 'polite'); tip.append(title, text);
+  ask.hidden = true; ask.append(askText, justHere, off);
+  bar.append(skip, count, next, ask); layer.append(hole, arrow, tip); root.append(bar);
   let i = 0, raf = 0;
   const place = () => {
     const el = find(steps[i].sel); if (!el) return;
-    const r = el.getBoundingClientRect(), vw = innerWidth, vh = innerHeight, pad = 6, foot = vw < 960 ? 136 : 72; // 아래 '튜토리얼 건너뛰기' 자리(폰은 아래 탭 위)
-    const top = Math.max(r.top - pad, 4), bottom = Math.min(r.bottom + pad, vh - 4);
-    Object.assign(hole.style, { left: Math.max(r.left - pad, 4) + 'px', top: top + 'px', width: (Math.min(r.right + pad, vw - 4) - Math.max(r.left - pad, 4)) + 'px', height: Math.max(bottom - top, 0) + 'px' });
-    const tw = tip.offsetWidth, th = tip.offsetHeight, gap = 12;
-    tip.style.left = Math.min(Math.max(r.left, 16), vw - tw - 16) + 'px';
-    // 아래 자리가 있으면 아래, 없으면 위, 둘 다 없으면(대상이 화면만큼 크면) 화면 아래쪽에 겹쳐서
-    tip.style.top = (bottom + gap + th <= vh - foot ? bottom + gap : top - gap - th >= 8 ? top - gap - th : vh - foot - th) + 'px';
+    const vv = globalThis.visualViewport, L = layer.getBoundingClientRect(), r = el.getBoundingClientRect();
+    // 보이는 화면(핀치 확대·주소창 변화 반영) — getBoundingClientRect와 같은 기준(레이아웃 뷰포트)
+    const vl = vv ? vv.offsetLeft : 0, vt = vv ? vv.offsetTop : 0, vw = vv ? vv.width : innerWidth, vh = vv ? vv.height : innerHeight;
+    const vis = { l: vl, t: vt, r: vl + vw, b: Math.min(vt + vh, bar.getBoundingClientRect().top - 16) }; // 아래 버튼 줄과 16px 띄움
+    const tw = Math.min(360, vw - 48); tip.style.width = tw + 'px';
+    const o = coachLayout(r, vis, tw, tip.offsetHeight);
+    const px = (el, x, y) => { el.style.left = (x - L.left) + 'px'; el.style.top = (y - L.top) + 'px'; };
+    px(hole, o.hole.left, o.hole.top); hole.style.width = (o.hole.right - o.hole.left) + 'px'; hole.style.height = Math.max(o.hole.bottom - o.hole.top, 0) + 'px';
+    px(tip, o.left, o.top); px(arrow, o.arrowX - 16, o.arrowY); arrow.classList.toggle('up', o.side === 'above');
   };
-  const later = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(place); };
+  const later = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => (raf = requestAnimationFrame(place))); };
   const go = n => {
     i = n; const s = steps[i], last = i === steps.length - 1;
-    count.textContent = (i + 1) + '/' + steps.length; title.textContent = s.title; text.textContent = s.text; next.textContent = last ? '시작하기' : '다음';
+    count.textContent = (i + 1) + '/' + steps.length; count.setAttribute('aria-label', steps.length + '단계 중 ' + (i + 1) + '단계');
+    title.textContent = s.title; text.textContent = s.text; next.textContent = last ? '시작하기' : '다음';
     const el = find(s.sel); // 화면보다 큰 대상은 제목이 보이게 위쪽부터
-    el?.scrollIntoView({ block: el.getBoundingClientRect().height > innerHeight * 0.6 ? 'start' : 'center', behavior: 'instant' });
-    place(); next.focus({ preventScroll: true });
+    if (el) { const x = scrollX; el.scrollIntoView({ block: el.getBoundingClientRect().height > innerHeight * 0.6 ? 'start' : 'center', behavior: 'instant' }); if (scrollX !== x) scrollTo(x, scrollY); } // 가로로는 움직이지 않게
+    place(); later(); next.focus({ preventScroll: true });
   };
-  const mo = new MutationObserver(later);
-  const end = () => {
-    running = null; markSeen(t.id); for (const id of t.covers || []) { const c = TOURS.find(x => x.id === id); if (c && all(c.when).every(shown)) markSeen(id); }
-    mo.disconnect(); removeEventListener('resize', later); removeEventListener('scroll', later, true); document.removeEventListener('keydown', key, true); document.removeEventListener('focusin', trap);
-    document.body.classList.remove('tour-on'); root.remove();
+  const forward = () => (i < steps.length - 1 ? go(i + 1) : end());
+  const mo = new MutationObserver(later), vv = globalThis.visualViewport;
+  const end = (seen = true) => {
+    running = null; if (seen) { markSeen(t.id); for (const id of t.covers || []) { const c = TOURS.find(x => x.id === id); if (c && all(c.when).every(shown)) markSeen(id); } }
+    mo.disconnect(); removeEventListener('resize', later); removeEventListener('scroll', later, true); vv?.removeEventListener('resize', later); vv?.removeEventListener('scroll', later);
+    document.removeEventListener('keydown', key, true); document.removeEventListener('focusin', trap); cancelAnimationFrame(raf);
+    document.body.classList.remove('tour-on'); root.remove(); layer.remove();
     poll(4); // 같은 화면에 이어 볼 탭 투어가 있으면
   };
+  const asking = on => { ask.hidden = !on; layer.classList.toggle('asking', on); for (const b of [skip, count, next]) b.hidden = on; (on ? justHere : next).focus({ preventScroll: true }); };
   const key = e => {
     if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); end(); }
-    else if (e.key === 'ArrowRight' || (e.key === 'Enter' && !e.target.closest?.('.tour button'))) { e.preventDefault(); e.stopPropagation(); i < steps.length - 1 ? go(i + 1) : end(); }
+    else if (!ask.hidden) return;
+    else if (e.key === 'ArrowRight' || (e.key === 'Enter' && !e.target.closest?.('.tour button'))) { e.preventDefault(); e.stopPropagation(); forward(); }
   };
-  const trap = e => { if (!root.contains(e.target)) next.focus({ preventScroll: true }); };
-  skip.onclick = end; next.onclick = () => (i < steps.length - 1 ? go(i + 1) : end()); off.onclick = () => { tourOff(); end(); };
-  running = t; document.body.classList.add('tour-on'); document.body.append(root);
+  const trap = e => { if (!root.contains(e.target)) (ask.hidden ? next : justHere).focus({ preventScroll: true }); };
+  next.onclick = forward; justHere.onclick = () => end(); skip.onclick = () => asking(true); off.onclick = () => { tourOff(); end(); };
+  root.onclick = e => { if (!bar.contains(e.target) && !ask.hidden) asking(false); }; // 어두운 곳은 넘기지 않음(닫으려다 넘어가는 실수 방지) — 묻는 중이면 묻기만 닫기
+  running = t; stopRun = end; document.body.classList.add('tour-on'); document.body.append(layer, root);
   mo.observe(document.getElementById('view') || document.body, { childList: true, subtree: true });
-  addEventListener('resize', later); addEventListener('scroll', later, true); document.addEventListener('keydown', key, true); document.addEventListener('focusin', trap);
-  go(0); requestAnimationFrame(() => root.classList.add('ready')); // 첫 자리는 움직이지 않고 바로
+  addEventListener('resize', later); addEventListener('scroll', later, true); vv?.addEventListener('resize', later); vv?.addEventListener('scroll', later);
+  document.addEventListener('keydown', key, true); document.addEventListener('focusin', trap);
+  go(0); requestAnimationFrame(() => layer.classList.add('ready')); // 첫 자리는 움직이지 않고 바로
 }

@@ -287,3 +287,10 @@ export function parseKakaoConti(text, { today = new Date().toISOString().slice(0
   });
   return { date, songs: songs.filter(s => s.title).slice(0, 30) };
 }
+
+// 한 주일 여러 예배 콘티: 탭 순서 = 기본 예배 → 교회가 기억한 예배(settings.contiServices) → 그 날짜에 곡이 있는 다른 예배
+export const contiTabs = (doc, def, remembered = {}) => [...new Set([def, ...Object.keys(remembered || {}).filter(k => remembered[k]), ...Object.keys(doc?.services || {}).filter(k => doc.services[k])])];
+// 짧은 예배 이름: '중고등부 예배' → '중고등부', '오후·찬양예배' → '오후·찬양'
+export const svcShort = name => String(name || '').replace(/\(.*\)/, '').replace(/\s예배$/, '').replace(/(찬양|수요)예배$/, '$1').trim();
+// '이번 주 콘티 모두 보내기' 카톡 글: 예배마다 ■ 이름 · 곡 목록 · 보기 링크. 곡 없는 예배는 뺀다
+export const bundleShare = (title, blocks) => [title, ...blocks.filter(b => b.songs.some(s => s?.title)).map(b => '■ ' + b.name + '\n' + b.songs.filter(s => s?.title).map((s, i) => (i + 1) + '. ' + s.title + (s.key ? ' (' + s.key + ')' : '')).join('\n') + (b.link ? '\n악보로 보기: ' + b.link : ''))].join('\n\n');

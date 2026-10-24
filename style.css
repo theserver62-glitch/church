@@ -1597,19 +1597,50 @@ main[data-screen=viewer]{max-width:720px;padding-top:var(--s5)}
 .el-guides .text-button{min-height:40px;padding:0 var(--s2);font-weight:400;color:var(--accent)}
 @media(max-width:959px){.ws-guide{min-height:44px}}
 
-/* 화면 첫 방문 안내(tour.js): 전체를 어둡게 덮고 대상만 구멍처럼 밝힘. 덮개가 아래 화면 클릭을 막는다 */
+/* 한 주일 여러 예배 콘티: 날짜 줄 아래 예배 탭(폰은 가로 스크롤 칩) · 보기 화면 예배 탭 · 설정 앱 정보 */
+.svc-tabs{display:flex;gap:var(--s2);margin:0 0 var(--s3);overflow-x:auto;scrollbar-width:none}
+.svc-tabs .chip{flex:none;min-height:40px;font-size:var(--fs-14)}
+.svc-tabs .chip small{color:var(--ink-3);font-weight:400}
+.svc-tabs .svc-tab[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
+.svc-tabs .svc-add{border-style:dashed;color:var(--accent)}
+.svc-list{display:grid;gap:var(--s2)}
+.svc-list button{justify-content:flex-start}
+.viewer-svcs{display:flex;gap:var(--s2);margin:0 0 var(--s3);overflow-x:auto}
+.viewer-svcs .chip{flex:none;min-height:44px}
+.app-info{max-width:var(--col);margin-top:var(--s5);padding-top:var(--s3);border-top:1px solid var(--line)}
+.app-info p{margin:var(--s1) 0;font-size:var(--fs-14);color:var(--ink-3)}
+.app-info a{color:var(--accent)}
+@media(max-width:959px){.svc-tabs .chip{min-height:44px}}
+
+/* 화면 첫 방문 안내(tour.js): 코치마크. 어두운 덮개에 대상만 구멍처럼 밝히고, 옆 빈 곳에 흰 글씨와 화살표.
+   .tour = 화면 전체를 덮는 투명한 탭 받이(누르면 다음)와 아래 버튼 줄, .tour-layer = 구멍·글·화살표(문서 기준 absolute라 대상과 같이 움직임) */
 .tour{position:fixed;inset:0;z-index:1000}
-.tour-hole{position:fixed;border-radius:var(--r-sm);box-shadow:0 0 0 9999px rgba(0,0,0,.6);pointer-events:none}
-.tour.ready:not(.calm) .tour-hole,.tour.ready:not(.calm) .tour-tip{transition:left 200ms ease-out,top 200ms ease-out,width 200ms ease-out,height 200ms ease-out}
-.tour-tip{position:fixed;width:min(360px,calc(100vw - 32px));padding:var(--s4);border-radius:var(--r-md);background:var(--surface);color:var(--ink);box-shadow:var(--float)}
-.tour-count{margin:0;font-size:var(--fs-14);color:var(--ink-3)}
-.tour-title{margin:var(--s1) 0 var(--s2);font-family:var(--text);font-size:var(--fs-18);line-height:var(--lh-title);letter-spacing:var(--ls-sub)}
-.tour-text{margin:0;font-size:var(--fs-16);line-height:var(--lh-body)}
-.tour-row{display:flex;justify-content:space-between;align-items:center;gap:var(--s2);margin-top:var(--s4)}
-.tour-row .tour-skip{min-height:44px;padding:0 var(--s2);font-weight:400;color:var(--ink-2)}
-.tour-off{position:fixed;left:50%;bottom:calc(72px + env(safe-area-inset-bottom));transform:translateX(-50%);min-height:var(--tap);padding:0 var(--s4);border:0;border-radius:var(--r-pill);background:rgba(0,0,0,.45);color:#fff;font-size:var(--fs-14);font-weight:400}
-.tour-off:hover{background:rgba(0,0,0,.65)}
-@media(min-width:960px){.tour-off{bottom:var(--s4)}}
-.tour button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.tour-off:focus-visible{outline-color:#fff}
+.tour-layer{position:absolute;left:0;top:0;width:0;height:0;z-index:999;pointer-events:none}
+.tour-hole{position:absolute;border-radius:var(--r-sm);box-shadow:0 0 0 2px rgba(255,255,255,.9),0 0 0 9999px rgba(0,0,0,.86)}
+.tour-layer.ready:not(.calm) .tour-hole{transition:left 200ms ease-out,top 200ms ease-out,width 200ms ease-out,height 200ms ease-out}
+.tour-tip,.tour-arrow{position:absolute;color:#fff}
+.tour-tip{padding:var(--s2) var(--s1);background:none;text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 12px rgba(0,0,0,.8)} /* 검은 카드 없이 흰 글씨만 — 비침은 글자 그림자로 막는다 */
+.tour-arrow{width:32px;height:48px}
+.tour-arrow.up{transform:scaleY(-1)}
+.tour-title{margin:0 0 var(--s2);font:700 20px/1.35 var(--text);letter-spacing:var(--ls-sub);color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.tour-text{margin:0;font-size:var(--fs-16);line-height:24px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+/* 아래 버튼 한 줄: 건너뛰기 · 2/4 · 다음. 폰은 아래 탭(64px+선 1px) 위, 안전영역 위 */
+.tour-bar{position:fixed;left:0;right:0;bottom:calc(73px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:var(--s2);max-width:560px;margin:0 auto;padding:0 var(--s4)}
+@media(min-width:960px){.tour-bar{bottom:calc(var(--s5) + env(safe-area-inset-bottom))}}
+.tour-bar [hidden]{display:none}
+.tour-skip{min-height:var(--tap);min-width:88px;padding:0 var(--s3);border:0;background:transparent;color:#fff;font-size:var(--fs-16);font-weight:400;text-decoration:underline;text-underline-offset:4px}
+.tour-skip:hover{background:rgba(255,255,255,.12)}
+.tour-count{margin:0;color:rgba(255,255,255,.85);font-size:var(--fs-16);font-variant-numeric:tabular-nums}
+.tour-next{min-height:var(--tap);min-width:96px;padding:0 var(--s5);border:0;border-radius:var(--r-pill);background:#fff;color:var(--ink);font-size:var(--fs-16);font-weight:700}
+.tour-next:hover{background:#f1f1ee}
+.tour-ask{display:flex;flex:1;align-items:center;flex-wrap:wrap;gap:var(--s2);padding:var(--s4);border-radius:var(--r-md);background:rgba(0,0,0,.94)}
+.tour-ask-text{flex:1 1 100%;margin:0;color:#fff;font-size:var(--fs-16)}
+.tour-ask button{flex:1 1 140px}
+.tour-layer.asking .tour-tip,.tour-layer.asking .tour-arrow{display:none} /* 묻는 동안엔 확인 하나만 */
+.tour button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 body.tour-on .onb{display:none} /* 처음 3단계 띠는 투어가 끝난 뒤에 */
+/* 튜토리얼 글씨: 화살표와 같은 동글동글한 손글씨(개구체) + 형광 노랑 */
+
+.tour-arrow{color:#fff45c}
+.tour-title{font:700 26px/1.25 'Gaegu',var(--text);color:#fff45c;letter-spacing:0}
+.tour-text{font:700 20px/1.4 'Gaegu',var(--text);color:#fff45c;letter-spacing:0}
