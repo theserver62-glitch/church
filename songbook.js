@@ -160,3 +160,29 @@ export function fitImage(w, h, box = { x: 0.4, y: 0.6, w: 12.533, h: 6.75 }) {
   const r = Math.min(box.w / w, box.h / h), iw = w * r, ih = h * r;
   return { x: box.x + (box.w - iw) / 2, y: box.y + (box.h - ih) / 2, w: iw, h: ih };
 }
+// 특송 유튜브: 항목에 youtube(https)가 있으면 그것, 없으면 검색 결과(특정 영상을 지어내지 않는다)
+export const youtubeLink = x => (typeof x.youtube === 'string' && /^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(x.youtube) ? x.youtube
+  : 'https://www.youtube.com/results?search_query=' + encodeURIComponent([x.title, cleanBy(x.by), '특송'].filter(Boolean).join(' ')));
+
+// ---------- 콘티 목록·새 콘티 ----------
+// 콘티 문서(conti/{날짜}): 기본 예배는 songs(예전 자료 그대로), 다른 예배는 services[예배 id].songs
+export const contiSongsOf = (doc, svc, def) => (svc && svc !== def ? doc?.services?.[svc]?.songs : doc?.songs) || [];
+export const contiPatchOf = (svc, def, songs) => (svc && svc !== def ? { services: { [svc]: { songs } } } : { songs });
+// 그 날짜 문서에 있는 예배들(기본 예배가 먼저)
+export const contiServices = (doc, def) => [def, ...Object.keys(doc?.services || {}).filter(k => k !== def && doc.services[k])];
+// 새 콘티 시작: 'empty' 빈 콘티 · 'copy' 지난주 같은 예배 곡 복사 · 'book' 빈 콘티로 열고 곡 보관함에서 고르기
+export const newContiSongs = (method, lastDoc, svc, def) => (method === 'copy' ? contiSongsOf(lastDoc, svc, def).filter(s => s?.title).map(s => ({ title: s.title || '', key: s.key || '', memo: s.memo || '' })) : []);
+
+// 첫 글자 초성(된소리는 예사소리로). 한글이 아니면 'A-Z·숫자'
+const CHO = 'ㄱㄱㄴㄷㄷㄹㅁㅂㅂㅅㅅㅇㅈㅈㅊㅋㅌㅍㅎ';
+const initial = t => { const c = (t || '').trim().charCodeAt(0) - 0xac00; return c >= 0 && c < 11172 ? CHO[Math.floor(c / 588)] : 'A-Z·숫자'; };
+// 악보 있는 곡 묶어 보기: by 'key'(악보 키별, 여러 키면 각 묶음에) · 'theme' · 'mood' · 'name'(첫 글자 ㄱㄴㄷ). [[이름, 곡들]] 정해진 순서로
+export function groupFor(songs, by, sheets = {}) {
+  const g = new Map(), add = (k, s) => { if (!g.has(k)) g.set(k, []); g.get(k).push(s); };
+  for (const s of songs) {
+    if (by === 'key') { const ks = sheetKeys(s.title, sheets); (ks.length ? ks : [s.key || '']).forEach(k => add(/m$/.test(k) ? '단조' : k || '키 없음', s)); }
+    else add(by === 'name' ? initial(s.title) : s[by] || (by === 'theme' ? '주제 없음' : '분위기 없음'), s);
+  }
+  const order = by === 'name' ? [...new Set(CHO)] : ORDER[by] || [];
+  return [...g].sort((a, b) => { const ia = order.indexOf(a[0]), ib = order.indexOf(b[0]); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a[0].localeCompare(b[0], 'ko'); });
+}

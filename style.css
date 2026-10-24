@@ -39,7 +39,7 @@ ol,ul{padding-left:var(--s5)}
 main{max-width:1280px;margin:auto;padding:var(--s4) var(--s4) 104px}
 .screen-guide{margin-bottom:var(--s5)}
 /* 움직임: 화면 들어올 때 한 번, 40ms 간격으로 4px 올라오며 나타남(200ms ease-out). 그 밖에는 색 전환 120ms만 */
-main>*{animation:rise 200ms ease-out both}
+main>*{animation:rise 200ms ease-out backwards} /* backwards: 끝난 뒤 transform이 남으면 안의 position:fixed(도움말 시트)가 갇힘 */
 @keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
 /* ---------- 버튼 3종 ---------- */
@@ -1051,3 +1051,74 @@ body:has(.event-dialog[open]){overflow:hidden}
 .tpl-btns{grid-column:2;grid-row:1/span 2;flex-wrap:nowrap}
 .tpl-btns button{padding:0 var(--s3);white-space:nowrap}
 @media(max-width:559px){.ppt-template{grid-template-columns:1fr}.tpl-btns{grid-column:1;grid-row:auto}}
+
+/* ===== 화면 도움말: 제목 옆 작은 원형 ?(보이는 28px, 누르는 44px) → 말풍선 / 폰은 아래 시트 ===== */
+.screen-heading{justify-content:flex-start;gap:var(--s1)}
+.home-top{justify-content:flex-start;gap:var(--s1)}
+.guide-toggle{position:relative;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border:0;border-radius:var(--r-pill);background:transparent;color:var(--ink-2);font-size:var(--fs-14);font-weight:700}
+.guide-toggle::before{content:'';position:absolute;inset:8px;border:1.5px solid var(--line-2);border-radius:var(--r-pill);background:var(--surface)}
+.guide-toggle{isolation:isolate}
+.guide-toggle::before{z-index:-1}
+.guide-toggle:hover{background:transparent;color:var(--ink)}
+.guide-toggle:hover::before,.guide-toggle[aria-expanded=true]::before{border-color:var(--accent)}
+.guide-pop{position:fixed;z-index:40;width:min(360px,calc(100vw - 16px));margin:0;padding:var(--s4);border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface);box-shadow:var(--float)}
+.guide-pop::before{content:'';position:absolute;top:-7px;left:calc(var(--arrow-x,28px) - 6px);width:12px;height:12px;background:var(--surface);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:rotate(45deg)}
+.guide-pop>strong{display:block;margin-bottom:var(--s1)}
+.guide-pop ol{margin:0 0 var(--s3);padding-left:var(--s5)}
+.guide-pop>button{min-height:40px}
+.guide-pop.as-sheet{left:0;right:0;bottom:0;top:auto!important;width:auto;border-radius:var(--r-lg) var(--r-lg) 0 0;padding-bottom:calc(var(--s4) + env(safe-area-inset-bottom))}
+.guide-pop.as-sheet>button{width:100%;min-height:var(--tap)}
+/* 홈 하위 탭 · 교회 일정 */
+.home-tabs{margin-bottom:var(--s3)}
+.section-title{margin:0;font-size:var(--fs-18)}
+.schedule-bar .section-title{flex:1}
+.todo-box{margin-bottom:var(--s6)}
+.todo-link{margin-top:var(--s2)}
+#sidebar .sub-menu{padding-left:calc(var(--s3) + 24px + var(--s3));font-size:var(--fs-14)}
+/* 할 일: 체크 동그라미(보이는 26px, 누르는 48px), 완료는 흐리게, 지난 것은 진한 회색 + 작은 점 */
+.task-check{display:flex;gap:var(--s2);align-items:flex-start;min-height:var(--tap);cursor:pointer}
+.tasks input.check-circle,input.check-circle{appearance:none;flex:none;width:26px;height:26px;min-height:26px;margin:11px;border:2px solid var(--line-2);border-radius:var(--r-pill);background:var(--surface);cursor:pointer;display:grid;place-content:center}
+.tasks input.check-circle:checked,input.check-circle:checked{background:var(--accent);border-color:var(--accent)}
+input.check-circle:checked::after{content:'';width:7px;height:12px;margin-top:-3px;border-right:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(45deg)}
+.task-check>span{padding-top:12px}
+.tasks .is-done .text,.tasks .is-skipped .text{color:var(--ink-3);text-decoration:line-through}
+.tasks .is-done,.tasks .is-skipped{opacity:.75}
+.late-soft{color:var(--ink-2)!important}
+.late-soft::before{content:'';display:inline-block;width:6px;height:6px;margin:0 6px 2px 0;border-radius:var(--r-pill);background:var(--ink-2)}
+.skip-tag{color:var(--ink-3)}
+.task-more{display:flex;flex-wrap:wrap;gap:0 var(--s1);margin-left:50px}
+.task-more .text-button{min-height:36px;padding:0 var(--s2);font-size:var(--fs-14);font-weight:400;color:var(--ink-2)}
+@media(max-width:959px){.task-more .text-button{min-height:44px}}
+.tasks .task-doc{margin-left:50px}
+.tasks>li{padding-top:var(--s1);padding-bottom:var(--s1)}
+
+/* 창 머리줄(제목·키·☆·닫기)은 위에 붙어 있고 본문만 스크롤 */
+.event-dialog{padding-top:0}
+.event-dialog-heading{position:sticky;top:0;z-index:3;flex-wrap:wrap;margin:0 0 var(--s2);padding:var(--s4) 0 var(--s2);background:var(--surface);border-bottom:1px solid var(--line)}
+.event-dialog-heading h2{flex:1;min-width:0}
+.event-dialog-heading>button{order:2}
+.event-dialog-heading .sheet-tools{order:3;flex-basis:100%;margin:var(--s2) 0 0}
+@media(max-width:639px){.event-dialog{padding-top:0}}
+.yt-link{display:inline-flex;align-items:center;min-height:32px;margin-left:var(--s2);padding:0 var(--s2);border:1px solid var(--line-2);border-radius:var(--r-pill);font-size:var(--fs-12);font-weight:600;color:var(--ink-2);text-decoration:none;vertical-align:middle}
+@media(max-width:959px){.yt-link{min-height:36px}}
+@media(max-width:959px){.yt-link{min-height:44px}}
+/* 콘티 목록 줄 [이번 주][다음 주][+ 새 콘티] · 새 콘티 창 */
+.conti-list{display:flex;flex-wrap:wrap;gap:var(--s2);margin:0 0 var(--s4)}
+.conti-list .chip{min-height:44px;font-size:var(--fs-14)}
+.conti-chip small{color:var(--ink-3);font-weight:400}
+.conti-list .new-conti{border-style:dashed;color:var(--accent)}
+.start-ways{display:grid;gap:var(--s2)}
+@media (min-width:640px){.start-ways{grid-template-columns:1fr 1fr 1fr}}
+/* 곡 보관함 분류 보기: 묶음 머리줄로 접고 펼침 */
+.group-by{display:flex;width:100%;margin:var(--s2) 0 var(--s3)}
+.song-group{border-top:1px solid var(--line)}
+.group-head{width:100%;justify-content:flex-start;gap:var(--s1);min-height:48px;padding:0 var(--s2);border:0;border-radius:0;background:transparent;font-size:var(--fs-16)}
+.group-head:hover{background:var(--paper-2)}
+.group-head .chev{width:8px;height:8px;margin:0 var(--s2) 4px auto;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);transform:rotate(45deg)}
+.group-head[aria-expanded=true] .chev{margin-bottom:-4px;transform:rotate(-135deg)}
+.song-group .browse{margin:0 0 var(--s3)}
+/* 도움말 시트(휴대폰): 뒤를 어둡게, 손잡이, 항목 사이 간격 */
+.guide-pop.as-sheet{padding-top:var(--s6);box-shadow:0 0 0 100vmax rgba(29,36,33,.35)}
+.guide-pop.as-sheet::before{display:block;top:var(--s2);left:50%;width:40px;height:4px;margin-left:-20px;border:0;border-radius:2px;background:var(--line-2);transform:none}
+.guide-pop li+li{margin-top:var(--s2)}
+.new-conti-dialog .hint{margin:var(--s4) 0 var(--s2)}

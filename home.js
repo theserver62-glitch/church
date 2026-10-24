@@ -1,5 +1,5 @@
-import { addDays, parse } from './calendar.js?v=202610242045';
-import { occurrences, tasksAround, occursOn } from './custom-events.js?v=202610242045';
+import { addDays, parse } from './calendar.js?v=202610242104';
+import { occurrences, tasksAround, occursOn } from './custom-events.js?v=202610242104';
 export function monthGrid(year, month) {
  const first = new Date(Date.UTC(year, month - 1, 1)).toISOString().slice(0,10);
  const start = addDays(first, -parse(first).getUTCDay());
@@ -88,3 +88,10 @@ export function scriptureSlides(passages, max = 120) {
 }
 // 파일 이름: "2026-10-25 막4_1-9.pptx"(구간이 더 있으면 " 외 n")
 export const scriptureFileName = (passages, date) => date + ' ' + passageLabel(passages[0]).replace(' ', '').replace(':', '_') + (passages.length > 1 ? ' 외 ' + (passages.length - 1) : '') + '.pptx';
+
+// ---------- 할 일 체크 ----------
+// 완료(done)와 이번엔 건너뛰기(skipped)는 따로 저장한다. 되돌리기는 false
+export const donePatch = (key, on, by, at) => ({ done: { [key]: on ? { by, at } : false } });
+export const skipPatch = (key, on, by, at) => ({ skipped: { [key]: on ? { by, at } : false } });
+// 목록에서 뺄 '챙긴 일': 완료 + 건너뜀
+export const handled = (done = {}, skipped = {}) => ({ ...Object.fromEntries(Object.entries(done).filter(([, v]) => v)), ...Object.fromEntries(Object.entries(skipped).filter(([, v]) => v)) });
