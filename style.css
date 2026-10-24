@@ -1276,7 +1276,7 @@ input.check-circle:checked::after{content:'';width:7px;height:12px;margin-top:-3
 .conti .conti-panel .conti-history{display:block;margin:0;border-top:1px solid var(--line);padding-top:var(--s3)}
 .conti-history h3{margin:0 0 var(--s2);font-size:var(--fs-18)}
 .from-kakao{display:inline-block;margin-left:var(--s2);padding:0 var(--s2);border:1px solid var(--line-2);border-radius:var(--r-pill);font-size:var(--fs-12);font-weight:400;line-height:20px;color:var(--ink-3);vertical-align:middle}
-.conti[data-tab=history] .conti-panel[hidden]{display:block}
+.conti[data-tab=history] .conti-panel[hidden]{display:block!important} /* [hidden]의 !important를 이겨야 폰 지난 콘티 탭이 보인다 */
 .conti[data-tab=history] .conti-layout{display:none}
 .conti-songs li.conti-song{grid-template-columns:28px minmax(0,1fr) auto auto;gap:var(--s1) var(--s2);align-items:center;padding:var(--s2) 0}
 .conti-song input.title{border-color:transparent;background:transparent;font-weight:600;padding:0 var(--s2)}
