@@ -1,6 +1,6 @@
 // 예장 통합 교회력 날짜 계산과 "이번 주 할 일" 뽑기. 날짜는 모두 'YYYY-MM-DD' 문자열.
 // 시간대 문제를 피하려고 내부 계산은 UTC 자정 Date로만 한다.
-import { EVENTS } from './events.js?v=202610241939';
+import { EVENTS } from './events.js?v=202610242003';
 
 const D = (y, m, d) => new Date(Date.UTC(y, m - 1, d));
 const add = (dt, n) => new Date(dt.getTime() + n * 864e5);
@@ -59,8 +59,8 @@ export function occurrences(years, settings = {}) {
 // 할 일 하나하나. key는 완료 체크를 저장하는 이름이라 바꾸면 안 된다.
 export function tasksAround(today, settings = {}) {
   const y = +today.slice(0, 4);
-  return occurrences([y - 1, y, y + 1], settings).flatMap(ev => ev.tasks.map(([weeks, text, who], i) => ({
-    key: `${ev.id}_${ev.date}_${i}`, event: ev.name, eventDate: ev.date, due: settings.taskDue?.[ev.id+'_'+ev.date+'_'+i] || addDays(ev.date, -7 * weeks), weeks, text, who: who || '',
+  return occurrences([y - 1, y, y + 1], settings).flatMap(ev => ev.tasks.map(([weeks, text, who, doc], i) => ({
+    key: `${ev.id}_${ev.date}_${i}`, event: ev.name, eventDate: ev.date, due: settings.taskDue?.[ev.id+'_'+ev.date+'_'+i] || addDays(ev.date, -7 * weeks), weeks, text, who: who || '', doc: doc || '',
   }))).sort((a, b) => a.due.localeCompare(b.due));
 }
 

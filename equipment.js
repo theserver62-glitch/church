@@ -63,3 +63,15 @@ export function equipmentRows(saved={}) {
  for(const [cat,names] of Object.entries(equipment))for(const name of names)if(!rows.some(([,v])=>v.cat===cat&&v.name===name))rows.push([equipmentId(cat,name),{cat,name,qty:0,state:'없음',memo:''}]);
  return rows;
 }
+
+// ---------- 구매 도움(equip-products.json: {cat, name, why, price, url, partner}) ----------
+// 장비 분류 이름 → 추천 상품 분류
+const PRODUCT_CAT = { '케이블(XLR 등)': '케이블', '악기(기타·건반·드럼 등)': '악기 소모품', '컴퓨터·영상(프로젝터·노트북 등)': '컴퓨터·영상', '소모품(건전지 등)': '소모품' };
+export const productCat = cat => PRODUCT_CAT[cat] || cat;
+export const productsFor = (cat, list = []) => list.filter(p => p?.cat === productCat(cat) && /^https:\/\//.test(p.url || ''));
+// 쿠팡 링크: 파트너스 링크가 있으면 그것, 없으면 상품 주소
+export const productLink = p => (typeof p.partner === 'string' && p.partner.startsWith('https://') ? p.partner : p.url);
+export const compareLink = name => 'https://search.shopping.naver.com/search/all?query=' + encodeURIComponent(name);
+export const buyNotice = list => list.some(p => typeof p.partner === 'string' && p.partner.startsWith('https://'))
+  ? '가격은 바뀔 수 있어요. 쿠팡 링크는 쿠팡 파트너스 활동의 일환으로 수수료를 받을 수 있어요.'
+  : '가격은 바뀔 수 있어요. 최저가는 가격 비교에서 확인하세요.';

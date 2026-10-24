@@ -1,5 +1,5 @@
-import { addDays, parse } from './calendar.js?v=202610241939';
-import { occurrences, tasksAround, occursOn } from './custom-events.js?v=202610241939';
+import { addDays, parse } from './calendar.js?v=202610242003';
+import { occurrences, tasksAround, occursOn } from './custom-events.js?v=202610242003';
 export function monthGrid(year, month) {
  const first = new Date(Date.UTC(year, month - 1, 1)).toISOString().slice(0,10);
  const start = addDays(first, -parse(first).getUTCDay());
@@ -59,3 +59,32 @@ export function dayItems(dateIso,settings={},done={}) {
  return {tasks:tasks.filter(t=>t.due===dateIso),events:occurrences([year-1,year],settings).filter(e=>occursOn(e,dateIso)),next:tasks.find(t=>t.due>dateIso&&!done[t.key])||null,
  preps:occurrences([year-1,year,year+1],settings).filter(e=>e.tasks.length&&e.date>=dateIso&&addDays(e.date,-7*Math.max(...e.tasks.map(t=>t[0])))<=dateIso).map(e=>{const mine=tasks.filter(t=>t.key.startsWith(e.id+'_'+e.date+'_'));return {...e,total:mine.length,completed:mine.filter(t=>done[t.key]).length};})};
 }
+
+// ---------- 말씀 PPT ----------
+// 긴 절은 한 장에 max자 이하로, 비슷한 길이로 띄어쓰기에서 나눈다
+export function splitVerse(text, max = 120) {
+  const t = String(text).trim().replace(/\s+/g, ' ');
+  if (t.length <= max) return [t];
+  const n = Math.ceil(t.length / max), target = Math.ceil(t.length / n), out = [];
+  let cur = '';
+  for (const w of t.split(' ')) {
+    const next = cur ? cur + ' ' + w : w;
+    if (cur && (next.length > max || cur.length >= target) && out.length < n - 1) { out.push(cur); cur = w; } else cur = next;
+  }
+  if (cur) out.push(cur);
+  return out;
+}
+// 구간 이름: "막 4:1-9", 장을 넘으면 "막 4:35-5:2"
+export const passageLabel = p => p.abbr + ' ' + p.chap + ':' + p.v1 + (p.endChap !== p.chap ? '-' + p.endChap + ':' + p.v2 : p.v2 !== p.v1 ? '-' + p.v2 : '');
+// passages: [{name, abbr, chap, v1, endChap, v2, verses: [{c, v, text}]}] → 표지 1장, 절마다(긴 절은 나눠) 한 장, 마지막 출처 장
+export function scriptureSlides(passages, max = 120) {
+  const slides = [{ type: 'title', title: passages.map(passageLabel).join(' / ') + ' · 개역한글' }];
+  for (const p of passages) for (const v of p.verses) {
+    const parts = splitVerse(v.text, max);
+    parts.forEach((text, i) => slides.push({ type: 'verse', text, label: p.name + ' ' + v.c + ':' + v.v + (parts.length > 1 ? ' (' + (i + 1) + '/' + parts.length + ')' : '') }));
+  }
+  slides.push({ type: 'source', text: '개역한글(1961) · 저작권 보호기간 만료' });
+  return slides;
+}
+// 파일 이름: "2026-10-25 막4_1-9.pptx"(구간이 더 있으면 " 외 n")
+export const scriptureFileName = (passages, date) => date + ' ' + passageLabel(passages[0]).replace(' ', '').replace(':', '_') + (passages.length > 1 ? ' 외 ' + (passages.length - 1) : '') + '.pptx';
