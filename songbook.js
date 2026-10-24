@@ -197,3 +197,12 @@ export const filterHymns = (list, q = '') => { q = q.trim(); const n = q.replace
 
 // 메모 속 주소를 링크로: [글자, 주소, 글자 …]로 나눈다(홀수 칸이 주소). http(s)만, 끝의 문장부호는 빼고
 export const splitLinks = (text = '') => String(text).split(/(https?:\/\/[^\s<>"']+[^\s<>"'.,!?)\]])/);
+
+// 콘티 보기 링크: ?v=교회코드&d=날짜(&s=예배). 받은 사람은 로그인 없이 악보 보기 화면으로
+export const viewerLink = (base, code, date, svc = '') => base + '?v=' + encodeURIComponent(code) + '&d=' + date + (svc ? '&s=' + encodeURIComponent(svc) : '');
+export function parseViewer(search = '') {
+  const q = new URLSearchParams(search), code = (q.get('v') || '').toUpperCase(), date = q.get('d') || '', svc = q.get('s') || '';
+  return /^[A-Z0-9]{5}-[A-Z0-9]{5}$/.test(code) && /^\d{4}-\d{2}-\d{2}$/.test(date) && /^[\w-]{0,40}$/.test(svc) ? { code, date, svc } : null;
+}
+// 보기 장: 곡마다 한 장(악보 id 또는 null = '악보 없음' 장). 제목 없는 줄은 뺀다
+export const viewerPages = (songs = [], sheets = {}) => songs.filter(s => s?.title?.trim()).map(s => ({ title: s.title, key: s.key || '', sheet: pickSheet(s, sheets) }));
