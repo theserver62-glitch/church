@@ -9,7 +9,7 @@ import { openStore, newChurchCode, NOW } from './store.js?v=202610242341';
 import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610242341';
 import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610242341';
 import { docs } from './docs.js?v=202610242341';
-import { linksFor, byKind } from './links.js?v=202610242341';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610242341';
 import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610242341';
 import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink } from './songbook.js?v=202610242341';
 import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610242341';
@@ -1068,18 +1068,35 @@ function docsView() {
   commonBox.hidden = !common.length;
  };
  // [서류 | 링크] 탭. 링크는 부서 고르기(서류와 같은 부서) → 종류별 접기 → 이름(새 창 ↗) + 설명 한 줄
- let tab = 'docs', links = null; const rec = h('div', { class: 'doc-rec' }), linkBox = h('section', { class: 'doc-list link-list' });
- const tabs = h('div', { class: 'segments doc-tabs', role: 'group', 'aria-label': '자료 종류' }, [['docs', '서류'], ['links', '링크']].map(([id, t]) => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(id === tab), onclick: () => { tab = id; for (const b of tabs.children) b.setAttribute('aria-pressed', String(b.textContent === t)); paintTab(); } }, t)));
+ let tab = 'docs', links = null, res = null; const rec = h('div', { class: 'doc-rec' }), linkBox = h('section', { class: 'doc-list link-list' }), resBox = h('section', { class: 'res-box' }), resMore = new Set();
+ const tabs = h('div', { class: 'segments doc-tabs', role: 'group', 'aria-label': '자료 종류' }, [['docs', '서류'], ['cur', '커리큘럼·교재'], ['trip', '나들이·수련회'], ['links', '링크']].map(([id, t]) => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(id === tab), onclick: () => { tab = id; for (const b of tabs.children) b.setAttribute('aria-pressed', String(b.textContent === t)); paintTab(); } }, t)));
  const linkRow = x => h('li', {}, h('a', { href: x.url, target: '_blank', rel: 'noopener', class: 'link-name' }, x.name + ' ↗'), x.desc && h('small', { class: 'meta' }, x.desc));
  const linkGroups = (list, open) => byKind(list).map(([k, l]) => h('details', { class: 'doc-group', open }, h('summary', {}, h('strong', { class: 'doc-group-title' }, k), h('small', { class: 'meta' }, l.length + '개')), h('ul', { class: 'link-rows' }, l.map(linkRow))));
  const drawLinks = () => { if (!links) { links = []; fetch('./links.json').then(r => r.json()).then(l => { links = l; drawLinks(); }).catch(() => fill(linkBox, h('p', { class: 'err' }, '링크 목록을 불러오지 못했어요'))); return; }
   const { mine, common } = linksFor(links, dept);
-  fill(picker, h('summary', {}, '부서: ' + dept), h('div', { class: 'row', role: 'group', 'aria-label': '부서 고르기' }, DOC_DEPTS.map(d => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(d === dept), onclick: () => { dept = d; picker.open = false; drawLinks(); } }, d))));
+  deptPick(drawLinks);
   fill(linkBox, h('h3', {}, (dept === '전체' ? '모든 링크 ' : dept + ' 링크 ') + mine.length + '개'), mine.length ? linkGroups(mine, mine.length <= 6) : h('p', { class: 'empty' }, '이 부서용 링크는 아직 없어요. 아래 공통 링크를 보세요'),
    common.length > 0 && h('h3', {}, '공통 링크 ' + common.length + '개'), linkGroups(common, false)); };
- const paintTab = () => { const on = tab === 'docs'; find.hidden = mineBox.hidden = pptBox.hidden = !on; linkBox.hidden = on; if (on) draw(); else { commonBox.hidden = true; picker.hidden = false; drawLinks(); } };
- const pptBox = pptTemplatesSection(); linkBox.hidden = true;
- view.append(rec, tabs, find, picker, mineBox, commonBox, linkBox, pptBox);
+ const deptPick = redraw => fill(picker, h('summary', {}, '부서: ' + dept), h('div', { class: 'row', role: 'group', 'aria-label': '부서 고르기' }, DOC_DEPTS.map(d => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(d === dept), onclick: () => { dept = d; picker.open = false; redraw(); } }, d))));
+ // 알려 주기만 하는 비교 표(컴퓨터는 표, 폰은 항목마다 촘촘한 줄). 표가 길면 처음 8줄 + [더 보기]
+ const COLS = { cur: [['size', '대상'], ['price', '가격'], ['pros', '장점'], ['cons', '단점'], ['fit', '이런 곳에 맞아요']], trip: [['region', '지역'], ['size', '알맞은 인원'], ['price', '가격·예약'], ['pros', '좋은 점'], ['cons', '주의할 점']] };
+ const resTable = (title, cat, kind) => {
+  const all = resourcesFor(res, cat, dept, kind === 'trip'), cols = cat === '수련회 장소' ? [...COLS.trip.slice(0, 3), ['has', '시설'], ...COLS.trip.slice(3)] : COLS[kind], more = resMore.has(cat), list = more ? all : all.slice(0, 8);
+  const name = x => h('a', { href: x.url, target: '_blank', rel: 'noopener', class: 'link-name' }, x.name + ' ↗');
+  return h('section', { class: 'res-section' }, h('h3', {}, title + ' ' + all.length + '개'),
+   !all.length ? h('p', { class: 'empty' }, '이 부서에 맞는 자료가 아직 없어요. 위에서 부서를 바꿔 보세요') : [
+    h('table', { class: 'res-table' }, h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, kind === 'cur' ? '이름 · 발행처' : '이름'), cols.map(([, t]) => h('th', { scope: 'col' }, t)))),
+     h('tbody', {}, list.map(x => h('tr', {}, h('th', { scope: 'row' }, name(x), kind === 'cur' && x.region && h('small', { class: 'meta' }, x.region)), cols.map(([k]) => h('td', {}, x[k] || '')))))),
+    h('ul', { class: 'res-cards' }, list.map(x => h('li', {}, name(x), h('p', { class: 'meta' }, [x.region, x.size, x.price].filter(Boolean).join(' · ')), x.pros && h('p', {}, h('b', {}, kind === 'cur' ? '장점 ' : '좋은 점 '), x.pros), x.cons && h('p', {}, h('b', {}, kind === 'cur' ? '단점 ' : '주의할 점 '), x.cons), (x.fit || x.has) && h('p', { class: 'meta' }, x.fit || '시설: ' + x.has)))),
+    all.length > 8 && h('button', { type: 'button', class: 'text-button res-more', onclick: () => { more ? resMore.delete(cat) : resMore.add(cat); drawRes(); } }, more ? '접기' : '더 보기 · ' + (all.length - 8) + '개 더')]);
+ };
+ const drawRes = () => { if (!res) { res = []; fetch('./resources.json').then(r => r.json()).then(l => { res = Array.isArray(l) ? l : []; drawRes(); }).catch(() => fill(resBox, h('p', { class: 'err' }, '자료를 불러오지 못했어요'))); return; }
+  deptPick(drawRes);
+  fill(resBox, h('p', { class: 'meta res-note' }, '가격·조건은 조사 시점(2026-10) 기준이에요. 신청 전 공식 사이트에서 확인하세요.'),
+   tab === 'cur' ? [resTable('교회학교 커리큘럼', '커리큘럼', 'cur'), resTable('큐티책 비교', '큐티책', 'cur')] : [resTable('나들이', '나들이', 'trip'), resTable('성지순례', '성지순례', 'trip'), resTable('수련회 장소', '수련회 장소', 'trip')]); };
+ const paintTab = () => { const on = tab === 'docs'; find.hidden = mineBox.hidden = pptBox.hidden = !on; linkBox.hidden = tab !== 'links'; resBox.hidden = tab !== 'cur' && tab !== 'trip'; if (on) return draw(); commonBox.hidden = true; picker.hidden = false; tab === 'links' ? drawLinks() : drawRes(); };
+ const pptBox = pptTemplatesSection(); linkBox.hidden = resBox.hidden = true;
+ view.append(rec, tabs, find, picker, mineBox, commonBox, linkBox, resBox, pptBox);
  // 추천 한 줄: 8주 안 행사(절기·교회 행사)에 관련 서류가 있으면 "수련회까지 3주: [계획서 받기]"
  const paintRec = d => { const today = todayIso(), y = +today.slice(0, 4), s = { ...d?.settings, customEvents: d?.customEvents };
   const ev = occurrences([y, y + 1], s).filter(e => e.date >= today && e.date <= addDays(today, 56)).find(e => relatedDocs(e, docs).length), doc = ev && relatedDocs(ev, docs)[0];
