@@ -1,20 +1,20 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250034';
-import { TEMPLATES } from './templates.js?v=202610250034';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250034';
-import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250034';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250044';
+import { TEMPLATES } from './templates.js?v=202610250044';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250044';
+import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250044';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250034';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250034';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610250034';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap } from './season.js?v=202610250034';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250034';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250034';
-import { docs } from './docs.js?v=202610250034';
-import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250034';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610250034';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250034';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink } from './songbook.js?v=202610250034';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250034';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250044';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250044';
+import { openStore, newChurchCode, NOW } from './store.js?v=202610250044';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap } from './season.js?v=202610250044';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250044';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250044';
+import { docs } from './docs.js?v=202610250044';
+import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250044';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610250044';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250044';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250044';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250044';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -555,7 +555,34 @@ function contiView(startPick = 'book') {
       !cur.length && h('div', { class: 'empty conti-empty' }, h('p', { class: 'hint only-wide' }, '왼쪽에서 곡을 찾아 [+ 담기]를 누르면 여기에 쌓여요'), h('button', { type: 'button', class: 'primary add-song only-narrow', onclick: openPicker }, '+ 곡 찾아 추가하기')),
       h('ol', { class: 'songs conti-songs' }, cur.map(songLi)),
       h('div', { class: 'row conti-more' }, !cur.length && lastCount > 0 && h('button', { type: 'button', class: 'text-button', onclick: () => loadLast() }, '지난주 콘티 그대로 가져오기'), h('button', { type: 'button', class: 'text-button', onclick: () => { memoOpen.clear(); setSongs([...cur, { title: '', key: '', memo: '' }]); box.querySelector?.('[data-k=title' + (cur.length - 1) + ']')?.focus(); } }, '+ 곡 직접 입력'),
+        h('button', { type: 'button', class: 'text-button', onclick: () => openKakao() }, '카톡 글 붙여 넣기'),
         removed && h('button', { type: 'button', class: 'text-button', onclick: () => { const songs = [...cur]; songs.splice(removed.index, 0, removed.song); removed = null; setSongs(songs); } }, '삭제 되돌리기'))); };
+  // 카톡 글 붙여 넣기: 글에서 곡(번호·곡명·키·메모)과 날짜를 뽑아 미리 보여 주고, 그 날짜(없으면 지금 연 날짜) 콘티에 넣는다. 이미 있는 곡(제목+키)은 다시 넣지 않는다
+  const openKakao = () => {
+    let got = { date: '', songs: [] };
+    const prev = h('div', { class: 'kakao-preview', 'aria-live': 'polite' }), go = h('button', { type: 'button', class: 'primary', disabled: true }, '이번 콘티에 넣기');
+    const ta = h('textarea', { rows: 6, 'aria-label': '카톡 콘티 글', placeholder: '카톡에서 콘티 글을 길게 눌러 복사한 뒤 여기에 붙여 넣어요\n예) 10/25 콘티 1. 손 잡고 함께 가세(E) 2. 부르신 곳에서(E)', oninput: () => paint() });
+    const paint = () => {
+      got = parseKakaoConti(ta.value, { today: todayIso(), list: Object.values(book) });
+      const day = got.date || date.value, n = got.songs.length;
+      go.disabled = !n; go.textContent = n ? dayLabel(day) + ' 콘티에 ' + n + '곡 넣기' : '이번 콘티에 넣기';
+      fill(prev, ta.value.trim() && (n ? [h('p', { class: 'kakao-target' }, dayLabel(day) + ' 콘티에 들어가요' + (got.date ? '' : ' (글에 날짜가 없어서 지금 연 날짜로)')),
+        h('ol', { class: 'kakao-songs' }, got.songs.map(s => h('li', {}, h('span', { class: 'song-name' }, s.title), h('small', { class: 'meta' }, [s.key ? s.key + '키' : '키 없음', s.memo, !s.known && '새 곡'].filter(Boolean).join(' · ')))))]
+        : h('p', { class: 'hint' }, '곡을 찾지 못했어요. 한 줄에 한 곡씩 \'곡명 (키)\'로 적혀 있으면 가장 잘 읽어요.')));
+    };
+    go.onclick = async () => {
+      const day = got.date || date.value, songs = got.songs.map(({ title, key, memo }) => ({ title, key, memo }));
+      dlg.close(); flush();
+      let base = cur;
+      // 다른 날짜면 그 날짜 콘티를 먼저 읽는다. 못 읽으면 덮어쓰지 않게 멈춘다
+      if (day !== date.value) { try { base = contiSongsOf(await readOnce(`${churchPath()}/conti/${day}`), svc, defSvc); } catch { return say(dayLabel(day) + ' 콘티를 불러오지 못했어요. 다시 해 주세요.'); } pickConti(day, svc); }
+      const add = songs.filter(s => !base.some(c => c.title === s.title && (c.key || '') === (s.key || '')));
+      if (add.length) setSongs([...base.map(x => ({ ...x })), ...add]);
+      say(!add.length ? '모두 이미 ' + dayLabel(day) + ' 콘티에 있어요' : dayLabel(day) + ' 콘티에 ' + add.length + '곡을 넣었어요' + (songs.length > add.length ? ' (이미 있던 ' + (songs.length - add.length) + '곡은 그대로)' : ''));
+    };
+    const dlg = bigDialog('카톡 글 붙여 넣기', 'kakao-dialog', ta, prev, h('div', { class: 'filter-foot' }, go));
+    ta.focus();
+  };
   let historyRequest = 0;
   const historyList = h('div');
   const history = h('section', { class: 'conti-history' }, h('h3', {}, '지난 콘티'), historyList);
