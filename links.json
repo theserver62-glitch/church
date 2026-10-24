@@ -1,0 +1,314 @@
+[
+ {
+  "dept": "유치·아동",
+  "kind": "커리큘럼",
+  "name": "파이디온선교회",
+  "url": "https://www.paidionmall.com/seminar/sub1_3.php",
+  "desc": "어린이 공과와 성경학교 교재·강습회 안내",
+  "free": null
+ },
+ {
+  "dept": "유치·아동",
+  "kind": "커리큘럼",
+  "name": "파이디온 예수빌리지",
+  "url": "https://paidion-jv.net/",
+  "desc": "연령별 주일학교 공과와 교사 도움 자료",
+  "free": false
+ },
+ {
+  "dept": "유치·아동",
+  "kind": "커리큘럼",
+  "name": "히즈쇼",
+  "url": "https://www.hisshow.co.kr/",
+  "desc": "성경 영상 공과와 성경학교 활동 교재",
+  "free": false
+ },
+ {
+  "dept": "유치·아동",
+  "kind": "커리큘럼",
+  "name": "꿈미·드림웨이브",
+  "url": "https://www.coommi.org/",
+  "desc": "가정과 교회가 함께 쓰는 공과와 영상",
+  "free": null
+ },
+ {
+  "dept": "유치·아동",
+  "kind": "커리큘럼",
+  "name": "팻머스몰·예꼬클럽·홀리키즈",
+  "url": "https://www.patmosmall.com/",
+  "desc": "유아·어린이 예배 공과와 문화 활동 자료",
+  "free": false
+ },
+ {
+  "dept": "유치·아동",
+  "kind": "커리큘럼",
+  "name": "한국어린이전도협회",
+  "url": "https://www.cefkorea.org/",
+  "desc": "새소식공과와 어린이 전도·교사 훈련 안내",
+  "free": null
+ },
+ {
+  "dept": "유치·아동",
+  "kind": "활동",
+  "name": "한국어와나",
+  "url": "https://awanakorea.net/",
+  "desc": "말씀 암송과 게임을 엮은 클럽 활동 안내",
+  "free": false
+ },
+ {
+  "dept": "유치·아동",
+  "kind": "자료 사이트",
+  "name": "온누리교회 꿈이자라는땅",
+  "url": "https://www.onnuri.org/community/children-and-infants/%EA%BF%88%EC%9D%B4%EC%9E%90%EB%9D%BC%EB%8A%94-%EB%95%85/",
+  "desc": "초등부 예배와 부서 운영 사례 참고",
+  "free": true
+ },
+ {
+  "dept": "유치·아동",
+  "kind": "활동",
+  "name": "큐티프렌즈 소그룹 지침서",
+  "url": "https://www.365qt.com/QT/QTFriends/List",
+  "desc": "어린이 말씀 나눔에 쓰는 소그룹 지침",
+  "free": null
+ },
+ {
+  "dept": "유치·아동",
+  "kind": "찬양",
+  "name": "파이디온선교회 어린이 사역·찬양 안내",
+  "url": "https://www.paidionmall.com/seminar/pindex2_kids.php",
+  "desc": "어린이 찬양·율동과 성경학교 강습 안내",
+  "free": null
+ },
+ {
+  "dept": "중고등",
+  "kind": "커리큘럼",
+  "name": "한국장로교출판사 중고등부 공과",
+  "url": "https://www.pckbooks.co.kr/",
+  "desc": "예장통합 중고등부 공과와 교사용 교재",
+  "free": false
+ },
+ {
+  "dept": "중고등",
+  "kind": "커리큘럼",
+  "name": "꿈미 드림틴즈",
+  "url": "https://www.coommi.org/",
+  "desc": "청소년 말씀 공과와 수업 도움 자료",
+  "free": null
+ },
+ {
+  "dept": "중고등",
+  "kind": "커리큘럼",
+  "name": "히즈쇼 틴즈·하이틴즈",
+  "url": "https://www.hisshow.co.kr/",
+  "desc": "청소년 눈높이의 영상 공과와 예배 교재",
+  "free": false
+ },
+ {
+  "dept": "중고등",
+  "kind": "교재",
+  "name": "국제제자훈련원 큐틴",
+  "url": "https://www.365qt.com/basic/intro3",
+  "desc": "청소년 큐티 교재와 소그룹 성경공부",
+  "free": null
+ },
+ {
+  "dept": "중고등",
+  "kind": "자료 사이트",
+  "name": "부산십대선교회 YFC",
+  "url": "https://bsyfc.org/pages/campus-2.php",
+  "desc": "학교 동아리와 청소년 제자훈련 사례",
+  "free": true
+ },
+ {
+  "dept": "중고등",
+  "kind": "행사",
+  "name": "비전파워 비전캠프",
+  "url": "https://www.visioncamp.com/",
+  "desc": "청소년 연합수련회 일정과 참가 안내",
+  "free": false
+ },
+ {
+  "dept": "중고등",
+  "kind": "행사",
+  "name": "주바라기선교회",
+  "url": "https://www.juba.co.kr/",
+  "desc": "청소년 선교비전캠프 일정과 신청 안내",
+  "free": false
+ },
+ {
+  "dept": "중고등",
+  "kind": "자료 사이트",
+  "name": "비전파워 사역 기록실",
+  "url": "https://www.visionpower.com/",
+  "desc": "수련회 포스터와 디자인·사진 사례 참고",
+  "free": null
+ },
+ {
+  "dept": "청년",
+  "kind": "활동",
+  "name": "한국대학생선교회 CCC",
+  "url": "https://www.kccc.org/",
+  "desc": "청년 제자훈련과 캠퍼스·단기선교 안내",
+  "free": null
+ },
+ {
+  "dept": "청년",
+  "kind": "교재",
+  "name": "IVP 출판사",
+  "url": "https://ivp.co.kr/",
+  "desc": "소그룹 성경공부와 청년 독서모임 교재",
+  "free": false
+ },
+ {
+  "dept": "청년",
+  "kind": "활동",
+  "name": "죠이선교회",
+  "url": "https://www.joymission.org/",
+  "desc": "대학생 공동체와 청년 양육 사역 사례",
+  "free": null
+ },
+ {
+  "dept": "청년",
+  "kind": "아웃리치",
+  "name": "한국OMF 서브아시아",
+  "url": "https://omf.org/kr/get-involved/serve-asia-short-term-mission/",
+  "desc": "아시아 단기선교 분야와 지원 절차 안내",
+  "free": false
+ },
+ {
+  "dept": "청년",
+  "kind": "아웃리치",
+  "name": "미션파트너스 퍼스펙티브스",
+  "url": "https://sites.google.com/mp.or.kr/psp",
+  "desc": "선교의 기초를 배우는 훈련과 수강 안내",
+  "free": false
+ },
+ {
+  "dept": "청년",
+  "kind": "아웃리치",
+  "name": "예수전도단 뉴코리아 써번트 아카데미",
+  "url": "https://nksa.imweb.me/",
+  "desc": "북한과 열방을 섬기는 선교훈련 안내",
+  "free": null
+ },
+ {
+  "dept": "청년",
+  "kind": "아웃리치",
+  "name": "한국어린이전도협회 해외단기선교",
+  "url": "https://www.cefkorea.org/",
+  "desc": "청년·대학생 어린이 사역 단기선교 모집",
+  "free": false
+ },
+ {
+  "dept": "청년",
+  "kind": "행사",
+  "name": "비전캠프 청년·대학 캠프",
+  "url": "https://www.visioncamp.com/",
+  "desc": "청년 연합수련회 일정과 등록 안내",
+  "free": false
+ },
+ {
+  "dept": "청년",
+  "kind": "행사",
+  "name": "주바라기 청년·대학 선교비전캠프",
+  "url": "https://www.juba.co.kr/",
+  "desc": "청년·대학생 선교 수련회 참가 안내",
+  "free": false
+ },
+ {
+  "dept": "공통",
+  "kind": "총회·교단",
+  "name": "대한예수교장로회총회·통합",
+  "url": "https://pck.or.kr/",
+  "desc": "교단 정책과 헌법·교회력·행정 자료",
+  "free": true
+ },
+ {
+  "dept": "공통",
+  "kind": "총회·교단",
+  "name": "예장통합 총회 교육자원부",
+  "url": "https://pck.or.kr/division.php?part=edu",
+  "desc": "교회교육 정책과 부서 소식·교육 안내",
+  "free": true
+ },
+ {
+  "dept": "공통",
+  "kind": "총회·교단",
+  "name": "한국장로교출판사",
+  "url": "https://www.pckbooks.co.kr/",
+  "desc": "통합 교단 공과와 교회교육·신앙 도서",
+  "free": false
+ },
+ {
+  "dept": "공통",
+  "kind": "큐티",
+  "name": "성서유니온선교회 매일성경",
+  "url": "https://www.su.or.kr/",
+  "desc": "연령별 매일성경과 묵상·공과 도움 자료",
+  "free": null
+ },
+ {
+  "dept": "공통",
+  "kind": "큐티",
+  "name": "두란노 생명의삶",
+  "url": "https://www.duranno.com/qt/",
+  "desc": "매일 큐티 본문과 해설(두란노)",
+  "free": true
+ },
+ {
+  "dept": "공통",
+  "kind": "큐티",
+  "name": "국제제자훈련원 날마다 솟는 샘물",
+  "url": "https://www.365qt.com/basic/intro2",
+  "desc": "날마다 말씀 묵상과 소그룹 나눔 자료",
+  "free": null
+ },
+ {
+  "dept": "공통",
+  "kind": "큐티",
+  "name": "IVP 시냇가에 심은 나무",
+  "url": "https://ivp.co.kr/sisim/s01.html",
+  "desc": "오늘의 묵상과 큐티 교재 정기구독 안내",
+  "free": null
+ },
+ {
+  "dept": "공통",
+  "kind": "성경",
+  "name": "대한성서공회 성경플랫폼",
+  "url": "https://bible.bskorea.or.kr/",
+  "desc": "공식 성경 본문 읽기와 구절 검색",
+  "free": true
+ },
+ {
+  "dept": "공통",
+  "kind": "교재",
+  "name": "국제제자훈련원",
+  "url": "https://www.disciplen.com/",
+  "desc": "성경공부 교재와 제자훈련·인도자 자료",
+  "free": null
+ },
+ {
+  "dept": "공통",
+  "kind": "자료 사이트",
+  "name": "바이블프로젝트 한국어",
+  "url": "https://bibleproject.com/ko/",
+  "desc": "성경 각 권을 설명하는 영상과 포스터",
+  "free": true
+ },
+ {
+  "dept": "공통",
+  "kind": "찬양",
+  "name": "CCLI 한국",
+  "url": "https://ccli.com/kr/ko",
+  "desc": "찬양 복제와 예배 중계 저작권 이용 안내",
+  "free": null
+ },
+ {
+  "dept": "공통",
+  "kind": "찬양",
+  "name": "CCLI 송셀렉트",
+  "url": "https://ccli.com/kr/ko/songselect",
+  "desc": "찬양 악보 검색과 조옮김 서비스 안내",
+  "free": null
+ }
+]
