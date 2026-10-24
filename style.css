@@ -918,3 +918,37 @@ body:has(.event-dialog[open]){overflow:hidden}
 .ppt-theme{margin:0}
 .ppt-go{width:100%;margin-top:var(--s2)}
 .ppt-box .hint{margin:var(--s2) 0 0;font-size:var(--fs-14)}
+
+/* ===== 카드 없애기 검수 반영 ===== */
+/* 1. 구매 도움은 품목 목록과 떨어진 묶음으로 */
+.buy-help{margin:var(--s5) 0 var(--s3);padding-top:var(--s2)}
+.buy-help>:not(summary){margin-left:var(--s4)}
+/* 2. 장비: 분류 제목 아래 선과 품목 구분선만 */
+.equipment-category thead tr{border-bottom:0}
+.equipment-warning{border-radius:var(--r-sm)}
+/* 3. 절기·행사: 행사 사이 넉넉히, '준비 n개 중…'은 테두리 없는 글자+∨(터치 48px 유지) */
+.tl-item{padding-top:var(--s4);padding-bottom:var(--s4)}
+.tl-month{margin-bottom:var(--s6)}
+.tl-toggle.sub{border-color:transparent;background:transparent;color:var(--ink-2);font-weight:600;padding:0 var(--s2);margin-left:calc(-1 * var(--s2))}
+.tl-toggle.sub:hover{background:var(--paper-2)}
+/* 4. 폰 달력: 준비 기간은 같은 주 안에서 이어지는 얇은 띠, 시작 칸에 작은 이름 */
+@media(max-width:959px){
+ .calendar[data-mode=month] .day{min-height:58px}
+ .in-prep::after{left:0;right:0;bottom:2px;border-radius:0}
+ .in-prep.prep-s::after{left:6px;border-radius:2px 0 0 2px}
+ .in-prep.prep-e::after{right:6px;border-radius:0 2px 2px 0}
+ .in-prep.prep-s.prep-e::after{border-radius:2px}
+ .day[data-prep]::before{content:attr(data-prep);position:absolute;z-index:1;left:4px;bottom:6px;max-width:calc(300% - 8px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:var(--fs-12);font-weight:600;line-height:1.2;color:var(--pp)}
+}
+/* 5. 컴퓨터 설정: 한 열(최대 720px), 줄마다 선, 값은 화살표 바로 앞에 */
+@media(min-width:960px){.settings-grid{grid-template-columns:1fr;max-width:720px;gap:0}}
+.settings-grid .fold-note{margin-left:auto;text-align:right}
+.settings-grid .fold>summary::before{margin-left:var(--s2)}
+.settings-grid .fold>summary .fold-title{margin-right:auto}
+.settings-grid .fold-note{margin-left:0}
+
+/* 콘티 PPT: 아주 작은 선택 '표지·순서 장도 넣기' */
+.ppt-cover{display:flex;align-items:center;gap:var(--s2);min-height:36px;font-size:var(--fs-14);color:var(--ink-2);cursor:pointer}
+.ppt-cover input{width:20px;height:20px;min-height:20px}
+.export-tools .ppt-cover{grid-column:1/-1;order:5}
+.ppt-cover>span{margin:0;font-weight:400}

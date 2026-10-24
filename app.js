@@ -1,15 +1,15 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610242003';
-import { TEMPLATES } from './templates.js?v=202610242003';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610242013';
+import { TEMPLATES } from './templates.js?v=202610242013';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610242003';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610242003';
-import { openStore, newChurchCode } from './store.js?v=202610242003';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610242003';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610242003';
-import { docs } from './docs.js?v=202610242003';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610242003';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller } from './songbook.js?v=202610242003';
-import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610242003';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610242013';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610242013';
+import { openStore, newChurchCode } from './store.js?v=202610242013';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610242013';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610242013';
+import { docs } from './docs.js?v=202610242013';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610242013';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller } from './songbook.js?v=202610242013';
+import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610242013';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -303,9 +303,13 @@ function contiView() {
   const drawPrint = () => fill(printBox, h('h1', {}, '주일 찬양 콘티 · ' + date.value.replace(/(\d{4})-(\d{2})-(\d{2})/, (_, y, m, d) => y + '년 ' + +m + '월 ' + +d + '일')),
     h('table', {}, h('thead', {}, h('tr', {}, ['순서', '곡명', '키', '메모'].map(t => h('th', {}, t)))), h('tbody', {}, cur.map((s, i) => h('tr', {}, [i + 1, s.title, s.key, s.memo].map(t => h('td', {}, t || '')))))));
   const print = () => { flush(); drawPrint(); printBox.dataset.paper = paper.value; $('pagesize')?.remove(); document.head.append(h('style', { id: 'pagesize' }, '@page { size: ' + paper.value + ' portrait; margin: 15mm }')); window.print(); };
+  const withCover = h('input', { type: 'checkbox' });
   const ppt = h('button', { type: 'button', class:'primary', onclick: async () => {
-    flush(); const songs = cur.map(s => ({ ...s })), day = date.value, name = churchName; ppt.disabled = true;
-    try { await makePpt(name, day, songs); } catch { say('PPT 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.'); } finally { ppt.disabled = !cur.some(s=>s.title.trim()); }
+    flush(); const songs = cur.map(s => ({ ...s })).filter(s => s.title.trim()), day = date.value, name = churchName; ppt.disabled = true;
+    const size = data => new Promise(ok => { const im = new Image(); im.onload = () => ok({ w: im.naturalWidth || 1, h: im.naturalHeight || 1 }); im.onerror = () => ok(null); im.src = data; });
+    const got = await Promise.allSettled(songs.map(async s => { const id = pickSheet(s, sheets); if (!id) return null; const d = await readOnce(churchPath() + '/sheets/' + id); if (!String(d?.img).startsWith('data:image/')) return null; const wh = await size(d.img); return wh && [s.title + '|' + (s.key || ''), { data: d.img, ...wh }]; }));
+    const images = Object.fromEntries(got.map(r => r.status === 'fulfilled' && r.value).filter(Boolean)), missing = songs.filter(s => !images[s.title + '|' + (s.key || '')]);
+    try { await makePpt(name, day, songs, images, withCover.checked); say(missing.length ? '악보 없는 곡 ' + missing.length + '개: ' + missing.map(s => s.title).join(', ') + ' (설정 > 악보 사진 올리기)' : '악보 ' + songs.length + '곡을 넣었어요'); } catch { say('PPT 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.'); } finally { ppt.disabled = !cur.some(s=>s.title.trim()); }
   } }, h('span', { class: 'desktop-copy' }, '예배'), 'PPT 만들기');
   const box = h('div'), list = h('datalist', { id: 'songbook' }), groups = h('div');
   let sheets={}; // 교회 문서의 sheets: {id: {title, key}}
@@ -334,8 +338,8 @@ function contiView() {
     go.onclick=()=>dlg.close();paint();
   };
   const drawChips=()=>fill(chips,
-    Object.keys(sheets).length>0&&h('button',{type:'button',class:'chip','aria-pressed':String(useSheets()),onclick:()=>{onlySheets=!useSheets();count=20;drawBrowse();}},'악보만'),
-    h('button',{type:'button',class:'chip','aria-pressed':String(onlyFav),onclick:()=>{onlyFav=!onlyFav;count=20;drawBrowse();}},onlyFav?'★ 즐겨찾기':'☆ 즐겨찾기'),
+    Object.keys(sheets).length>0&&h('button',{type:'button',class:'chip','aria-pressed':String(useSheets()),onclick:()=>{onlySheets=!useSheets();count=20;drawBrowse();}},'악보 있는 곡만'),
+    h('button',{type:'button',class:'chip','aria-pressed':String(onlyFav),onclick:()=>{onlyFav=!onlyFav;count=20;drawBrowse();}},'즐겨찾기만'),
     h('button',{type:'button',class:'chip','aria-pressed':String(nFilters()>0),'aria-haspopup':'dialog',onclick:openFilters},'필터'+(nFilters()?' '+nFilters():'')));
   const drawBrowse=()=>{
     drawChips();
@@ -459,7 +463,7 @@ function contiView() {
     if (cur.length && !confirm('지금 콘티를 지난 주 콘티로 바꿀까요?')) return;
     setSongs(d.songs.map(s => ({ title: s.title || '', key: s.key || '', memo: s.memo || '' })));
   };
-  const exports = h('div',{class:'export-tools'},h('button',{class:'sub',onclick:()=>{flush();copyText(contiShare(churchName,date.value,cur));}},'카톡 보내기'), h('div', { class: 'row print-tools' }, h('label', {}, h('span', {}, '인쇄 용지'), paper), h('button', { type: 'button', class:'sub', onclick: print }, '인쇄'), ppt));
+  const exports = h('div',{class:'export-tools'},h('button',{class:'sub',onclick:()=>{flush();copyText(contiShare(churchName,date.value,cur));}},'카톡 보내기'), h('div', { class: 'row print-tools' }, h('label', {}, h('span', {}, '인쇄 용지'), paper), h('button', { type: 'button', class:'sub', onclick: print }, '인쇄'), ppt), h('label', { class: 'ppt-cover' }, withCover, h('span', {}, 'PPT에 표지·순서 장도 넣기')));
   // 휴대폰: [이번 주 콘티][곡 보관함][지난 콘티] 중 하나만 보인다(컴퓨터는 콘티와 보관함을 나란히)
   const tabs=h('div',{class:'segments conti-tabs',role:'group','aria-label':'콘티 화면 고르기'},[['week','이번 주 콘티'],['book','곡 보관함'],['special','특송'],['history','지난 콘티']].map(([id,t])=>h('button',{type:'button',class:'sub','aria-pressed':String(id==='week'),onclick:e=>{wrap.dataset.tab=id;if(id==='special')loadSpecials();for(const b of tabs.children)b.setAttribute('aria-pressed',String(b===e.currentTarget));if(id==='history'&&!history.open)history.open=true;scrollTo(0,0);}},t,id==='week'&&badge)));
   const wrap=h('div',{class:'conti','data-tab':'week'});
@@ -830,22 +834,25 @@ async function makeScripturePpt(slides, fileName, dark) {
   }
   await deck.writeFile({ fileName });
 }
-async function makePpt(name, date, songs) {
+// 콘티 PPT: 기본은 콘티 순서대로 악보 장만(악보 없는 곡은 제목 장). 표지·순서 장은 고를 때만
+async function makePpt(name, date, songs, images = {}, withCover = false) {
   await loadPptTool();
-  const deck = new window.PptxGenJS(); deck.layout = 'LAYOUT_WIDE'; deck.author = name; deck.subject = '주일 예배'; deck.title = date + ' 주일 예배';
-  deck.theme = { headFontFace: 'Malgun Gothic', bodyFontFace: 'Malgun Gothic', lang: 'ko-KR' };
-  const slide = title => {
-    const s = deck.addSlide(); s.background = { color: '1f2420' };
-    s.addShape(deck.ShapeType.rect, { x: 0, y: 0, w: 13.334, h: 0.3, fill: { color: '2f5d50' }, line: { color: '2f5d50' } });
-    s.addText(title, { x: 0.8, y: 0.8, w: 11.7, h: 1.3, color: 'FFFFFF', fontFace: 'Malgun Gothic', fontSize: 40, bold: true, breakLine: false }); return s;
-  };
-  const text = (s, content, y, size = 28) => s.addText(content, { x: 0.8, y, w: 11.7, h: 1.3, color: 'FFFFFF', fontFace: 'Malgun Gothic', fontSize: size });
-  const cover = slide('주일 예배'); text(cover, name, 3); text(cover, date, 4.5);
-  const order = slide('예배 순서'); order.addText('묵도 · 찬송 · 대표기도 · 성경봉독 · 설교\n찬양 · 봉헌 · 광고 · 축도', { x: 0.8, y: 2.5, w: 11.7, h: 3, fontFace: 'Malgun Gothic', color: 'FFFFFF', fontSize: 28 });
-  for (const song of songs.filter(s => s.title.trim())) { const s = slide(song.title); text(s, '키: ' + (song.key || ''), 3); text(s, '가사는 교회가 저작권을 확인하고 넣어 주세요', 6, 16); }
-  const word = slide('오늘의 말씀'); word.addShape(deck.ShapeType.rect, { x: 0.8, y: 2.5, w: 11.7, h: 3.6, line: { color: 'FFFFFF', width: 1 }, fill: { color: '1f2420', transparency: 100 } });
-  slide('광고');
-  await deck.writeFile({ fileName: '예배_' + date + '.pptx' });
+  const deck = new window.PptxGenJS(); deck.layout = 'LAYOUT_WIDE'; deck.author = name; deck.subject = '주일 찬양'; deck.title = date + ' 콘티 악보';
+  const font = 'Malgun Gothic';
+  if (withCover) {
+    const cover = deck.addSlide(); cover.background = { color: 'FFFFFF' };
+    cover.addText('주일 예배', { x: 0.8, y: 2.2, w: 11.7, h: 1.3, fontFace: font, fontSize: 44, bold: true, color: '1D2421', align: 'center' });
+    cover.addText([name, date].filter(Boolean).join(' · '), { x: 0.8, y: 3.6, w: 11.7, h: 0.8, fontFace: font, fontSize: 24, color: '5F6964', align: 'center' });
+    const order = deck.addSlide(); order.background = { color: 'FFFFFF' };
+    order.addText('예배 순서', { x: 0.8, y: 0.8, w: 11.7, h: 1, fontFace: font, fontSize: 36, bold: true, color: '1D2421' });
+    order.addText('묵도 · 찬송 · 대표기도 · 성경봉독 · 설교\n찬양 · 봉헌 · 광고 · 축도', { x: 0.8, y: 2.3, w: 11.7, h: 3, fontFace: font, fontSize: 28, color: '1D2421' });
+  }
+  for (const sl of contiSlides(songs, images)) {
+    const s = deck.addSlide(); s.background = { color: 'FFFFFF' };
+    if (sl.type === 'sheet') { s.addImage({ data: sl.image.data, ...fitImage(sl.image.w, sl.image.h) }); s.addText(sl.label, { x: 7.3, y: 0.12, w: 5.8, h: 0.4, fontFace: font, fontSize: 12, color: '6B726D', align: 'right' }); }
+    else s.addText(sl.label, { x: 0.8, y: 2.6, w: 11.7, h: 2, fontFace: font, fontSize: 44, bold: true, color: '1D2421', align: 'center', valign: 'middle' });
+  }
+  await deck.writeFile({ fileName: date + ' 콘티 악보.pptx' });
 }
 
 
@@ -944,7 +951,7 @@ function homeView(){
  h('div',{class:'weekdays'},...'일월화수목금토'.split('').map(d=>h('div',{class:'weekday'},d))),grid.map(week=>h('div',{class:'calendar-week'},h('div',{class:'month-grid'},week.map(day=>{
  const cell=calendarCell(day,ts,evs), active=evs.filter(e=>occursOn(e,day)), starts=spans.filter(p=>p.start===day), inPrep=spans.filter(p=>p.start<=day&&p.end>day).sort((a,b)=>a.start.localeCompare(b.start));
  const label=[fmt(day),...active.map(e=>e.name),...starts.map(p=>p.name+' 준비 시작')].join(' · ');
- return h('div',{style:(active[0]?'--ev:'+eventColor(active[0].id)+';':'')+(starts[0]?'--ps:'+eventColor(starts[0].eventId)+';':'')+(inPrep[0]?'--pp:'+eventColor(inPrep[0].eventId):''),ondragover:e=>{if(matchMedia('(pointer:fine)').matches){e.preventDefault();e.currentTarget.classList.add('drop-target');}},ondragleave:e=>e.currentTarget.classList.remove('drop-target'),ondrop:e=>{e.preventDefault();e.currentTarget.classList.remove('drop-target');const ev=evs.find(v=>v.id+'_'+v.date===e.dataTransfer.getData('text/plain'));if(ev)moveEvent(ev,day,data);},class:'day'+(active.length?' has-event':'')+(inPrep.length?' in-prep':'')+(starts.length?' prep-day':'')+(day===today?' today':'')+(day===selectedDay?' selected':'')+(!day.startsWith(homeMonth)?' outside':'')},h('button',{class:'day-number','aria-label':label,'aria-pressed':String(day===selectedDay),onclick:()=>{selectedDay=day;selectedEvent=null;draw();}},String(+day.slice(8))),cell.items.filter(item=>item.event).map(item=>h('button',{style:'background:'+eventColor(item.event.id)+';color:white',class:'calendar-item sub event-title',draggable:matchMedia('(pointer:fine)').matches,ondragstart:e=>e.dataTransfer.setData('text/plain',item.event.id+'_'+item.event.date),title:item.event.name,onclick:()=>{selectedDay=day;selectedEvent=null;editing=item.event;adding=false;draw();detail.scrollIntoView({behavior:'smooth',block:'nearest'});}},item.event.name)),cell.extra>0&&h('button',{class:'calendar-more sub',onclick:()=>{selectedDay=day;selectedEvent=null;draw();}},'외 '+cell.extra+'개'));
+ return h('div',{style:(active[0]?'--ev:'+eventColor(active[0].id)+';':'')+(starts[0]?'--ps:'+eventColor(starts[0].eventId)+';':'')+(inPrep[0]?'--pp:'+eventColor(inPrep[0].eventId):''),...(inPrep[0]?.start===day&&{'data-prep':inPrep[0].name.replace(/주일$/,'')}),ondragover:e=>{if(matchMedia('(pointer:fine)').matches){e.preventDefault();e.currentTarget.classList.add('drop-target');}},ondragleave:e=>e.currentTarget.classList.remove('drop-target'),ondrop:e=>{e.preventDefault();e.currentTarget.classList.remove('drop-target');const ev=evs.find(v=>v.id+'_'+v.date===e.dataTransfer.getData('text/plain'));if(ev)moveEvent(ev,day,data);},class:'day'+(active.length?' has-event':'')+(inPrep.length?' in-prep'+(inPrep[0].start===day?' prep-s':'')+(addDays(day,1)===inPrep[0].end?' prep-e':''):'')+(starts.length?' prep-day':'')+(day===today?' today':'')+(day===selectedDay?' selected':'')+(!day.startsWith(homeMonth)?' outside':'')},h('button',{class:'day-number','aria-label':label,'aria-pressed':String(day===selectedDay),onclick:()=>{selectedDay=day;selectedEvent=null;draw();}},String(+day.slice(8))),cell.items.filter(item=>item.event).map(item=>h('button',{style:'background:'+eventColor(item.event.id)+';color:white',class:'calendar-item sub event-title',draggable:matchMedia('(pointer:fine)').matches,ondragstart:e=>e.dataTransfer.setData('text/plain',item.event.id+'_'+item.event.date),title:item.event.name,onclick:()=>{selectedDay=day;selectedEvent=null;editing=item.event;adding=false;draw();detail.scrollIntoView({behavior:'smooth',block:'nearest'});}},item.event.name)),cell.extra>0&&h('button',{class:'calendar-more sub',onclick:()=>{selectedDay=day;selectedEvent=null;draw();}},'외 '+cell.extra+'개'));
  })),h('div',{class:'week-preps'},prepWeek(week,spans,homeMonth).sort((a,b)=>a.start.localeCompare(b.start)||a.name.localeCompare(b.name)).map((p,i)=>h('button',{class:'prep-ribbon'+(selectedEvent?.eventId===p.eventId?' chosen':'')+(p.starts?' starts':'')+(p.ends?' ends':''),style:'--event-color:'+eventColor(p.eventId)+';--event-bg:'+eventTone(p.eventId)[0]+';grid-row:'+(i+1)+';grid-column:'+p.column+' / span '+p.width,'aria-label':p.name+' 준비 '+md(p.start)+'~'+md(p.end),title:p.name+' 준비 '+md(p.start)+'~'+md(p.end),onclick:()=>choose(p)},h('span',{},p.name.replace(/주일$/,'')+' 준비')))))),
  h('div',{class:'calendar-legend'},h('span',{},h('i',{class:'key-event'}),'행사일'),h('span',{},h('i',{class:'key-prep'}),'준비 시작'),h('span',{class:'key-bar-item'},h('i',{class:'key-bar'}),'준비 기간'),h('span',{},h('i',{class:'key-today'}),'오늘')));
  const dayData=dayItems(selectedDay,s,done);

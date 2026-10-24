@@ -141,3 +141,22 @@ export function seller(url) {
   let host = ''; try { host = new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; }
   return /akbotong/.test(host) ? '악보통' : /joongangart/.test(host) ? '중앙아트' : host.split('.')[0];
 }
+
+// ---------- 콘티 PPT의 악보 장 ----------
+// 곡에 쓸 악보: 같은 제목+키, 없으면 같은 제목의 아무 키(키 순). 없으면 null
+export function pickSheet(song, sheets = {}) {
+  const same = Object.entries(sheets).filter(([, v]) => v?.title === song.title).sort((a, b) => (a[1].key || '').localeCompare(b[1].key || ''));
+  return (same.find(([, v]) => (v.key || '') === (song.key || '')) || same[0])?.[0] || null;
+}
+// 곡 장 구성(콘티 순서): 악보 그림이 있으면 'sheet'(오른쪽 위 작게 "1. 곡명 · E"), 없으면 'song'(제목 장 "곡명 · E")
+export function contiSlides(songs, images = {}) {
+  return songs.filter(s => s.title?.trim()).map((s, i) => {
+    const name = s.title + (s.key ? ' · ' + s.key : ''), image = images[s.title + '|' + (s.key || '')];
+    return image ? { type: 'sheet', title: s.title, key: s.key || '', label: (i + 1) + '. ' + name, image } : { type: 'song', title: s.title, key: s.key || '', label: name };
+  });
+}
+// 그림을 16:9 장(13.333×7.5in) 안에 비율대로 최대한 크게(자르지 않음). 위에 이름 자리 0.6in
+export function fitImage(w, h, box = { x: 0.4, y: 0.6, w: 12.533, h: 6.75 }) {
+  const r = Math.min(box.w / w, box.h / h), iw = w * r, ih = h * r;
+  return { x: box.x + (box.w - iw) / 2, y: box.y + (box.h - ih) / 2, w: iw, h: ih };
+}

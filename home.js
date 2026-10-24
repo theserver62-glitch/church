@@ -1,5 +1,5 @@
-import { addDays, parse } from './calendar.js?v=202610242003';
-import { occurrences, tasksAround, occursOn } from './custom-events.js?v=202610242003';
+import { addDays, parse } from './calendar.js?v=202610242013';
+import { occurrences, tasksAround, occursOn } from './custom-events.js?v=202610242013';
 export function monthGrid(year, month) {
  const first = new Date(Date.UTC(year, month - 1, 1)).toISOString().slice(0,10);
  const start = addDays(first, -parse(first).getUTCDay());
