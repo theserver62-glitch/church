@@ -23,3 +23,38 @@ export function mineList(churches) {
 // 카톡 안 브라우저(구글이 로그인을 막음) 알아보기와, 기본 브라우저로 여는 주소
 export const isKakaoInApp = ua => /KAKAOTALK/i.test(ua || '');
 export const kakaoExternalUrl = url => 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url);
+// 앱 안 브라우저(카톡·네이버·인스타·페이스북·라인·Claude 등 웹뷰)는 구글이 로그인을 막는다
+export const isInAppBrowser = ua => /KAKAOTALK|NAVER|Instagram|FBAN|FBAV|Line\/|; wv\)|Claude/i.test(ua || '')
+  || (/iPhone|iPad/.test(ua || '') && !/Safari\//.test(ua || ''));
+const LOGIN_ERRORS = {
+  'auth/unauthorized-domain': '이 주소에서는 로그인이 허용되지 않았어요.',
+  'auth/popup-blocked': '팝업이 막혔어요. 브라우저 설정에서 팝업을 허용해 주세요.',
+  'auth/network-request-failed': '인터넷 연결이 불안정해요. 다시 시도해 주세요.',
+  'auth/web-storage-unsupported': '이 브라우저는 로그인 정보를 저장할 수 없어요. 사파리나 크롬으로 열어 주세요.',
+  'auth/operation-not-allowed': '구글 로그인이 아직 켜지지 않았어요.',
+};
+export const loginErrorText = code => (LOGIN_ERRORS[code] || '구글 로그인을 하지 못했어요. 다시 시도해 주세요.') + (code ? ` (${code})` : '');
+
+// 이전 단일 부서 설정도 읽으며 호출자가 원본 배열을 바꾸지 않게 복사한다.
+export function deptsOf(settings) {
+  const values = Array.isArray(settings?.depts) ? settings.depts : [settings?.dept];
+  return [...new Set(values.filter(v => typeof v === 'string' && v.trim()).map(v => v.trim()))];
+}
+export function toggleDept(settings, dept) {
+  const selected = deptsOf(settings);
+  return selected.includes(dept) ? (selected.length > 1 ? selected.filter(v => v !== dept) : selected) : [...selected, dept];
+}
+
+// 고른 부서만 반환하며, 이전 규모는 부서 규모로 읽는다. 원본은 바꾸지 않는다.
+export function sizeOf(settings) {
+  const legacy = {s:'b',m:'c',l:'d'}[settings?.size] || 'b';
+  return Object.fromEntries(deptsOf(settings).map(dept => {
+    const value = settings?.deptSize?.[dept];
+    return [dept, ['a','b','c','d'].includes(value) ? value : legacy];
+  }));
+}
+export function sizeTips(settings) {
+  return Object.entries(sizeOf(settings)).map(([dept, size]) => dept + ' · ' + (
+    size === 'd' ? '대형 시설 · D-12주 장소 예약 · 교사 1:7~8' :
+    size === 'c' ? '수련원 · 교사 1:5~6' : '교회 안/1박 2일 위주 · 교사 1:3~4'));
+}

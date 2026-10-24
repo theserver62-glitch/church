@@ -1,7 +1,7 @@
 // 저장소. config.js에 Firebase 설정이 있으면 Firestore(리더끼리 실시간 공유),
 // 없으면 이 기기 localStorage(체험 모드, 같은 브라우저의 다른 탭끼리만 공유).
 // 쓰기는 늘 "깊게 합치기"라서 두 사람이 다른 칸을 동시에 고쳐도 서로 지우지 않는다(배열은 통째로 바뀜).
-import { firebaseConfig } from './config.js?v=202610241251';
+import { firebaseConfig } from './config.js?v=202610241314';
 
 const FB = 'https://www.gstatic.com/firebasejs/10.12.2/';
 
@@ -10,7 +10,9 @@ export async function openStore() {
     const { initializeApp } = await import(FB + 'firebase-app.js');
     const { getFirestore, doc, onSnapshot, setDoc } = await import(FB + 'firebase-firestore.js');
     const A = await import(FB + 'firebase-auth.js');
-    const app = initializeApp(firebaseConfig);
+    // Firebase 주소(web.app)에서 열리면 로그인도 같은 주소로 처리한다 — 사파리가 다른 주소 사이의 로그인 결과를 막아서 멈추는 문제 방지
+    const host = location.hostname, sameSite = /\.(web\.app|firebaseapp\.com)$/.test(host);
+    const app = initializeApp({ ...firebaseConfig, authDomain: sameSite ? host : firebaseConfig.authDomain });
     const db = getFirestore(app);
     const auth = A.getAuth(app);
     return {
@@ -19,7 +21,12 @@ export async function openStore() {
       auth: {
         ready: new Promise(r => { const off = A.onAuthStateChanged(auth, u => { off(); r(u); }); }),
         user: () => auth.currentUser,
-        signIn: () => A.signInWithPopup(auth, new A.GoogleAuthProvider()),
+        // 팝업이 막히는 브라우저(일부 휴대폰)는 페이지 이동 방식으로 다시 시도한다. 돌아오면 redirectResult로 받는다.
+        signIn: () => A.signInWithPopup(auth, new A.GoogleAuthProvider()).catch(e => {
+          if (e?.code === 'auth/popup-blocked' || e?.code === 'auth/operation-not-supported-in-this-environment') return A.signInWithRedirect(auth, new A.GoogleAuthProvider());
+          throw e;
+        }),
+        redirectResult: () => A.getRedirectResult(auth).catch(e => { throw e; }),
         signOut: () => A.signOut(auth),
       },
       // cb(data) — 문서가 없으면 null

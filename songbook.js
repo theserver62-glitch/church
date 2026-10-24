@@ -29,3 +29,24 @@ export function groupSongs(book, by) {
   return Object.entries(g).sort(([a], [b]) => rank(a) - rank(b) || a.localeCompare(b))
     .map(([k, list]) => [k, list.sort((a, b) => a.title.localeCompare(b.title))]);
 }
+
+// 기본 분류를 유지하면서 교회의 메모·악보·수정 값을 우선한다.
+export function mergeLibrary(defaults = [], songbook = {}) {
+  const merged = new Map(defaults.map(s => [label(s), { ...s }]));
+  for (const [name, s] of Object.entries(songbook || {})) {
+    if (!s) continue;
+    const id = s.title ? label(s) : name;
+    merged.set(id, { ...merged.get(id), ...s });
+  }
+  return Object.fromEntries(merged);
+}
+
+// 모든 선택 조건을 함께 적용하고 새 배열을 곡명순으로 반환한다.
+export function filterSongs(list, { key = '', theme = '', mood = '', q = '' } = {}) {
+  const query = q.trim().toLocaleLowerCase();
+  return list.filter(s => (!key || key === '전체' || (key === '단조' ? ['Am','Bm','Dm','Em','F#m'].includes(s.key) : s.key === key))
+    && (!theme || theme === '전체' || s.theme === theme)
+    && (!mood || mood === '전체' || s.mood === mood)
+    && (!query || s.title.toLocaleLowerCase().includes(query)))
+    .sort((a, b) => a.title.localeCompare(b.title, 'ko') || (a.key || '').localeCompare(b.key || ''));
+}
