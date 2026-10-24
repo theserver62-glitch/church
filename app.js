@@ -1,21 +1,22 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250303';
-import { TEMPLATES } from './templates.js?v=202610250303';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250303';
-import { elementsFor, sundayName, callRec, nameDates, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250303';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250310';
+import { TEMPLATES } from './templates.js?v=202610250310';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250310';
+import { elementsFor, sundayName, callRec, nameDates, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250310';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250303';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250303';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610250303';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250303';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250303';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250303';
-import { docs } from './docs.js?v=202610250303';
-import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250303';
-import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610250303';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610250303';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250303';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250303';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250303';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250310';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250310';
+import { openStore, newChurchCode, NOW } from './store.js?v=202610250310';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250310';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250310';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250310';
+import { docs } from './docs.js?v=202610250310';
+import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250310';
+import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610250310';
+import { introSections, sourceDomains, deepParts } from './bookintro.js?v=202610250310';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610250310';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250310';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250310';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250310';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -708,7 +709,8 @@ function qtView() {
   const daily = h('section', { class: 'card', hidden: true });
   const drawDaily = () => {
     const item = archive[qtIndex(date.value, archive.length)]; daily.hidden = !item; if(item)scripture(passageBox,item.ref,false);
-    fill(daily, item && [h('h3', { class: 'qt-head' }, '오늘의 큐티'), h('h4', {}, item.ref + ' · ' + item.title),
+    const introSlot = h('div', { class: 'intro-slot' }); if (item) introForRef(item.ref).then(f => { if (f && introSlot.isConnected) introSlot.replaceChildren(f); });
+    fill(daily, item && [h('h3', { class: 'qt-head' }, '오늘의 큐티'), h('h4', {}, item.ref + ' · ' + item.title), introSlot,
       ...[['meaning', '1 이 말씀의 뜻'], ['context', '2 앞뒤 맥락'], ['people', '3 인물들의 입장과 생각'], ['why', '4 성경에 실린 이유'], ['theology', '5 신학적 의미와 본문의 역할'], ['apply', '6 오늘의 적용']].map(([key, title]) => h('div', {}, stepTitle(title), h('p', { class: 'qt-copy' }, item[key] || ''))), deepBox(item)]);
     const passage = box.querySelector('[data-k=passage]'); if (passage) passage.placeholder = item?.ref || '예: 요 3:1-16';
   };
@@ -1531,7 +1533,16 @@ function homeView(){
 }
 const stepTitle=t=>h('h4',{class:'step-title'},h('span',{class:'step-number'},t.slice(0,1)),t.slice(2));
 // 심화: 매튜 헨리 주석(1706, 저작권 만료)을 AI가 한국어로 풀어 쓴 글. tools/gen_deep.py가 만든다.
-const deepBox=a=>a.deep&&h('details',{class:'qt-deep'},h('summary',{},'심화 · 매튜 헨리 주석'),h('p',{class:'qt-copy'},a.deep),h('p',{class:'bible-credit'},'매튜 헨리 성경 주석 요약판(1706, 저작권 만료)을 AI가 한국어로 풀어 썼어요'));
+const deepBox=a=>{if(!a.deep)return null;const p=deepParts(a.deep);return h('details',{class:'qt-deep'},h('summary',{},p.label),h('p',{class:'qt-copy'},p.body),p.source&&h('p',{class:'bible-credit'},'출처: '+p.source),p.kind==='mh'&&h('p',{class:'bible-credit'},'매튜 헨리 성경 주석 요약판(1706, 저작권 만료)을 AI가 한국어로 풀어 썼어요'));};
+// 책 개관(book-intro.json): 접힌 보조. 개관이 없는 책이면 null(접기 숨김)
+let bookIntroLoad=null;
+const loadIntro=()=>(bookIntroLoad??=fetch('./book-intro.json').then(r=>r.ok?r.json():{}).catch(()=>({})));
+const introFold=(name,data)=>{const e=data?.[name],secs=introSections(e);if(!secs.length)return null;const doms=sourceDomains(e.sources);
+ return h('details',{class:'book-intro'},h('summary',{},'이 책 개관('+name+')'),h('p',{class:'meta intro-note'},'AI가 여러 자료를 요약한 참고용이에요. 연대·인명은 원자료로 확인하세요.'),
+  secs.map(([label,v])=>h('section',{},h('h4',{},label),Array.isArray(v)?v.map(d=>h('div',{class:'intro-debate'},h('h5',{},d.topic),h('ul',{},(d.views||[]).map(x=>h('li',{},x))))):h('p',{},v))),
+  doms.length>0&&h('p',{class:'meta intro-src'},'참고 출처: '+doms.join(' · ')));};
+// 큐티처럼 장절 글만 있을 때: 책 이름을 찾아 개관 접기
+const introForRef=async ref=>{try{const [index,data]=await Promise.all([fetch('./bible/index.json').then(r=>r.json()),loadIntro()]);const r=refRange(ref,index),b=r&&index.find(x=>x.n===r.book);return b?introFold(b.name,data):null;}catch{return null;}};
 const STEPS=[['meaning','1 이 말씀의 뜻'],['context','2 앞뒤 맥락'],['people','3 인물들의 입장과 생각'],['why','4 성경에 실린 이유'],['theology','5 신학적 의미와 본문의 역할'],['apply','6 오늘의 적용']];
 const BIBLE_CODES='gen exo lev num deu jos jdg rut 1sa 2sa 1ki 2ki 1ch 2ch ezr neh est job psa pro ecc sng isa jer lam ezk dan hos jol amo oba jnh mic nam hab zep hag zec mal mat mrk luk jhn act rom 1co 2co gal eph php col 1th 2th 1ti 2ti tit phm heb jas 1pe 2pe 1jn 2jn 3jn jud rev'.split(' ');
 let wordMode='sermon';
@@ -1539,14 +1550,14 @@ async function scripture(box,text,commentary=true){
  const request=Symbol();box.request=request;
  fill(box,h('p',{},'본문을 불러오는 중이에요'));
  try{
- const [index,archive]=await Promise.all([fetch('./bible/index.json').then(r=>r.json()),fetch('./qt-archive.json').then(r=>r.json())]);const ref=refRange(text,index);
+ const [index,archive,introData]=await Promise.all([fetch('./bible/index.json').then(r=>r.json()),fetch('./qt-archive.json').then(r=>r.json()),commentary?loadIntro():null]);const ref=refRange(text,index);
  if(!ref){fill(box,h('p',{class:'err'},'본문을 찾지 못했어요. 책 이름과 장·절을 확인해 주세요'));return;}
  if(box.request!==request)return;
  const bible=await fetch('./bible/'+String(ref.book).padStart(2,'0')+'.json').then(r=>r.json());
  if(box.request!==request)return;
  if(!bible[ref.chap-1]||!bible[ref.endChap-1]||ref.v1>bible[ref.chap-1].length||ref.v2>bible[ref.endChap-1].length){fill(box,h('p',{class:'err'},'본문을 찾지 못했어요. 책 이름과 장·절을 확인해 주세요'));return;}
  const verses=[];for(let c=ref.chap;c<=ref.endChap;c++)for(let v=(c===ref.chap?ref.v1||1:1);v<=(c===ref.endChap?ref.v2||bible[c-1].length:bible[c-1].length);v++)verses.push(h('p',{},h('sup',{},c+':'+v+' '),bible[c-1][v-1]));
- fill(box,h('h3',{class:'scripture-head'},h('small',{},'성경 본문'),text),h('div',{class:'scripture'},...verses),h('p',{class:'bible-credit'},'개역한글(1961) · 저작재산권 보호기간 만료(대한성서공회 안내)'),h('a',{href:'https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book='+BIBLE_CODES[ref.book-1]+'&chap='+ref.chap,target:'_blank',rel:'noopener'},'개역개정으로 보기'));
+ fill(box,commentary&&introFold(index.find(b=>b.n===ref.book)?.name,introData),h('h3',{class:'scripture-head'},h('small',{},'성경 본문'),text),h('div',{class:'scripture'},...verses),h('p',{class:'bible-credit'},'개역한글(1961) · 저작재산권 보호기간 만료(대한성서공회 안내)'),h('a',{href:'https://www.bskorea.or.kr/bible/korbibReadpage.php?version=GAE&book='+BIBLE_CODES[ref.book-1]+'&chap='+ref.chap,target:'_blank',rel:'noopener'},'개역개정으로 보기'));
  if(commentary){const matches=archive.filter(a=>{const r=refRange(a.ref,index);return r&&overlaps(ref,r);});box.append(...(matches.length?matches.map(a=>h('section',{class:'card'},h('h3',{},a.ref+' · '+a.title),...STEPS.map(([k,t])=>h('div',{},stepTitle(t),h('p',{class:'qt-copy'},a[k]))),deepBox(a))):[h('p',{},'이 본문의 해설은 준비 중이에요')]));}
  }catch{if(box.request!==request)return;fill(box,h('p',{class:'err'},'본문을 불러오지 못했어요. 본문 범위와 인터넷 연결을 확인해 주세요.'));}
 }
