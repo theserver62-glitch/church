@@ -11,6 +11,7 @@ import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './cal
 import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250102';
 import { docs } from './docs.js?v=202610250102';
 import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250102';
+import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610250102';
 import { linksFor, byKind, resourcesFor } from './links.js?v=202610250102';
 import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250102';
 import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250102';
@@ -314,6 +315,7 @@ function screenHeading(id, title) {
   doc?.addEventListener('pointerdown',outside,true);doc?.addEventListener('keydown',esc);};
  const button=h('button',{type:'button',class:'guide-toggle','aria-label':'이 화면 도움말','aria-controls':card.id,'aria-expanded':'false',onclick:()=>card.hidden?open():close()},'?');
  card.append(h('button',{type:'button',class:'sub',onclick:()=>{close();for(const k of Object.keys(SCREEN_HELP))localStorage.setItem('church:guide:'+k,'closed');button.focus?.();}},'알겠어요'));
+ card.append(h('button',{type:'button',class:'text-button tour-again',onclick:()=>{close();if(!tourAgain())say('이 화면은 따로 안내할 게 없어요');}},'사용법 다시 보기'));
  return [h('div',{class:'row screen-heading'},h('h2',{},title),button),card];
 }
 // 접히는 카드: 머리줄(제목 · 한 줄 요약, 56px). 펼침 상태는 church:open:<id>에 기억한다
@@ -338,7 +340,7 @@ function show(tab) {
  watch(churchPath(),d=>{ $('church-title').textContent=d?.name||'교회 사역앱'; });
  for(const title of [...view.querySelectorAll('h2')].slice(1)) title.remove();
  [...view.children].forEach((el,i)=>el.style.animationDelay=(i*40)+'ms');
- scrollTo(0,0); paintBand();
+ scrollTo(0,0); paintBand(); tourScreen(tab);
 }
 function toggleTask(key, checked) {
  let role=localStorage.getItem('church:role')?.trim();
@@ -909,7 +911,7 @@ function setView() {
   h('section',{class:'song-tool'},h('h4',{},'악보 사진 올리기'),h('p',{class:'hint'},"사진을 고르고 곡명과 키를 적어요. 파일 이름이 '곡명 (키).jpg'면 저절로 채워져요. 교회 안 공유도 악보 저작권 허락(CCLI 등)이 필요할 수 있어요."),h('label',{class:'photo-pick'},h('span',{},'사진 고르기'),photoInput),photoList),
   h('details',{class:'advanced'},h('summary',{},'고급 (CSV 파일 · 악보 링크)'),h('label',{},h('span',{},'CSV 파일로 곡 넣기'),csv),h('p',{class:'meta'},'제목, 키, 메모, 주제, 분위기, 악보 주소 순서'),sheetForm),
   transferCard()), snapF&&snapF.el, logF&&logF.el,
- h('h3',{class:'set-group'},'내 기기'),fold('set-account','내 기기·계정',localStorage.getItem('church:role')||'',loginBox(),h('label',{},h('span',{},'내 역할 이름 (이 기기에만 저장)'),h('input',{value:localStorage.getItem('church:role')||'',placeholder:'예: 찬양리더',maxLength:20,oninput:e=>localStorage.setItem('church:role',e.target.value.trim())})),h('button',{class:'danger',onclick:()=>{localStorage.removeItem('church:code');history.replaceState(null,'',location.pathname+location.search);showEntry();}},'다른 교회로 바꾸기'))));
+ h('h3',{class:'set-group'},'내 기기'),fold('set-account','내 기기·계정',localStorage.getItem('church:role')||'',loginBox(),h('label',{},h('span',{},'내 역할 이름 (이 기기에만 저장)'),h('input',{value:localStorage.getItem('church:role')||'',placeholder:'예: 찬양리더',maxLength:20,oninput:e=>localStorage.setItem('church:role',e.target.value.trim())})),h('button',{type:'button',class:'sub',onclick:()=>{resetTours();show('home');}},'튜토리얼 다시 하기'),h('button',{class:'danger',onclick:()=>{localStorage.removeItem('church:code');history.replaceState(null,'',location.pathname+location.search);showEntry();}},'다른 교회로 바꾸기'))));
   watch(churchPath(), d => {
     for(const [id,note] of [['set-church',d?.name||''],['set-dept',deptsOf(d?.settings).join(' · ')]]){const n=view.querySelector('.fold-'+id+' summary');if(n)n.replaceWith(foldHead(id==='set-church'?'교회 정보':'부서·규모',note));}
     fill(sizeBox,h('h3',{},'부서 고르기'),deptPicker(d?.settings, depts=>save(churchPath(),{settings:{depts,deptSize:sizeOf({...d?.settings,depts})}})),sizePickers(d?.settings,settings=>save(churchPath(),{settings}))); 

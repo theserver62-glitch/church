@@ -1567,3 +1567,20 @@ main[data-screen=viewer]{max-width:720px;padding-top:var(--s5)}
 .kakao-songs{margin:0;padding-left:var(--s5)}
 .kakao-songs li{min-height:48px;padding:var(--s2) 0;border-bottom:1px solid var(--line)}
 .kakao-songs .meta{display:block;font-size:var(--fs-14);color:var(--ink-3)}
+
+/* 화면 첫 방문 안내(tour.js): 전체를 어둡게 덮고 대상만 구멍처럼 밝힘. 덮개가 아래 화면 클릭을 막는다 */
+.tour{position:fixed;inset:0;z-index:1000}
+.tour-hole{position:fixed;border-radius:var(--r-sm);box-shadow:0 0 0 9999px rgba(0,0,0,.6);pointer-events:none}
+.tour.ready:not(.calm) .tour-hole,.tour.ready:not(.calm) .tour-tip{transition:left 200ms ease-out,top 200ms ease-out,width 200ms ease-out,height 200ms ease-out}
+.tour-tip{position:fixed;width:min(360px,calc(100vw - 32px));padding:var(--s4);border-radius:var(--r-md);background:var(--surface);color:var(--ink);box-shadow:var(--float)}
+.tour-count{margin:0;font-size:var(--fs-14);color:var(--ink-3)}
+.tour-title{margin:var(--s1) 0 var(--s2);font-family:var(--text);font-size:var(--fs-18);line-height:var(--lh-title);letter-spacing:var(--ls-sub)}
+.tour-text{margin:0;font-size:var(--fs-16);line-height:var(--lh-body)}
+.tour-row{display:flex;justify-content:space-between;align-items:center;gap:var(--s2);margin-top:var(--s4)}
+.tour-row .tour-skip{min-height:44px;padding:0 var(--s2);font-weight:400;color:var(--ink-2)}
+.tour-off{position:fixed;left:50%;bottom:calc(72px + env(safe-area-inset-bottom));transform:translateX(-50%);min-height:var(--tap);padding:0 var(--s4);border:0;border-radius:var(--r-pill);background:rgba(0,0,0,.45);color:#fff;font-size:var(--fs-14);font-weight:400}
+.tour-off:hover{background:rgba(0,0,0,.65)}
+@media(min-width:960px){.tour-off{bottom:var(--s4)}}
+.tour button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tour-off:focus-visible{outline-color:#fff}
+body.tour-on .onb{display:none} /* 처음 3단계 띠는 투어가 끝난 뒤에 */
