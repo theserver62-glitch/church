@@ -1,22 +1,22 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250310';
-import { TEMPLATES } from './templates.js?v=202610250310';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250310';
-import { elementsFor, sundayName, callRec, nameDates, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250310';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250312';
+import { TEMPLATES } from './templates.js?v=202610250312';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250312';
+import { elementsFor, sundayName, callRec, nameDates, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250312';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250310';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250310';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610250310';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250310';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250310';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250310';
-import { docs } from './docs.js?v=202610250310';
-import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250310';
-import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610250310';
-import { introSections, sourceDomains, deepParts } from './bookintro.js?v=202610250310';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610250310';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250310';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250310';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250310';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250312';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250312';
+import { openStore, newChurchCode, NOW } from './store.js?v=202610250312';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250312';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250312';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250312';
+import { docs } from './docs.js?v=202610250312';
+import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250312';
+import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610250312';
+import { introSections, sourceDomains, deepParts } from './bookintro.js?v=202610250312';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610250312';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250312';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250312';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250312';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -1091,7 +1091,7 @@ function nowView() {
   loadGuides().then(redraw);
   watch(churchPath() + '/conti/' + nextSunday(todayIso()), d => { contiDoc = d; redraw(); });
   loadWorship().then(redraw).catch(() => {});
-  fetch('./qt-archive.json').then(r => r.json()).then(items => { const it = items[qtIndex(todayIso(), items.length)]; qtRef = it?.ref || ''; redraw(); }).catch(() => {});
+  fetch('./qt-refs.json').then(r => r.json()).then(refs => { qtRef = refs[qtIndex(todayIso(), refs.length)] || ''; redraw(); }).catch(() => {});
   watch(churchPath(), d => { data = d || {}; ready = true; draw(); }, () => fill(box, h('div', { class: 'empty-state' }, h('p', {}, '불러오지 못했어요'), h('button', { type: 'button', class: 'sub', onclick: () => show('home') }, '다시 시도'))));
 }
 
