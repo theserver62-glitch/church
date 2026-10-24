@@ -1,17 +1,17 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610242154';
-import { TEMPLATES } from './templates.js?v=202610242154';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610242154';
-import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610242154';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610242202';
+import { TEMPLATES } from './templates.js?v=202610242202';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610242202';
+import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610242202';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610242154';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610242154';
-import { openStore, newChurchCode } from './store.js?v=202610242154';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610242154';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610242154';
-import { docs } from './docs.js?v=202610242154';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610242154';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink } from './songbook.js?v=202610242154';
-import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610242154';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610242202';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610242202';
+import { openStore, newChurchCode } from './store.js?v=202610242202';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610242202';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610242202';
+import { docs } from './docs.js?v=202610242202';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610242202';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink } from './songbook.js?v=202610242202';
+import { parseBackup, backupSundays, previousSundays } from './backup.js?v=202610242202';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -368,7 +368,7 @@ function contiView() {
     drawChips();
     fill(tags,nFilters()>0&&[...['key','theme','mood'].filter(f=>filters[f]).map(f=>h('button',{type:'button',class:'tag','aria-label':NAMES[f]+' '+filters[f]+' 조건 빼기',onclick:()=>{filters[f]='';drawBrowse();}},NAMES[f]+' '+filters[f]+' ×')),h('button',{type:'button',class:'text-button',onclick:()=>{filters.key=filters.theme=filters.mood='';drawBrowse();}},'조건 초기화')]);
     const {songs,reason}=browseSongs(Object.values(book),query());
-    fill(countLine,h('span',{'aria-live':'polite'},'조건에 맞는 곡 '+songs.length+'곡 · '),h('select',{class:'sort-select',k:'song-sort','aria-label':'정렬',onchange:e=>{sort=e.target.value;drawBrowse();}},[['name','가나다순'],['rec','추천순']].map(([v,t])=>h('option',{value:v,selected:sort===v},t))));
+    fill(countLine,h('span',{'aria-live':'polite'},songs.length+'곡 · '),h('label',{class:'group-pick'},h('span',{},'묶어 보기:'),h('select',{class:'sort-select',k:'song-group','aria-label':'묶어 보기',onchange:e=>{groupBy=e.target.value;openGroups=new Set();drawBrowse();}},[['','가나다'],['key','키별'],['theme','주제별'],['mood','분위기별']].map(([v,t])=>h('option',{value:v,selected:groupBy===v},t)))));
     const q=search.value.trim(),typed=q&&!songs.some(x=>x.title===q)&&h('button',{type:'button',class:'sub add-title',onclick:()=>{setSongs([...cur,{title:q,key:'',memo:''}]);say(q+' 추가했어요');search.value='';drawBrowse();}},"+ '"+q+"' 곡으로 추가");
     const hint=!songs.length&&emptyHint({reason,onlyFav,onlySheets:useSheets(),...filters});
     const added=s=>cur.some(c=>c.title===s.title&&(c.key||'')===(s.key||''));
@@ -377,13 +377,11 @@ function contiView() {
       return h('li',{},h('div',{class:'song-info'},h('span',{class:'song-name'},isFav(s)&&h('span',{class:'fav-mark','aria-label':'즐겨찾기'},'★ '),s.title),h('small',{class:'meta'},[keys.length?'악보 '+keys.map(k=>k||'키 없음').join('·'):s.key&&s.key+'키',s.note].filter(Boolean).join(' · '))),
        hit?h('button',{type:'button',class:'sub sheet-button','aria-label':s.title+' 악보 보기',onclick:()=>showSheet(s.title,hit[0],sheets,{isFav,toggleFav})},'악보 보기'):link?h('a',{class:'sub-link',href:link,target:'_blank',rel:'noopener'},'악보 보기'):null,
        added(s)?h('button',{type:'button',class:'sub added',disabled:true},'담았음 ✓'):h('button',{type:'button',class:'sub add-button','aria-label':s.title+' 콘티에 담기',onclick:()=>{const at=cur.length;flashAt=at;setTimeout(()=>{flashAt=-1;},1600);setSongs([...cur,{title:s.title,key:s.key,memo:''}]);draw();drawBrowse();say(whichLabel()+'에 담았어요');msg.append(h('button',{onclick:()=>{setSongs(cur.filter((_,j)=>j!==at));msg.textContent='';drawBrowse();}},'실행 취소'));}},'+ 담기'));};
-    // 분류 보기 줄 [키별|주제별|분위기별|가나다]: 다시 누르면 묶음 해제. 묶음 머리줄로 접고 펼침(처음엔 첫 묶음만)
-    const grouped=useSheets()&&groupBy&&songs.length?groupFor(songs,groupBy,sheets).filter(([k])=>groupBy!=='key'||!filters.key||k===filters.key):null;
-    const pickGroup=id=>{groupBy=groupBy===id?'':id;openGroups=new Set();drawBrowse();};
+    // 묶어 보기(키별·주제별·분위기별): 묶음 머리줄로 접고 펼침(처음엔 첫 묶음만). 가나다는 묶지 않은 목록
+    const grouped=groupBy&&songs.length?groupFor(songs,groupBy,sheets).filter(([k])=>groupBy!=='key'||!filters.key||k===filters.key):null;
     if(grouped&&!openGroups.size)openGroups.add(grouped[0][0]);
-    const groupBar=useSheets()&&songs.length>0&&h('div',{class:'segments group-by',role:'group','aria-label':'분류 보기'},[['key','키별'],['theme','주제별'],['mood','분위기별'],['name','가나다']].map(([id,t])=>h('button',{type:'button',class:'sub','aria-pressed':String(groupBy===id),onclick:()=>pickGroup(id)},t)));
     const groupList=grouped&&h('div',{class:'song-groups'},grouped.map(([k,list])=>{const on=openGroups.has(k);return h('section',{class:'song-group'},h('button',{type:'button',class:'group-head','aria-expanded':String(on),onclick:()=>{on?openGroups.delete(k):openGroups.add(k);drawBrowse();}},h('span',{},k),h('small',{class:'meta'},' ('+list.length+'곡)'),h('span',{class:'chev','aria-hidden':'true'})),on&&h('ul',{class:'browse'},list.map(x=>songRow(x,groupBy==='key'?k:''))));}));
-    fill(groups,typed,groupBar,grouped?groupList:songs.length?h('ul',{class:'browse'},songs.slice(0,count).map(x=>songRow(x))):h('div',{class:'empty-state'},h('p',{},hint.text),h('button',{type:'button',class:'sub',onclick:()=>clear(hint.action)},hint.button)),!grouped&&songs.length>count&&h('button',{class:'sub more-songs',onclick:()=>{count+=20;drawBrowse();}},'더 보기 · 남은 '+(songs.length-count)+'곡'));
+    fill(groups,typed,grouped?groupList:songs.length?h('ul',{class:'browse'},songs.slice(0,count).map(x=>songRow(x))):h('div',{class:'empty-state'},h('p',{},hint.text),h('button',{type:'button',class:'sub',onclick:()=>clear(hint.action)},hint.button)),!grouped&&songs.length>count&&h('button',{class:'sub more-songs',onclick:()=>{count+=20;drawBrowse();}},'더 보기 · 남은 '+(songs.length-count)+'곡'));
   };
   const browse=h('section',{class:'card song-browser'},search,chips,tags,countLine,groups);
 

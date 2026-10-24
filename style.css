@@ -1210,3 +1210,11 @@ input.check-circle:checked::after{content:'';width:7px;height:12px;margin-top:-3
  .conti[data-pick=book] .pick-col>.song-browser,.conti[data-pick=special] .pick-col>.special-browser,.conti[data-pick=hymn] .pick-col>.hymn-browser{display:block}
  .pick-col .special-list li{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"info info" "buy add"}
 }
+/* 찬양 탭 조작 줄 4단: 개수 줄의 '묶어 보기: 가나다 ▾'가 정렬·묶기를 겸함 */
+.group-pick{display:inline-flex;align-items:center;gap:var(--s1);margin:0;font-weight:400;color:var(--ink-2)}
+.group-pick .sort-select{min-height:44px;font-size:var(--fs-16)}
+/* 곡 줄: 보기·외부 링크는 글자형(강조색), [+ 담기]만 테두리 버튼 */
+.pick-col .browse .sheet-button,.pick-col .browse .sub-link,.pick-col .browse .yt-link{min-height:44px;padding:0 var(--s2);border:0;background:transparent;color:var(--accent);font-size:var(--fs-16);font-weight:600;text-decoration:none}
+.pick-col .browse .sheet-button:hover,.pick-col .browse .sub-link:hover,.pick-col .browse .yt-link:hover{background:transparent;text-decoration:underline}
+.pick-col .browse .yt-link{display:inline-flex;align-items:center;margin-left:var(--s1);font-size:var(--fs-14)}
+.pick-col .browse-count{align-items:center;font-size:var(--fs-16)}.pick-col .browse-count>span{line-height:44px}.group-pick>span{font-size:var(--fs-16)}.pick-col .special-list .sub-link{padding-left:0}
