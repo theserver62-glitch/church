@@ -1,21 +1,21 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250147';
-import { TEMPLATES } from './templates.js?v=202610250147';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250147';
-import { elementsFor, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250147';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250148';
+import { TEMPLATES } from './templates.js?v=202610250148';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250148';
+import { elementsFor, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250148';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250147';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250147';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610250147';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250147';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250147';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250147';
-import { docs } from './docs.js?v=202610250147';
-import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250147';
-import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610250147';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610250147';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250147';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250147';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250147';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250148';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250148';
+import { openStore, newChurchCode, NOW } from './store.js?v=202610250148';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250148';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250148';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250148';
+import { docs } from './docs.js?v=202610250148';
+import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250148';
+import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610250148';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610250148';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250148';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250148';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250148';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
