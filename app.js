@@ -1,20 +1,20 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250126';
-import { TEMPLATES } from './templates.js?v=202610250126';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250126';
-import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250126';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250139';
+import { TEMPLATES } from './templates.js?v=202610250139';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250139';
+import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250139';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250126';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250126';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610250126';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250126';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250126';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250126';
-import { docs } from './docs.js?v=202610250126';
-import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250126';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610250126';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250126';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250126';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250126';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250139';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250139';
+import { openStore, newChurchCode, NOW } from './store.js?v=202610250139';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250139';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250139';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250139';
+import { docs } from './docs.js?v=202610250139';
+import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250139';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610250139';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250139';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250139';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250139';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -625,7 +625,7 @@ function contiView(startPick = 'book') {
   // 보기 링크: 받은 사람이 로그인 없이 태블릿에서 악보로 본다
   const viewUrl = () => viewerLink(location.origin + location.pathname, localStorage.getItem('church:code') || '', date.value, svc !== defSvc ? svc : '');
   const shareItems = [h('button', { type: 'button', class: 'menu-item', onclick: () => { closeMenus(); flush(); copyText(contiShare(churchName, date.value, cur) + '\n\n악보로 보기: ' + viewUrl()); } }, '카톡 보내기'), h('button', { type: 'button', class: 'menu-item', onclick: () => { closeMenus(); flush(); copyText(viewUrl()); } }, '보기 링크 복사'), h('button', { type: 'button', class: 'menu-item', onclick: openPrint }, '인쇄'), ppt, h('label', { class: 'ppt-cover' }, withCover, h('span', {}, 'PPT에 표지·순서 장도 넣기')), h('button', { type: 'button', class: 'menu-item', onclick: openWorship }, '예배 PPT')];
-  const exports = menu('share-menu', '공유·출력', '공유·출력 메뉴', ...shareItems);
+  const exports = menu('share-menu', '찬양팀에 보내기', '찬양팀에 보내기 메뉴(카톡·보기 링크·인쇄·PPT)', ...shareItems);
   // 휴대폰: [이번 주 콘티][곡 보관함][지난 콘티] 중 하나만 보인다(컴퓨터는 콘티와 보관함을 나란히)
   const tabs=h('div',{class:'segments conti-tabs',role:'group','aria-label':'콘티 화면 고르기'},[['week','콘티'],['book','CCM'],['special','특송'],['hymn','찬송가'],['history','지난 콘티']].map(([id,t])=>h('button',{type:'button',class:'sub','aria-pressed':String(id==='week'),onclick:e=>{wrap.dataset.tab=id;if(id==='special')loadSpecials();if(id==='hymn')loadHymns();for(const b of tabs.children)b.setAttribute('aria-pressed',String(b===e.currentTarget));if(id==='history')loadHistory();scrollTo(0,0);}},t,id==='week'&&badge)));
   const wrap=h('div',{class:'conti','data-tab':'week','data-pick':'book'});
@@ -940,8 +940,8 @@ function setView() {
     { // 계획서·보고 생략: 프로젝트(할 일 있는 절기·행사)마다 체크. 잠긴 것은 회색 '꼭 필요해요'
       const ss = { ...d?.settings, customEvents: d?.customEvents }, yy = +todayIso().slice(0, 4), seen = new Set();
       const evs = occurrences([yy, yy + 1], ss).filter(e => e.tasks.length && !seen.has(e.id) && seen.add(e.id)), skip = d?.settings?.skipReport || {};
-      const row = (id, name, locked) => h('label', { class: 'skip-row' + (locked ? ' locked' : '') }, h('input', { type: 'checkbox', checked: !locked && !!skip[id], disabled: locked || !editable, 'aria-label': name + ' 계획서·보고 생략', onchange: e => save(churchPath(), { settings: { skipReport: { [id]: e.target.checked } } }) }), h('span', {}, name), locked && h('small', { class: 'meta' }, '꼭 필요해요'));
-      fill(skipBox, h('p', { class: 'hint' }, '체크한 절기는 홈·절기 화면에서 계획서 작성·보고와 결과 보고 할 일이 빠져요.'), row('annual', '연간 사역계획서', true), evs.map(e => row(e.id, e.name, reportLocked(e, ss))));
+      const row = (id, name, locked) => h('label', { class: 'skip-row' + (locked ? ' locked' : '') }, h('input', { type: 'checkbox', checked: !locked && !!skip[id], disabled: locked || !editable, 'aria-label': name + ' 계획서·보고 생략', onchange: e => save(churchPath(), { settings: { skipReport: { [id]: e.target.checked } } }) }), h('span', {}, name), locked && h('small', { class: 'meta' }, id === 'annual' ? '항상 해요 · 한 해 일정·예산의 기준이에요' : '항상 해요 · 숙박·안전·예산이 커서 보고가 꼭 필요해요'));
+      fill(skipBox, h('p', { class: 'hint' }, '체크한 절기는 계획서 작성·보고와 결과 보고 할 일만 빠지고, 준비 할 일은 그대로 남아요.'), row('annual', '연간 사역계획서', true), evs.map(e => row(e.id, e.name, reportLocked(e, ss))));
     }
     const requested = !!d?.adminRequests?.[uid];
     fill(permBox, !editable && h('div', { class: 'special-note perm-note' }, h('span', {}, '설정은 리더가 승인한 사람만 바꿀 수 있어요'),
@@ -1009,7 +1009,8 @@ function focusCard(t, c) {
       h('div', {}, h('p', { class: 'pj-label' }, [c.first && !isDone && !skip && '가장 먼저', c.showEvent && t.event, PHASES[t.phase] + ' 구간'].filter(Boolean).join(' · ')),
         h('h3', { class: 'pj-focus-title' }, tTitle(t)),
         h('p', { class: 'meta' }, t.who, t.who && ' · ', late ? h('span', { class: 'late' }, fmt(t.due) + ' 마감, ' + daysTo(c.today, t.due) + '일 지남') : fmt(t.due) + '까지' + (isDone || skip ? '' : ' · ' + dLabel(daysTo(t.due, c.today))))),
-      isDone ? h('button', { type: 'button', onclick: () => toggleTask(t.key, false) }, '완료 되돌리기') : skip ? h('button', { type: 'button', onclick: () => skipTask(t.key, false) }, '건너뛰기 되돌리기') : h('button', { type: 'button', class: 'primary', onclick: () => toggleTask(t.key, true) }, '다 했어요')),
+      isDone ? h('button', { type: 'button', onclick: () => toggleTask(t.key, false) }, '완료 되돌리기') : skip ? h('button', { type: 'button', onclick: () => skipTask(t.key, false) }, '건너뛰기 되돌리기') : h('div', { class: 'pj-focus-acts' }, doc && h('a', { class: 'primary pj-start', href: doc.file, download: true, 'aria-label': doc.title + ' 받아서 시작하기' }, '양식 받아 시작하기'), h('button', { type: 'button', class: doc ? 'sub' : 'primary', onclick: () => toggleTask(t.key, true) }, '다 했어요'))),
+    late && !isDone && !skip && h('p', { class: 'pj-late-note' }, '기한이 지났어요. 다 못 했어도 괜찮아요 — 지금까지 정한 것과 아직 정할 것을 오늘 한 장으로 정리해 공유하세요.'),
     h('dl', {}, [
       g ? [row('목표', g.goal && h('span', { class: 'pj-goal' }, g.goal)), row('시작 전에', list('ul', g.before)), row('이렇게 해요', list('ol', g.steps)), row('모임에서 정할 것', list('ul', g.points)), row('끝나면 남는 것', g.output),
         row('안내문 예시', g.notice && [h('div', { class: 'pj-notice' }, g.notice), h('div', { class: 'pj-notice-actions' }, h('button', { type: 'button', onclick: () => shareText(g.notice) }, '카톡으로 보내기'), h('button', { type: 'button', class: 'text-button', onclick: () => copyText(g.notice) }, '복사'))])]
