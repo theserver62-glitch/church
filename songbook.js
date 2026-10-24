@@ -191,7 +191,7 @@ export function groupFor(songs, by, sheets = {}) {
 export const fromKakao = (doc, day, code) => doc?.source === 'kakao' || (!doc?.source && day < '2026-10-24' && code === '7XWAJ-25432');
 
 // 찬송가: 악보·PPT는 앱에 넣지 않고(한국찬송가공회 저작권) 구글 검색으로 연결
-export const hymnLinks = x => { const q = t => 'https://www.google.com/search?q=' + encodeURIComponent(t); return { sheet: q(`새찬송가 ${x.no}장 ${x.title} 악보`), ppt: q(`새찬송가 ${x.no}장 ${x.title} ppt`) }; };
+export const hymnLinks = x => { const q = t => 'https://www.google.com/search?q=' + encodeURIComponent(t); return { sheet: q(`새찬송가 ${x.no}장 ${x.title} 악보`), ppt: 'https://www.hymnkorea.org/48' }; }; // PPT는 한국찬송가공회 공식 자료실(공회가 직접 무료 제공)
 // "123" · "123장"은 장 번호 앞자리로, 그 밖은 제목에 들어 있는지로 찾는다
 export const filterHymns = (list, q = '') => { q = q.trim(); const n = q.replace(/장$/, ''); return !q ? list : /^\d+$/.test(n) ? list.filter(x => String(x.no).startsWith(n)) : list.filter(x => x.title.includes(q)); };
 
