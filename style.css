@@ -1197,3 +1197,16 @@ input.check-circle:checked::after{content:'';width:7px;height:12px;margin-top:-3
 }
 .hymn-list li{justify-content:flex-end;gap:var(--s2)}.hymn-list li>*{white-space:nowrap}.hymn-list .song-info{white-space:normal}@media(max-width:639px){.hymn-list .song-info{flex-basis:100%}}
 .hymn-browser .browse button{width:auto;padding:0 var(--s3);font-size:var(--fs-16);font-weight:600}
+/* 곡 고르는 곳 [찬양 | 특송 | 찬송가]: 폰은 맨 위 탭이 대신해 칸 제목·탭 줄을 숨기고, 컴퓨터는 오른쪽 칸 안에서 하나만 */
+.pick-col>.browse-title,.pick-tabs{display:none}
+.pick-col>.card{margin:0;padding:0;border:0;background:transparent}
+@media(min-width:960px){
+ .conti-layout{grid-template-rows:auto}
+ .conti-layout>.pick-col{grid-column:2;grid-row:1;position:sticky;top:var(--s5);max-height:calc(100vh - 48px);overflow:auto}
+ .pick-col>.browse-title{display:block}
+ .pick-tabs{display:flex;width:100%;margin:0 0 var(--s3)}
+ .pick-tabs button{font-size:var(--fs-16)}
+ .conti .pick-col>.song-browser,.conti .pick-col>.special-browser,.conti .pick-col>.hymn-browser{display:none;position:static;max-height:none;overflow:visible;grid-column:auto;grid-row:auto}
+ .conti[data-pick=book] .pick-col>.song-browser,.conti[data-pick=special] .pick-col>.special-browser,.conti[data-pick=hymn] .pick-col>.hymn-browser{display:block}
+ .pick-col .special-list li{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"info info" "buy add"}
+}
