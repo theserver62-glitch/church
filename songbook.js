@@ -110,3 +110,34 @@ export function emptyHint({ reason, onlyFav = false, onlySheets = false, key = '
   const [button, action] = key ? ['키 조건 해제', 'key'] : theme ? ['주제 조건 해제', 'theme'] : mood ? ['분위기 조건 해제', 'mood'] : onlyFav ? ['즐겨찾기 끄기', 'fav'] : onlySheets ? ['악보만 끄기', 'sheets'] : ['초기화', 'reset'];
   return { text: scope + (conds.length ? conds.join(' · ') + '에 맞는 곡이 없어요' : '맞는 곡이 없어요'), button, action };
 }
+
+// ---------- 특송 고르기(specials.json: {title, by, form[], age[], season[], theme[], where, url}) ----------
+// 절기 행사 → 특송 절기 이름
+export const SPECIAL_SEASON = { advent: '대림·성탄', christmas: '대림·성탄', lent: '사순·고난', palm: '사순·고난', easter: '부활', pentecost: '성령강림', thanksgiving: '추수·맥추감사', summerThanks: '추수·맥추감사', yearEnd: '송구영신' };
+// 다가오는 행사(가까운 순) 중 특송 절기가 있는 첫 행사 → {season, event}. 없으면 null
+export function defaultSeason(upcoming = []) {
+  const ev = upcoming.find(e => SPECIAL_SEASON[e.id]);
+  return ev ? { season: SPECIAL_SEASON[ev.id], event: ev.name } : null;
+}
+// 형태·연령·절기·주제는 모두 AND(각각 그 값을 가진 곡만), 검색은 곡명·부른 이. 가나다순
+export function filterSpecials(list, { form = '', age = '', season = '', theme = '', q = '' } = {}) {
+  const query = q.trim().toLocaleLowerCase();
+  const has = (arr, v) => !v || (arr || []).includes(v);
+  return list.filter(s => has(s.form, form) && has(s.age, age) && has(s.season, season) && has(s.theme, theme)
+    && (!query || (s.title + ' ' + (s.by || '')).toLocaleLowerCase().includes(query)))
+    .sort((a, b) => a.title.localeCompare(b.title, 'ko'));
+}
+// 0곡일 때 안내와 풀 조건 하나(가장 최근에 좁힌 순서: 주제 → 절기 → 연령 → 형태)
+export function specialEmpty({ form = '', age = '', season = '', theme = '', q = '' }) {
+  if (q.trim()) return { text: '현재 조건에 맞는 특송이 없어요', button: '초기화', action: 'reset' };
+  const conds = [form, age, season && season + ' 절기', theme].filter(Boolean);
+  const [button, action] = theme ? ['주제 조건 해제', 'theme'] : season ? ['절기 조건 해제', 'season'] : age ? ['연령 조건 해제', 'age'] : form ? ['형태 조건 해제', 'form'] : ['초기화', 'reset'];
+  return { text: (conds.length ? conds.join(' · ') + '에 맞는 특송이 없어요' : '특송 목록이 비어 있어요'), button, action };
+}
+// 특송 표시: by에서 '확인 필요' 조각은 빼고 확인된 부분만(예: "신상우 편곡")
+export const cleanBy = by => String(by || '').split('/').map(x => x.trim()).filter(x => x && !x.includes('확인 필요')).join(' / ');
+// 판매처 이름: 주소 도메인으로(악보통·중앙아트, 그 외는 도메인 이름)
+export function seller(url) {
+  let host = ''; try { host = new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; }
+  return /akbotong/.test(host) ? '악보통' : /joongangart/.test(host) ? '중앙아트' : host.split('.')[0];
+}

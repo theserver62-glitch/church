@@ -424,9 +424,11 @@ button.tl-name:hover{background:none;text-decoration-color:var(--ink-2)}
 
 /* 휴대폰: 탭 3개 중 하나만 보인다 */
 .conti-tabs{display:flex;width:100%}
-.conti-tabs button{padding:0 var(--s2)}
+.conti-tabs button{flex:1 1 auto;padding:0 6px;white-space:nowrap}
 .tab-badge{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 var(--s1);border-radius:var(--r-pill);background:var(--accent);color:#fff;font-size:var(--fs-14);font-weight:600}
 .conti[data-tab=week] .song-browser,.conti[data-tab=week] .conti-history{display:none}
+.conti:not([data-tab=special]) .special-browser{display:none}
+.conti[data-tab=special] .conti-editor,.conti[data-tab=special] .export-tools,.conti[data-tab=special] .song-browser,.conti[data-tab=special] .conti-history,.conti[data-tab=special] .conti-date,.conti[data-tab=special] .conti-hint{display:none}
 .conti[data-tab=book] .conti-editor,.conti[data-tab=book] .export-tools,.conti[data-tab=book] .conti-history,.conti[data-tab=book] .conti-date,.conti[data-tab=book] .conti-hint{display:none}
 .conti[data-tab=history] .conti-editor,.conti[data-tab=history] .export-tools,.conti[data-tab=history] .song-browser,.conti[data-tab=history] .conti-hint{display:none}
 .conti-history{border-top:0}
@@ -830,3 +832,27 @@ body:has(.event-dialog[open]){overflow:hidden}
 .week-bar{display:none}
 .conti[data-tab=book] .week-bar{position:sticky;bottom:calc(64px + env(safe-area-inset-bottom));z-index:4;display:flex;width:calc(100% + 32px);margin:0 calc(-1 * var(--s4));justify-content:flex-start;border:0;border-top:1px solid var(--line);border-radius:0;background:var(--accent-soft);color:var(--accent)}
 @media(min-width:960px){.conti[data-tab] .week-bar{display:none}}
+
+/* ---------- 특송 ---------- */
+.special-note:not(:empty){display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s2);margin-bottom:var(--s2);padding:var(--s2) var(--s3);border-radius:var(--r-sm);background:var(--accent-soft);color:var(--accent)}
+.special-note .text-button{min-height:36px;padding:0 var(--s2);color:var(--accent)}
+.chip-select{width:auto;padding:0 var(--s6) 0 var(--s3);appearance:none;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23454f4a' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 12px center;border:1px solid var(--line-2)}
+.chip-select.on{background-color:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.special-list li{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"info info" "buy add";gap:var(--s2);align-items:start;padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+.special-list .song-info{grid-area:info}
+.special-list .buy{grid-area:buy;display:grid;gap:2px;justify-items:start}
+.special-list .buy .meta{font-size:var(--fs-12);color:var(--ink-3)}
+.special-list .add-button,.special-list .added{grid-area:add;width:auto;padding:0 var(--s3);font-size:var(--fs-16);font-weight:600}
+.special-list .sub-link{padding:0 var(--s3);font-weight:600}
+.special-source{margin:var(--s3) 0 0;font-size:var(--fs-14)}
+@media(min-width:960px){
+ .conti-layout>.special-browser{grid-column:1;grid-row:4}
+ .special-list li{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"info buy add";align-items:center}
+}
+
+/* 특송 다듬기: 절기 적용 칩, 추가될 콘티 날짜, [악보 구매 ↗] 보조 · [+ 특송 추가] 주 버튼(같은 높이) */
+.season-on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.special-target{margin:var(--s2) 0 0;color:var(--accent);font-weight:600}
+.special-list .sub-link{min-height:var(--tap);background:var(--surface);color:var(--ink)}
+.special-list .add-button{min-height:var(--tap)}
+.special-list .buy .meta{font-size:var(--fs-14);color:var(--ink-2)}
