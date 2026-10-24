@@ -1,5 +1,5 @@
 // 예배 순서(worship.json)와 부서별 예배 PPT 장 구성. 화면·파일 만들기와 떼어 둔 순수 함수(테스트용).
-import { splitVerse, passageLabel } from './home.js?v=202610250416';
+import { splitVerse, passageLabel } from './home.js?v=202610250430';
 
 // 교회가 고친 순서가 있으면 그것, 없으면(null·빈 값) 기본 순서
 export const orderFor = (service, saved = {}) => (Array.isArray(saved?.[service.id]) && saved[service.id].length ? saved[service.id] : service.steps).map(s => ({ name: s.name || '', who: s.who || '', note: s.note || '' }));
