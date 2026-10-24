@@ -85,3 +85,28 @@ export function sheetFirst(list, sheets = {}, churchBook = {}, only = false, fav
   const rank = s => (fav(s) ? 0 : has(s) ? 1 : churchBook[label(s)] ? 2 : 3);
   return list.filter(s => (!only || has(s)) && (!onlyFav || fav(s))).map((s, i) => [rank(s), i, s]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(r => r[2]);
 }
+
+// ---------- 곡 보관함(2026-10-24 개편): 조건 AND, 키별 악보, 0곡 까닭 ----------
+const keyMatch = (k, want) => !want || want === '전체' || (want === '단조' ? /m$/.test(k || '') : k === want);
+// 그 제목으로 올라온 악보의 키들(가나다·알파벳순)
+export const sheetKeys = (title, sheets = {}) => [...new Set(Object.values(sheets).filter(v => v?.title === title).map(v => v.key || ''))].sort();
+// 조건은 모두 AND. 악보만 켜면 '그 키의 악보가 실제로 있는 곡'만(같은 제목은 한 줄). sort: 'name' 가나다순 · 'rec' 즐겨찾기→악보→우리 교회
+export function browseSongs(list, { sheets = {}, churchBook = {}, favorites = {}, onlySheets = false, onlyFav = false, key = '', theme = '', mood = '', q = '', sort = 'name' } = {}) {
+  // 즐겨찾기: 그 곡(제목+키). 악보만 보기에서는 같은 제목의 다른 키 즐겨찾기도 인정
+  const fav = s => Object.entries(favorites).some(([k, v]) => v === true && (k === label(s) || (onlySheets && (k === s.title || k.startsWith(s.title + ' (')))));
+  const seen = new Set();
+  let songs = filterSongs(list, { theme, mood, q }).filter(s => (!onlyFav || fav(s)) && (onlySheets ? sheetKeys(s.title, sheets).some(k => keyMatch(k, key)) : keyMatch(s.key, key)));
+  if (onlySheets) songs = songs.filter(s => !seen.has(s.title) && seen.add(s.title));
+  if (sort === 'rec') { const r = s => fav(s) ? 0 : sheetKeys(s.title, sheets).length ? 1 : churchBook[label(s)] ? 2 : 3; songs = songs.map((s, i) => [r(s), i, s]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(x => x[2]); }
+  const reason = songs.length ? '' : onlyFav && !Object.values(favorites).some(v => v === true) ? 'noFav' : q.trim() ? 'search' : 'cond';
+  return { songs, reason };
+}
+// 0곡일 때 안내와 풀 조건 하나(action: fav·key·theme·mood·sheets·reset)
+export function emptyHint({ reason, onlyFav = false, onlySheets = false, key = '', theme = '', mood = '' }) {
+  if (reason === 'noFav') return { text: '아직 즐겨찾기한 곡이 없어요', button: '즐겨찾기 끄기', action: 'fav' };
+  if (reason === 'search') return { text: '현재 조건에 맞는 곡이 없어요', button: '초기화', action: 'reset' };
+  const scope = onlyFav ? '즐겨찾기 중 ' : onlySheets ? '악보 있는 곡 중 ' : '';
+  const conds = [key && (key === '단조' ? '단조' : key + '키'), theme, mood].filter(Boolean);
+  const [button, action] = key ? ['키 조건 해제', 'key'] : theme ? ['주제 조건 해제', 'theme'] : mood ? ['분위기 조건 해제', 'mood'] : onlyFav ? ['즐겨찾기 끄기', 'fav'] : onlySheets ? ['악보만 끄기', 'sheets'] : ['초기화', 'reset'];
+  return { text: scope + (conds.length ? conds.join(' · ') + '에 맞는 곡이 없어요' : '맞는 곡이 없어요'), button, action };
+}

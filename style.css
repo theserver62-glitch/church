@@ -201,7 +201,7 @@ main[data-screen=home]{padding-bottom:168px}
 .next-sub{margin:var(--s1) 0 0;color:var(--ink-2)}
 .home-next progress{height:6px;margin:var(--s2) 0 0;max-width:360px}
 .next-go{margin-top:var(--s3)}
-.next-late{display:flex;margin:var(--s2) 0 0 calc(-1 * var(--s2));padding:0 var(--s2);color:var(--ink)}
+.home-next .next-go{margin-right:var(--s2)}
 .next-go::after{content:'';width:7px;height:7px;margin:0 0 3px var(--s1);border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg)}
 
 /* 달력(월): 휴대폰은 숫자 + 색 동그라미(행사일)·색 테두리(준비 시작)만 */
@@ -224,13 +224,17 @@ main[data-screen=home]{padding-bottom:168px}
 .prep-day .day-number::before{box-shadow:inset 0 0 0 2px var(--ps)}
 .selected .day-number::before{outline:2px solid var(--ink);outline-offset:1px}
 .outside.has-event .day-number::before{opacity:.55}
-.calendar .calendar-item,.calendar .calendar-marker,.calendar-more,.week-preps,.calendar-legend .key-bar-item{display:none}
+.calendar .calendar-item,.calendar .calendar-marker,.calendar-more,.week-preps{display:none}
+/* 휴대폰: 준비 중인 날은 칸 아래에 절기 색 3px 선 */
+.calendar[data-mode=month] .day{position:relative}
+.in-prep::after{content:'';position:absolute;left:3px;right:3px;bottom:0;height:3px;border-radius:2px;background:var(--pp)}
 .calendar-legend{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);margin:var(--s3) var(--s2) 0;font-size:var(--fs-14);color:var(--ink-2)}
 .calendar-legend span{display:inline-flex;align-items:center;gap:var(--s2)}
 .calendar-legend i{width:12px;height:12px;border-radius:var(--r-pill)}
 .key-event{background:var(--ink-2)}
 .key-prep{box-shadow:inset 0 0 0 2px var(--ink-2)}
-.key-bar{width:20px!important;height:10px!important;border-radius:2px!important;background:#EAE4EF;border-left:3px solid #5E486F}
+.key-bar{width:16px!important;height:3px!important;border-radius:2px!important;background:var(--ink-2)}
+.key-today{background:var(--accent)}
 .drop-target{outline:3px solid var(--accent);outline-offset:-3px;background:var(--accent-soft)}
 
 /* 달력(일·주·년) */
@@ -365,6 +369,7 @@ main[data-screen=home]{padding-bottom:168px}
 button.tl-name{min-height:0;min-width:0;padding:0;border:0;background:none;text-align:left;text-decoration:underline;text-decoration-style:dotted;text-decoration-color:var(--line-2);text-underline-offset:5px}
 button.tl-name:hover{background:none;text-decoration-color:var(--ink-2)}
 .tl-sub{margin:var(--s1) 0 0;color:var(--ink-2)}
+.nowrap{white-space:nowrap}
 .tl-main progress{height:4px;margin:var(--s2) 0 0;max-width:320px}
 .tl-toggle{grid-area:toggle;justify-self:start;margin-top:var(--s2);padding:0 var(--s3);white-space:nowrap}
 .tl-toggle::after{content:'';width:7px;height:7px;margin:0 var(--s1) 3px var(--s1);border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform 160ms ease-out}
@@ -384,6 +389,12 @@ button.tl-name:hover{background:none;text-decoration-color:var(--ink-2)}
 .tl-item.far .tl-name{font-weight:600}
 .tl-item.past .tl-date{border-top-color:var(--line-2);background:var(--paper)}
 .tl-item.past .tl-name,.tl-item.past .tl-day{color:var(--ink-3)}
+
+/* 3개월 뒤 일정: 접은 묶음 */
+.tl-later{border:0;margin-top:var(--s2)}
+.tl-later>summary{min-height:52px;padding:0 var(--s4);border:1px solid var(--line-2);border-radius:var(--r-md);background:var(--surface);font-size:var(--fs-18)}
+.tl-later[open]>summary{margin-bottom:var(--s4)}
+.tl-later>summary::before{order:2;margin-left:auto}
 
 /* ---------- 찬양 콘티 ---------- */
 /* 악보: 아이콘 + 글자 버튼, 보관함 맨 위 '악보 있는 곡만 보기' */
@@ -547,6 +558,8 @@ sup{font-size:var(--fs-12);color:var(--ink-3);margin-right:var(--s1)}
 .doc-row .doc-title{flex:1;font-weight:600}
 .doc-row summary .meta{flex:none}
 .doc-row>p{margin:0 0 var(--s3);color:var(--ink-2)}
+.doc-kind{flex:none;padding:0 var(--s2);border:1px solid var(--line-2);border-radius:var(--r-pill);font-size:var(--fs-12);line-height:20px;color:var(--ink-2)}
+.doc-frame iframe{display:block;width:100%;height:360px;margin:0 0 var(--s3);border:1px solid var(--line);border-radius:var(--r-sm);background:#fff}
 .doc-row>.doc-download{margin:0 0 var(--s4)}
 .docs-recommendations{margin-bottom:var(--s6)}
 .docs-recommendations h3{margin-top:0;margin-bottom:var(--s1)}
@@ -716,13 +729,14 @@ body:has(.event-dialog[open]){overflow:hidden}
  .week-preps:empty{display:none}
  .prep-ribbon{display:flex;align-items:center;gap:var(--s1);min-width:0;min-height:24px;height:24px;padding:0 var(--s2);border:0;border-radius:0;background:var(--event-bg);color:var(--event-color);font:600 var(--fs-14)/24px var(--text);text-align:left;white-space:nowrap;overflow:hidden}
  .prep-ribbon span{min-width:0;overflow:hidden;text-overflow:ellipsis}
- .prep-ribbon:not(.starts)::before{content:'←';flex:none}
- .prep-ribbon:not(.ends)::after{content:'→';flex:none;margin-left:auto}
+ .prep-ribbon:not(.starts)::before{content:'⋯';flex:none;opacity:.45;font-weight:400}
+ .prep-ribbon:not(.ends)::after{content:'⋯';flex:none;margin-left:auto;opacity:.45;font-weight:400}
  .prep-ribbon.starts{margin-left:var(--s1);border-left:3px solid var(--event-color);border-radius:4px 0 0 4px}
  .prep-ribbon.ends{margin-right:var(--s1);border-top-right-radius:4px;border-bottom-right-radius:4px}
  .prep-ribbon:hover{background:var(--event-bg);box-shadow:inset 0 0 0 1px var(--event-color)}
  .prep-ribbon.chosen{outline:2px solid var(--ink);outline-offset:1px}
- .calendar-legend .key-bar-item{display:inline-flex}
+ .in-prep::after{display:none}
+ .key-bar{width:20px!important;height:10px!important;background:#EAE4EF;border-left:3px solid #5E486F}
  .week-view{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
  .week-column{padding:var(--s2);border-bottom:0;border-right:1px solid var(--line)}
  .week-column:last-child{border-right:0}
@@ -780,3 +794,39 @@ body:has(.event-dialog[open]){overflow:hidden}
  .print-conti th,.print-conti td{border:1px solid #888;padding:16px;text-align:left}
  .print-conti tr{break-inside:avoid}
 }
+
+/* ---------- 곡 보관함(개편): 검색 → 작은 칩 → 걸린 조건 → 곡 수·정렬 → 구분선 목록 ---------- */
+.song-browser>input[type=search]{margin-bottom:var(--s2)}
+.browse-chips{display:flex;flex-wrap:wrap;gap:var(--s2);margin-bottom:var(--s2)}
+.chip{min-height:40px;padding:0 var(--s3);border-radius:var(--r-pill);font-weight:400;color:var(--ink-2)}
+@media(max-width:959px){.chip{min-height:var(--tap)}}
+.chip[aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.browse-chips .chip[aria-pressed=true]:not([aria-haspopup])::before{content:'✓';margin-right:2px}
+.browse-tags{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+.browse-tags:not(:empty){margin-bottom:var(--s2)}
+.tag{min-height:36px;padding:0 var(--s3);border-radius:var(--r-pill);background:var(--paper-2);border-color:transparent;font-size:var(--fs-14);font-weight:600}
+.browse-tags .text-button{min-height:36px;padding:0 var(--s2);font-size:var(--fs-14);font-weight:400}
+.browse-count{display:flex;align-items:center;gap:var(--s1);padding:var(--s2) 0;border-bottom:1px solid var(--line);color:var(--ink-2)}
+.sort-select{width:auto;min-height:36px;padding:0 var(--s2);border:0;background:transparent;font-weight:600;color:var(--ink)}
+.song-browser .browse li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:var(--s2);align-items:center;min-height:64px;padding:var(--s2) 0}
+.song-info{display:grid;gap:2px;min-width:0}
+.song-name{font-size:var(--fs-18);font-weight:600;line-height:1.3}
+.fav-mark{color:#a8740c;font-size:var(--fs-14)}
+.song-info .meta{font-size:var(--fs-14);color:var(--ink-2)}
+.song-browser .browse button,.song-browser .browse .sub-link{width:auto;padding:0 var(--s3);font-size:var(--fs-16);font-weight:600}
+.song-browser .browse .sheet-button{border-color:var(--accent);color:var(--accent)}
+.sub-link{display:inline-flex;align-items:center;min-height:var(--tap);border:1px solid var(--line-2);border-radius:var(--r-sm);color:var(--accent);text-decoration:none}
+.added{color:var(--accent)!important;background:var(--accent-soft)!important;border-color:transparent!important;opacity:1!important}
+.more-songs{width:100%;margin-top:var(--s2)}
+/* 필터 판: 휴대폰은 아래에서 올라오는 시트, 컴퓨터는 오른쪽 위 */
+.event-dialog.filter-dialog{height:auto;max-height:85dvh}
+.filter-group h4{margin:var(--s3) 0 var(--s2)}
+.filter-group .row{gap:var(--s2)}
+.filter-foot{position:sticky;bottom:calc(-1 * var(--s5));display:flex;gap:var(--s2);margin-top:var(--s4);padding:var(--s3) 0;background:var(--surface)}
+.filter-foot .primary{flex:1}
+@media(max-width:639px){.event-dialog.big-dialog.filter-dialog{height:auto;max-height:85dvh;margin:auto 0 0;border-radius:var(--r-lg) var(--r-lg) 0 0}}
+@media(min-width:960px){.event-dialog.big-dialog.filter-dialog{width:440px;max-width:440px;margin:96px 40px auto auto}}
+/* 보관함 탭에서만: 탭바 위 '이번 주 콘티 n곡 · 확인하기 →' */
+.week-bar{display:none}
+.conti[data-tab=book] .week-bar{position:sticky;bottom:calc(64px + env(safe-area-inset-bottom));z-index:4;display:flex;width:calc(100% + 32px);margin:0 calc(-1 * var(--s4));justify-content:flex-start;border:0;border-top:1px solid var(--line);border-radius:0;background:var(--accent-soft);color:var(--accent)}
+@media(min-width:960px){.conti[data-tab] .week-bar{display:none}}
