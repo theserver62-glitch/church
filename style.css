@@ -356,6 +356,128 @@ main[data-screen=home]{padding-bottom:168px}
 .event-card details li a{display:inline-flex;align-items:center;min-height:44px}
 .event-docs p{margin:0 0 var(--s2);font-weight:600}
 
+/* 절기 = 프로젝트(ux/season-mockup): 홈 지금 할 일 · 절기 목록 · 상세(6구간) · 끝난 절기 기록. 이름은 pj- 로 시작(다른 화면과 안 겹치게) */
+.pj{max-width:1160px}
+.pj h1{margin:0;font:700 var(--fs-28)/var(--lh-title) var(--display);letter-spacing:var(--ls-title)}
+.pj h3{margin:0;font:600 var(--fs-18)/var(--lh-title) var(--text);letter-spacing:var(--ls-sub)}
+.pj p{margin:0}
+.pj .meta{font-size:var(--fs-14)}
+.pj .late{display:inline;padding:0;background:none;font-weight:inherit;color:var(--alert)}
+.pj-more,.pj-edit{margin:0;border-top:0}
+.pj-more>summary::before{display:none}
+.pj-more>:not(summary){margin:0}
+.pj .num{font-variant-numeric:tabular-nums}
+.pj-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s3);margin-bottom:var(--s4)}
+.pj-eyebrow{font-size:var(--fs-14);color:var(--ink-2);margin-bottom:var(--s1)!important}
+.pj-sub{margin-top:var(--s1)!important;color:var(--ink-2)}
+.pj-label{display:block;font-size:var(--fs-14);font-weight:600;color:var(--ink-3)}
+.pj .text-button.pj-link{min-height:44px;padding:0 var(--s1);font-size:var(--fs-14);font-weight:400;color:var(--accent);text-decoration:underline;text-underline-offset:4px}
+.pj-eyebrow .pj-link,.pj-sub .pj-link{min-height:32px;vertical-align:baseline}
+.pj-sec-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:44px;margin-bottom:var(--s1)}
+.pj-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
+.pj-empty{padding:var(--s4)}
+.pj-split{display:grid;gap:var(--s5);grid-template-areas:"list" "focus" "rest"}
+.pj-list{grid-area:list}.pj-focus-area{grid-area:focus}.pj-rest{grid-area:rest}
+.pj-rest>*+*{margin-top:var(--s5)}
+@media(min-width:960px){.pj-split{grid-template-columns:392px minmax(0,1fr);grid-template-rows:auto 1fr;grid-template-areas:"list focus" "rest focus";align-items:start}}
+/* 할 일 줄 56px: 체크 · 제목/절기·담당·기한 · › */
+.pj-row{display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:var(--s1);align-items:center;min-height:56px;padding:0 0 0 var(--s1)}
+.pj-row+.pj-row,.pj-box>.pj-more,.pj-row+.pj-more,.pj-more>.pj-row,.pj-box>.pj-more+.pj-more{border-top:1px solid var(--line)}
+.pj-chk{display:flex;align-items:center;justify-content:center;width:44px;height:44px;cursor:pointer}
+.pj-chk input{width:22px;height:22px;min-height:22px}
+.pj-pick{display:grid;grid-template-columns:minmax(0,1fr) 20px;grid-template-areas:"t go" "m go";align-items:center;column-gap:var(--s2);width:100%;min-height:56px;padding:var(--s1) var(--s3) var(--s1) 0;border:0;border-radius:0;background:transparent;text-align:left;font-weight:400;line-height:1.4}
+.pj-pick:hover{background:transparent}
+.pj-row:hover{background:#fbfaf7}
+.pj-t{grid-area:t;display:block}
+.pj-m{grid-area:m;display:flex;flex-wrap:wrap;gap:0 var(--s2);font-size:var(--fs-14);color:var(--ink-2)}
+.pj-m>span+span::before{content:'·';margin-right:var(--s2);color:var(--line-2)}
+.pj-go{grid-area:go;width:20px;height:20px;color:var(--ink-3)}
+.pj-row.is-sel{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.pj-row.is-sel .pj-t{font-weight:600}
+.pj-row.is-done .pj-t{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line-2)}
+.pj-badge{display:inline-flex;align-items:center;height:22px;padding:0 var(--s2);margin-right:var(--s2);border-radius:var(--r-pill);background:var(--alert-bg);color:var(--alert);font-size:var(--fs-12);font-weight:600;vertical-align:2px}
+.pj-more>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:var(--s2);min-height:48px;padding:var(--s2) var(--s4);color:var(--ink-2);font-weight:400}
+.pj-more>summary::-webkit-details-marker{display:none}
+.pj-more[open]>summary .pj-go{transform:rotate(180deg)}
+/* 준비 안내 카드 */
+.pj-focus{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--s4);line-height:1.6;scroll-margin-top:var(--s4)}
+.pj-focus-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:var(--s3);padding-bottom:var(--s3);margin-bottom:var(--s3);border-bottom:1px solid var(--line)}
+.pj .pj-focus-title{margin:var(--s1) 0;font:600 var(--fs-22)/var(--lh-title) var(--text);letter-spacing:var(--ls-title)}
+.pj-focus dl{margin:0;display:grid;row-gap:var(--s3)}
+.pj-focus dt{font-size:var(--fs-14);font-weight:600;color:var(--ink-3)}
+.pj-focus dd{margin:0}
+.pj-focus dd ul,.pj-focus dd ol{margin:0;padding:0;list-style:none}
+.pj-focus dd li{position:relative;padding-left:var(--s4)}
+.pj-focus dd li+li{margin-top:var(--s1)}
+.pj-focus dd ul li::before{content:'';position:absolute;left:2px;top:.72em;width:5px;height:5px;border-radius:50%;background:var(--line-2)}
+.pj-focus dd ol{counter-reset:n}
+.pj-focus dd ol li{padding-left:32px;counter-increment:n}
+.pj-focus dd ol li::before{content:counter(n);position:absolute;left:0;top:2px;width:22px;height:22px;border-radius:50%;background:var(--paper-2);color:var(--ink-2);font-size:var(--fs-12);font-weight:600;display:flex;align-items:center;justify-content:center;line-height:1}
+.pj-goal{font-weight:600}
+.pj-notice{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sm);padding:var(--s3) var(--s4)}
+.pj-notice-actions{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s2)}
+.pj-doc{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2)}
+.pj-btn{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);min-width:44px;padding:0 var(--s4);border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface);color:var(--ink);font-weight:600;text-decoration:none}
+.pj-btn.text{border-color:transparent;padding:0 var(--s2)}
+.pj-focus-foot{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s4);padding-top:var(--s3);border-top:1px solid var(--line)}
+.pj-focus-foot .text-button{font-weight:400;color:var(--ink-2)}
+@media(min-width:960px){.pj-focus{padding:var(--s5)}.pj-focus dl{grid-template-columns:104px minmax(0,1fr);column-gap:var(--s4)}}
+/* 절기 줄(6칸 막대) · 지난 기록 줄 */
+.pj-proj,.pj-rec{display:block;width:100%;min-height:0;padding:var(--s3) var(--s4);border:0;border-radius:0;background:transparent;text-align:left;font-weight:400;line-height:var(--lh-body)}
+.pj-proj+.pj-proj,.pj-rec+.pj-rec{border-top:1px solid var(--line)}
+.pj-proj:hover,.pj-rec:hover{background:#fbfaf7}
+.pj-proj>span{display:flex}
+.pj-proj-top{align-items:baseline;justify-content:space-between;gap:var(--s2)}
+.pj-proj-name{font-weight:600}
+.pj-dday{font-weight:600;font-variant-numeric:tabular-nums}
+.pj-phasebar{display:grid!important;grid-template-columns:repeat(6,1fr);gap:2px;margin:var(--s2) 0 var(--s1)}
+.pj-phasebar i{height:6px;background:var(--paper-2);border-radius:2px}
+.pj-phasebar i.on{background:var(--accent)}
+.pj-phasebar i.past{background:#9fb8af}
+.pj-proj-now{justify-content:space-between;gap:var(--s2);font-size:var(--fs-14);color:var(--ink-2)}
+.pj-rec{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);min-height:48px;padding-top:0;padding-bottom:0}
+/* 상세: 6구간 */
+.pj-stepper{display:flex;gap:var(--s2);overflow-x:auto;margin:0 0 var(--s5);padding:0 0 var(--s1);list-style:none}
+.pj-step{flex:1 0 132px;padding:var(--s2) var(--s3);border:1px solid var(--line);border-radius:var(--r-sm);background:transparent}
+.pj-step b{display:flex;justify-content:space-between;gap:var(--s2);font-weight:600}
+.pj-step em{font-style:normal;font-size:var(--fs-12);color:var(--ink-3)}
+.pj-step span{display:block;font-size:var(--fs-14);color:var(--ink-2)}
+.pj-step.past{background:var(--surface)}
+.pj-step.now{background:var(--accent-soft);border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.pj-step.now b,.pj-step.now em{color:var(--accent)}
+.pj-side{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:var(--s4)}
+.pj-side>h3{margin-bottom:var(--s2)}
+.pj-extras h4{margin:var(--s3) 0 var(--s2);font-size:var(--fs-16)}
+.pj-extras>h4:first-of-type{margin-top:0}
+.pj-edit>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--ink-2)}
+/* 3줄 정리 */
+.pj-facts{display:grid;gap:var(--s3)}
+.pj-fact{border-left:3px solid var(--line-2);padding-left:var(--s3)}
+.pj-fact textarea{min-height:0;margin-top:var(--s1);field-sizing:content}
+.pj-summary .pj-facts{margin-bottom:var(--s3)}
+@media(min-width:600px){.pj-record .pj-facts,.pj-facts.read{grid-template-columns:repeat(3,1fr)}}
+/* 끝난 절기 기록 */
+.pj-grid{display:grid;gap:var(--s5);align-items:start}
+.pj-main>*+*,.pj-aside>*+*{margin-top:var(--s5)}
+@media(min-width:960px){.pj-grid{grid-template-columns:minmax(0,1fr) 340px}}
+.pj-log{margin:0;padding-top:var(--s2);padding-bottom:var(--s2);list-style:none}
+.pj-log li{display:grid;grid-template-columns:96px minmax(0,1fr);gap:var(--s3);padding:var(--s2) 0;align-items:baseline}
+.pj-log li+li{border-top:1px solid var(--line)}
+.pj-files ul{margin:0;padding:0;list-style:none}
+.pj-files li{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:48px}
+.pj-files li+li{border-top:1px solid var(--line)}
+.pj-years .pj-link{display:flex}
+/* 절기 목록: 컴퓨터는 왼쪽 진행 중 · 오른쪽 지난 기록 */
+.pj-lists{display:grid;gap:var(--s5);align-items:start}
+@media(min-width:960px){.pj-lists{grid-template-columns:minmax(0,1fr) 340px;max-width:1080px}}
+@media(max-width:959px){.pj-log li{grid-template-columns:1fr;gap:0}}
+@media print{
+ main#view>div.pj{display:block!important;max-width:none} /* 위 콘티 인쇄 규칙(#view>:not(.print-conti))보다 먼저 이기게 */
+ .pj-aside .pj-years,.pj-link,.pj-btn,.pj-eyebrow{display:none!important}
+ .pj-grid{grid-template-columns:1fr 240px}
+ .pj-fact textarea{border:0;padding:0;resize:none}
+}
+
 /* 절기·행사: 월별 타임라인. 왼쪽 달력 낱장 날짜, 가운데 이름·준비, 오른쪽 D-day. 가까운 30일만 진하게 */
 .timeline{max-width:820px}
 .tl-month{margin-bottom:var(--s5)}

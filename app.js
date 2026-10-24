@@ -1,18 +1,19 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610242341';
-import { TEMPLATES } from './templates.js?v=202610242341';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610242341';
-import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610242341';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250001';
+import { TEMPLATES } from './templates.js?v=202610250001';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250001';
+import { orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250001';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610242341';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610242341';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610242341';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610242341';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610242341';
-import { docs } from './docs.js?v=202610242341';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610242341';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610242341';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink } from './songbook.js?v=202610242341';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610242341';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250001';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250001';
+import { openStore, newChurchCode, NOW } from './store.js?v=202610250001';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap } from './season.js?v=202610250001';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250001';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250001';
+import { docs } from './docs.js?v=202610250001';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610250001';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250001';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink } from './songbook.js?v=202610250001';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250001';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -293,9 +294,9 @@ const PARENT = {events:'home',seasons:'schedule',ourEvents:'schedule',ccm:'conti
 const FIRST = {schedule:()=>'seasons',conti:()=>'ccm',word:()=>wordMode==='qt'?'qt':'sermon'};
 const TABS = [['home','홈'],['schedule','절기·행사'],['conti','콘티'],['word','말씀'],['more','더보기']];
 const side = h('aside', { id:'sidebar', hidden:true }); document.body.prepend(side);
-const VIEWS = { seasons:()=>scheduleView('season'), ourEvents:()=>scheduleView('custom'), ccm:()=>contiView('book'), special:()=>contiView('special'), hymn:()=>contiView('hymn'), sermon:()=>{wordMode='sermon';wordView();}, qt:()=>{wordMode='qt';wordView();}, events:churchScheduleView, worship:worshipView, home:homeView, schedule:scheduleView, conti:contiView, word:wordView, docs:docsView, equipment:equipmentView, set:setView, more:moreView };
-const GUIDES = {home:'일·주·월·년 일정과 준비할 일을 확인해요',schedule:'절기와 행사에 맞춰 준비할 일을 보여 줘요',conti:'이번 주일 찬양을 순서대로 준비해요',word:'주일설교 본문을 찾고 매일 말씀을 묵상해요',docs:'우리 교회에 필요한 준비 양식을 내려받아요',equipment:'장비의 수량과 상태를 함께 확인해요',set:'우리 교회에 맞게 설정해요',more:'자료실과 장비, 설정을 열어요'};
-const SCREEN_HELP = {"events":["챙길 일은 왼쪽 동그라미를 눌러 끝내요. 안 해도 되면 '이번엔 건너뛰기'","우리 교회가 추가한 행사가 먼저, 절기는 그 아래에 있어요","+ 행사 추가로 수련회·바자회·성경학교를 넣어요"],"worship":["예배를 고르면 순서와 담당, 메모가 나와요","▲▼·빼기·순서 추가로 우리 교회 순서로 고쳐요(기본값으로 되돌릴 수 있어요)","순서지 인쇄와 예배 PPT 만들기로 마무리해요"],"home":["◀ ▶로 기간을 옮기고, '월 보기'에서 일·주·월·년을 골라요","색 칸은 행사일, ○는 준비 시작일이에요","챙길 일과 행사 목록은 위 [교회 일정]에서 봐요"],"schedule":["행사마다 준비 진행률이 보여요","펼치면 할 일 체크와 준비물 사기 링크가 있어요","날짜를 바꾸면 준비 일정도 같이 옮겨져요"],"conti":["CCM 탭에서 키·주제·분위기로 곡을 찾아 [+ 담기]를 눌러요. 특송·찬송가 탭도 같아요","[순서 편집]으로 순서를 바꾸고, [⋯]에서 메모를 달아요","[공유·출력]에서 카톡·인쇄·PPT로 마무리해요"],"word":["주일설교: 본문(예: 막 4:1-9)을 검색하면 본문과 6단계 해설이 나와요","큐티: 매일 하나씩 순서대로 나와요","아래에 묵상을 적으면 리더들과 나눠져요"],"docs":["맨 위 '부서'를 눌러 우리 부서 자료를 골라요","서류 이름을 누르면 설명과 워드·한글 받기가 나와요","빈칸을 채워 바로 쓰면 돼요"],"equipment":["기본 장비 목록이 미리 있어요","수량과 상태를 바꾸면 바로 저장돼요","'점검 필요'·'고장'은 맨 위에 모여요"],"set":["교회 이름·규모·부서를 바꿔요","초대 링크를 복사해 리더들에게 보내요","구글로 로그인하면 다른 기기에서도 바로 들어와요"],"seasons":["교회력 절기마다 준비 진행률이 보여요","펼치면 할 일 체크와 준비물 사기 링크가 있어요","날짜를 바꾸면 준비 일정도 같이 옮겨져요"],"ourEvents":["수련회·바자회처럼 우리 교회가 추가한 행사만 모여요","+ 행사 추가로 새 행사와 준비할 일을 넣어요","펼치면 할 일 체크·날짜 바꾸기·삭제가 있어요"],"sermon":["본문(예: 막 4:1-9)을 고르거나 검색하면 본문과 6단계 해설이 나와요","PPT로 내보내기에서 본문을 예배 화면용 PPT로 받아요","아래에 묵상을 적으면 리더들과 나눠져요"],"qt":["매일 하나씩 순서대로 큐티 본문과 해설이 나와요","날짜를 바꾸면 그날 큐티를 볼 수 있어요","아래에 묵상을 적으면 리더들과 나눠져요"]};
+const VIEWS = { seasons:()=>scheduleView('season'), ourEvents:()=>scheduleView('custom'), ccm:()=>contiView('book'), special:()=>contiView('special'), hymn:()=>contiView('hymn'), sermon:()=>{wordMode='sermon';wordView();}, qt:()=>{wordMode='qt';wordView();}, events:homeView, project:projectView, worship:worshipView, home:nowView, schedule:scheduleView, conti:contiView, word:wordView, docs:docsView, equipment:equipmentView, set:setView, more:moreView };
+const GUIDES = {home:'밀린 일과 앞으로 2주 안에 할 일을 보여 줘요',schedule:'절기와 행사에 맞춰 준비할 일을 보여 줘요',conti:'이번 주일 찬양을 순서대로 준비해요',word:'주일설교 본문을 찾고 매일 말씀을 묵상해요',docs:'우리 교회에 필요한 준비 양식을 내려받아요',equipment:'장비의 수량과 상태를 함께 확인해요',set:'우리 교회에 맞게 설정해요',more:'자료실과 장비, 설정을 열어요'};
+const SCREEN_HELP = {"events":["◀ ▶로 기간을 옮기고, '월 보기'에서 일·주·월·년을 골라요","색 칸은 행사일, ○는 준비 시작일이에요","+ 행사 추가로 수련회·바자회·성경학교를 넣어요"],"worship":["예배를 고르면 순서와 담당, 메모가 나와요","▲▼·빼기·순서 추가로 우리 교회 순서로 고쳐요(기본값으로 되돌릴 수 있어요)","순서지 인쇄와 예배 PPT 만들기로 마무리해요"],"home":["할 일을 누르면 준비하는 방법이 옆(폰은 아래)에 나와요","끝냈으면 [다 했어요]나 왼쪽 네모를 눌러요","달력은 '달력으로 보기'나 [교회 일정]에서 봐요"],"schedule":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"conti":["CCM 탭에서 키·주제·분위기로 곡을 찾아 [+ 담기]를 눌러요. 특송·찬송가 탭도 같아요","[순서 편집]으로 순서를 바꾸고, [⋯]에서 메모를 달아요","[공유·출력]에서 카톡·인쇄·PPT로 마무리해요"],"word":["주일설교: 본문(예: 막 4:1-9)을 검색하면 본문과 6단계 해설이 나와요","큐티: 매일 하나씩 순서대로 나와요","아래에 묵상을 적으면 리더들과 나눠져요"],"docs":["맨 위 '부서'를 눌러 우리 부서 자료를 골라요","서류 이름을 누르면 설명과 워드·한글 받기가 나와요","빈칸을 채워 바로 쓰면 돼요"],"equipment":["기본 장비 목록이 미리 있어요","수량과 상태를 바꾸면 바로 저장돼요","'점검 필요'·'고장'은 맨 위에 모여요"],"set":["교회 이름·규모·부서를 바꿔요","초대 링크를 복사해 리더들에게 보내요","구글로 로그인하면 다른 기기에서도 바로 들어와요"],"seasons":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"ourEvents":["수련회·바자회처럼 우리 교회가 추가한 행사만 모여요","+ 행사 추가로 새 행사와 준비할 일을 넣어요","행사를 누르면 할 일·날짜 바꾸기·삭제가 있어요"],"sermon":["본문(예: 막 4:1-9)을 고르거나 검색하면 본문과 6단계 해설이 나와요","PPT로 내보내기에서 본문을 예배 화면용 PPT로 받아요","아래에 묵상을 적으면 리더들과 나눠져요"],"qt":["매일 하나씩 순서대로 큐티 본문과 해설이 나와요","날짜를 바꾸면 그날 큐티를 볼 수 있어요","아래에 묵상을 적으면 리더들과 나눠져요"]};
 // 화면 도움말: 제목 바로 옆 작은 원형 ? 버튼. 누르면 그 아래 말풍선(폰은 아래에서 올라오는 작은 시트). 본문을 밀지 않고, 바깥·Esc로 닫힘
 function screenHeading(id, title) {
  const key='church:guide:'+id;
@@ -330,7 +331,7 @@ function show(tab) {
  reset(); side.hidden=false; nav.hidden=false; view.dataset.screen=PARENT[tab]&&PARENT[tab]!=='home'?PARENT[tab]:tab;
  markNav(tab);
  const helpId=SCREEN_HELP[tab]?tab:PARENT[tab]||tab;
- if(tab!=='home')view.append(...(SCREEN_HELP[helpId]?screenHeading(helpId,MENUS.find(m=>m[0]===helpId)[1]):[h('h2',{},'더보기'),h('p',{class:'hint screen-guide'},GUIDES[tab])]));
+ if(tab!=='home'&&tab!=='project')view.append(...(SCREEN_HELP[helpId]?screenHeading(helpId,MENUS.find(m=>m[0]===helpId)[1]):[h('h2',{},'더보기'),h('p',{class:'hint screen-guide'},GUIDES[tab])]));
  VIEWS[tab]();
  watch(churchPath(),d=>{ $('church-title').textContent=d?.name||'교회 사역앱'; });
  for(const title of [...view.querySelectorAll('h2')].slice(1)) title.remove();
@@ -370,8 +371,6 @@ const taskList = (ts, done, compact = false, skipped = {}) => h('ul', { class: '
     docActions(t.doc),
     !compact && h('div', { class: 'task-more' }, isSkip ? h('button', { type: 'button', class: 'text-button', onclick: () => skipTask(t.key, false) }, '건너뛰기 되돌리기') : !isDone && [h('button', { type: 'button', class: 'text-button', onclick: () => changeTaskDue(t) }, '기한 바꾸기'), h('button', { type: 'button', class: 'text-button', onclick: () => skipTask(t.key, true) }, '이번엔 건너뛰기')]));
 }));
-
-const opened = new Set();
 
 const retreatForms = forms => h('div', {}, h('h4', {}, '수련회 양식'), RETREAT_FORMS.map(([name, cols, keep]) => keep
   ? h('label', {}, h('span', {}, name), h('textarea', { rows: 4, placeholder: cols, value: forms[name] || '', k: 'f:' + name,
@@ -931,70 +930,177 @@ function setView() {
 // 준비 시작 문구: 시작했으면 "준비 시작 10월 18일 · 준비 중", 아직이면 "3일 뒤 준비 시작"
 const mdLong = d => (+d.slice(5, 7)) + '월 ' + (+d.slice(8, 10)) + '일';
 const prepText = (start, today) => start > today ? Math.round((parse(start) - parse(today)) / 864e5) + '일 뒤 준비 시작' : '준비 시작 ' + mdLong(start) + ' · 준비 중';
-// 완료(done)와 이번엔 건너뛰기(skipped)를 합친 '챙긴 일' 표(목록에서 빼고 진행률에 셈)
-const handledMap = data => ({ ...data.done, ...Object.fromEntries(Object.entries(data.skipped || {}).filter(([, v]) => v)) });
-// 타임라인 한 줄: [달력 낱장 날짜] 이름·준비 시작·진행 막대·[준비 n개 중 m개 완료 ∨] | D-day. 가까운 30일만 진하게
-function timelineRow(ev, c) {
-  const { data, tasks, today, redraw, dateOpen } = c, handled = handledMap(data);
-  const mine = tasks.filter(t => t.key.startsWith(ev.id + '_' + ev.date + '_')), n = mine.filter(t => handled[t.key]).length, days = Math.round((parse(ev.date) - parse(today)) / 864e5), d = parse(ev.date);
-  const id = ev.id + ev.date, open = opened.has(id), start = mine.reduce((m, t) => t.due < m ? t.due : m, ev.date), tone = days < 0 ? 'past' : days <= 30 ? 'near' : 'far';
-  const toggle = () => { open ? opened.delete(id) : opened.add(id); redraw(); };
-  const hide = async () => { if (ev.custom) { if (!confirm('삭제하면 준비 체크 기록도 안 보여요')) return; await save(churchPath(), { customEvents: { [ev.id]: null } }); } else { if (!confirm(ev.name + "을(를) 이번 일정에서 숨길까요? 설정의 '절기·행사 켜고 끄기'에서 다시 켤 수 있어요")) return; await save(churchPath(), { settings: { enabled: { [ev.id + '_' + ev.date.slice(0, 4)]: false } } }); } };
-  return h('li', { class: 'tl-item ' + tone + (days === 0 ? ' dday0' : ''), style: '--ev:' + eventColor(ev.id) + ';--ev-bg:' + eventTone(ev.id)[0] },
-    h('div', { class: 'tl-date', 'aria-hidden': 'true' }, h('span', { class: 'tl-day' }, String(d.getUTCDate())), h('span', { class: 'tl-dow' }, '일월화수목금토'[d.getUTCDay()])),
-    h('div', { class: 'tl-main' },
-      h('div', { class: 'tl-name-row' }, h('strong', { class: 'tl-name' }, ev.name), ABOUT[ev.id] && h('button', { type: 'button', class: 'text-button tl-about', onclick: () => showAbout(ev) }, '절기 설명 보기'), ev.custom && h('small', { class: 'meta' }, '우리 교회 행사')),
-      h('p', { class: 'tl-sub' }, days < 0 ? (mine.length ? '준비 ' + n + '/' + mine.length + ' 완료' : '등록된 준비 항목이 없어요') : (mine.length ? (start > today ? '준비 시작까지 ' + Math.round((parse(start) - parse(today)) / 864e5) + '일' : '준비 중(' + mdLong(start) + '부터)') : '등록된 준비 항목 없음') + ' · ', h('span', { class: 'nowrap' }, '행사까지 ' + dLabel(days))),
-      mine.length > 0 && h('progress', { max: mine.length, value: n, 'aria-label': ev.name + ' 준비 진행' })),
-    h('span', { class: 'dday tl-dday' }, days < 0 ? Math.abs(days) + '일 전' : dLabel(days)),
-    h('button', { type: 'button', class: mine.length ? 'sub tl-toggle' : 'text-button tl-toggle quiet', 'aria-expanded': String(open), onclick: toggle }, mine.length ? '준비 ' + mine.length + '개 중 ' + n + '개 완료 · 남은 ' + (mine.length - n) : '날짜 바꾸기 · 숨기기'),
-    open && h('div', { class: 'tl-detail' }, mine.length ? taskList(mine, data.done || {}, false, data.skipped || {}) : null, eventExtras(ev, data),
-      h('div', { class: 'tl-more' }, h('button', { type: 'button', class: 'text-button', 'aria-expanded': String(dateOpen.has(id)), onclick: () => { dateOpen.has(id) ? dateOpen.delete(id) : dateOpen.add(id); redraw(); } }, '날짜 바꾸기'), h('button', { type: 'button', class: 'text-button', onclick: hide }, ev.custom ? '이 행사 삭제' : '우리 부서에서 숨기기'), dateOpen.has(id) && eventEditor(ev, data, () => { dateOpen.delete(id); redraw(); }, false, false))));
+// ---------- 절기 = 프로젝트: 홈 '지금 할 일' · 절기 목록 · 절기 상세 · 끝난 절기 기록 ----------
+// 앱은 묻지 않고 알려 준다: 교회의 결정을 입력받지 않고(기록용 3줄 메모만), 화면마다 채운 버튼은 1개
+let G = new Map(), guidesLoad = null;
+const loadGuides = () => (guidesLoad ??= fetch('./task-guides.json').then(r => r.ok ? r.json() : []).then(guideMap).catch(() => new Map())).then(m => (G = m));
+const tTitle = t => G.get(t.text)?.title || t.text;
+const daysTo = (d, today) => Math.round((parse(d) - parse(today)) / 864e5);
+const fmtLong = d => mdLong(d) + '(' + '일월화수목금토'[parse(d).getUTCDay()] + ')';
+const pjChevron = (down = false) => { const ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'), p = document.createElementNS(ns, 'path'); for (const [k, v] of Object.entries({ viewBox: '0 0 20 20', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.8, class: 'pj-go', 'aria-hidden': 'true' })) svg.setAttribute(k, v); p.setAttribute('d', down ? 'm5 8 5 5 5-5' : 'm8 5 5 5-5 5'); svg.append(p); return svg; };
+// 카톡으로 보내기: 휴대폰은 공유 창(카톡 고르기), 안 되면 복사
+const shareText = text => navigator.share ? navigator.share({ text }).catch(e => { if (e?.name !== 'AbortError') copyText(text); }) : copyText(text);
+const tasksShare = (title, ts) => '[' + title + ']\n' + ts.map(t => '☐ ' + tTitle(t) + ' — ' + fmt(t.due) + '까지' + (t.who ? ' · ' + t.who : '')).join('\n');
+const pjDoc = num => num && docs.find(d => d.file.startsWith('docs/' + num + '_'));
+let projectKey = '', pickHome = '', pickProject = '';
+const openProject = ev => { projectKey = evKey(ev); pickProject = ''; show('project'); };
+const projectList = ev => show(ev.custom ? 'ourEvents' : 'seasons');
+
+// 할 일 한 줄: [체크] 제목(밀린 날 표시)·절기·담당·기한 [›]. 줄을 누르면 오른쪽(폰은 아래) 준비 안내
+function pjRow(t, c) {
+  const isDone = !!c.done[t.key], late = !isDone && t.due < c.today, sel = c.sel === t.key, by = c.data.done?.[t.key];
+  return h('div', { class: 'pj-row' + (sel ? ' is-sel' : '') + (isDone ? ' is-done' : '') },
+    h('label', { class: 'pj-chk' }, h('input', { type: 'checkbox', checked: isDone, k: 'c:' + t.key, 'aria-label': tTitle(t) + ' 다 했어요', onchange: e => toggleTask(t.key, e.target.checked) })),
+    h('button', { type: 'button', class: 'pj-pick', 'aria-pressed': String(sel), onclick: () => c.pick(t) },
+      h('span', { class: 'pj-t' }, late && h('span', { class: 'pj-badge' }, daysTo(c.today, t.due) + '일 지남'), tTitle(t)),
+      h('span', { class: 'pj-m' }, c.showEvent && h('span', {}, t.event), t.who && h('span', {}, t.who),
+        h('span', { class: 'num' + (late ? ' late' : '') }, isDone ? (by?.at ? md(by.at) + ' 완료' : c.data.skipped?.[t.key] ? '건너뜀' : '완료') : fmt(t.due) + (late ? '' : ' · ' + dLabel(daysTo(t.due, c.today))))),
+      pjChevron()));
 }
-// 월별로 묶는다: "11월", 다른 해면 "2027년 1월"
-function timelineMonths(evs, c) {
-  const months = []; for (const ev of evs) { const k = ev.date.slice(0, 7); (months.at(-1)?.[0] === k ? months.at(-1)[1] : months[months.push([k, []]) - 1][1]).push(ev); }
-  return months.map(([k, list]) => h('section', { class: 'tl-month' }, h('h3', {}, (k.slice(0, 4) !== c.today.slice(0, 4) ? k.slice(0, 4) + '년 ' : '') + (+k.slice(5)) + '월'), h('ul', { class: 'tl-list' }, list.map(ev => timelineRow(ev, c)))));
+// 기록용 3줄 정리(결정 입력이 아니라 기록). records.{절기 key}.{good|bad|next}
+const MEMO = [['good', '잘된 점'], ['bad', '아쉬운 점'], ['next', '내년엔']];
+const memoFields = (key, data) => h('div', { class: 'pj-facts' }, MEMO.map(([f, label]) => h('label', { class: 'pj-fact' }, h('span', { class: 'pj-label' }, label),
+  h('textarea', { rows: 2, maxLength: 300, value: data.records?.[key]?.[f] || '', k: 'r:' + key + f, 'aria-label': label, oninput: e => { const v = e.target.value; later('r:' + key + f, () => save(churchPath(), { records: { [key]: { [f]: v } } })); } }))));
+// 준비 안내 카드(베테랑의 방법). 안내가 없으면 원문 할 일 + 담당 + 관련 서류만
+function focusCard(t, c) {
+  if (!t) return null;
+  const g = G.get(t.text), isDone = !!c.data.done?.[t.key], skip = !isDone && !!c.data.skipped?.[t.key], late = !isDone && !skip && t.due < c.today, doc = pjDoc(t.doc);
+  const row = (dt, dd) => dd && [h('dt', {}, dt), h('dd', {}, dd)];
+  const list = (tag, xs) => xs?.length ? h(tag, {}, xs.map(x => h('li', {}, x))) : null;
+  return h('article', { class: 'pj-focus', id: 'pj-focus' },
+    h('div', { class: 'pj-focus-head' },
+      h('div', {}, h('p', { class: 'pj-label' }, [c.first && !isDone && !skip && '가장 먼저', c.showEvent && t.event, PHASES[t.phase] + ' 구간'].filter(Boolean).join(' · ')),
+        h('h3', { class: 'pj-focus-title' }, tTitle(t)),
+        h('p', { class: 'meta' }, t.who, t.who && ' · ', late ? h('span', { class: 'late' }, fmt(t.due) + ' 마감, ' + daysTo(c.today, t.due) + '일 지남') : fmt(t.due) + '까지' + (isDone || skip ? '' : ' · ' + dLabel(daysTo(t.due, c.today))))),
+      isDone ? h('button', { type: 'button', onclick: () => toggleTask(t.key, false) }, '완료 되돌리기') : skip ? h('button', { type: 'button', onclick: () => skipTask(t.key, false) }, '건너뛰기 되돌리기') : h('button', { type: 'button', class: 'primary', onclick: () => toggleTask(t.key, true) }, '다 했어요')),
+    h('dl', {}, [
+      g ? [row('목표', g.goal && h('span', { class: 'pj-goal' }, g.goal)), row('시작 전에', list('ul', g.before)), row('이렇게 해요', list('ol', g.steps)), row('모임에서 정할 것', list('ul', g.points)), row('끝나면 남는 것', g.output),
+        row('안내문 예시', g.notice && [h('div', { class: 'pj-notice' }, g.notice), h('div', { class: 'pj-notice-actions' }, h('button', { type: 'button', onclick: () => shareText(g.notice) }, '카톡으로 보내기'), h('button', { type: 'button', class: 'text-button', onclick: () => copyText(g.notice) }, '복사'))])]
+        : row('할 일', t.text),
+      row('관련 서류', doc && h('div', { class: 'pj-doc' }, h('span', {}, doc.title, h('span', { class: 'meta' }, ' · 워드')), h('span', {}, h('button', { type: 'button', class: 'text-button', onclick: () => showPreview(doc) }, '미리보기'), h('a', { class: 'pj-btn', href: doc.file, download: true, 'aria-label': doc.title + ' 워드 받기' }, '받기')))),
+      g && row('자주 놓치는 것', g.tip),
+      t.phase === 5 && row('3줄 정리', [memoFields(t.key.slice(0, t.key.lastIndexOf('_')), c.data), h('p', { class: 'meta' }, '적어 두면 끝난 절기 기록과 내년 이맘때 상세 화면에 보여요')])].flat(3)),
+    !isDone && !skip && h('div', { class: 'pj-focus-foot' }, [h('button', { type: 'button', class: 'text-button', onclick: () => changeTaskDue(t) }, '기한 바꾸기'), h('button', { type: 'button', class: 'text-button', onclick: () => skipTask(t.key, true) }, '이번엔 건너뛰기')]));
 }
-function scheduleView(kind='season') {
- const list=h('div',{class:'timeline'});let mode='future',data={};const dateOpen=new Set(),mine=kind==='custom';
- // 폰은 화면 위 [절기|행사], 컴퓨터는 사이드바 하위 메뉴
- view.append(h('div',{class:'segments only-narrow'},[['season','seasons','절기'],['custom','ourEvents','행사']].map(([k,id,t])=>h('button',{type:'button',class:'sub','aria-pressed':String(k===kind),onclick:()=>k!==kind&&show(id)},t))));
- // 앞으로(오늘부터 12개월) / 지난 일정(지난 12개월)
- const tabs=h('div',{class:'segments'},[['future','앞으로'],['past','지난 일정']].map(([id,t])=>h('button',{class:'sub','aria-pressed':String(id===mode),onclick:()=>{mode=id;for(const b of tabs.children)b.setAttribute('aria-pressed',String(b.textContent===t));draw();}},t)));
- const addBox=h('section',{class:'card',hidden:true});view.append(h('div',{class:'schedule-bar'},tabs,mine&&h('button',{class:'primary',onclick:()=>{addBox.hidden=false;addEventPanel(addBox,todayIso(),()=>{addBox.hidden=true;draw();});}},'+ 행사 추가')),addBox,list);
- fill(list,h('p',{class:'hint'},'일정을 불러오는 중이에요'));
- function draw(){
- const s={...data.settings,customEvents:data.customEvents},today=todayIso(),y=+today.slice(0,4),tasks=tasksAround(today,s),yearLater=addDays(today,365),yearAgo=addDays(today,-365),c={data,tasks,today,redraw:draw,dateOpen};
- const all=(mode==='future'?occurrences([y,y+1],s).filter(ev=>ev.date>=today&&ev.date<yearLater):occurrences([y-1,y],s).filter(ev=>ev.date<today&&ev.date>=yearAgo).reverse()).filter(ev=>!!ev.custom===mine);
- // '앞으로'에서 3개월보다 먼 행사는 접은 묶음으로
- const cut=(()=>{const d=parse(today);d.setUTCMonth(d.getUTCMonth()+3);return d.toISOString().slice(0,10);})(),soon=mode==='future'?all.filter(ev=>ev.date<cut):all,later=mode==='future'?all.filter(ev=>ev.date>=cut):[];
- fill(list,all.length?[...timelineMonths(soon,c),later.length>0&&h('details',{class:'tl-later',open:opened.has('later'),ontoggle:e=>e.target.open?opened.add('later'):opened.delete('later')},h('summary',{},'3개월 뒤 일정 '+later.length+'개'),timelineMonths(later,c))]:h('div',{class:'empty-state'},h('p',{},(mode==='future'?'앞으로 12개월 안에 ':'지난 12개월 동안 ')+(mine?'추가한 행사가 없어요. 수련회·바자회·성경학교를 넣어 보세요':'절기가 없어요')),mine&&mode==='future'&&h('button',{type:'button',class:'sub',onclick:()=>{addBox.hidden=false;addEventPanel(addBox,todayIso(),()=>{addBox.hidden=true;draw();});}},'첫 행사 추가')));
- }
- watch(churchPath(),d=>{data=d||{};draw();},()=>fill(list,h('div',{class:'empty-state'},h('p',{},'불러오지 못했어요'),h('button',{type:'button',class:'sub',onclick:()=>show(mine?'ourEvents':'seasons')},'다시 시도'))));
+// 절기 한 줄: 이름 · D-day · 6칸 막대 · 지금 구간(밀린 일) · n/m 완료
+function pjProj(ev, st, today) {
+  return h('button', { type: 'button', class: 'pj-proj', onclick: () => openProject(ev) },
+    h('span', { class: 'pj-proj-top' }, h('span', { class: 'pj-proj-name' }, ev.name), h('span', { class: 'pj-dday' }, dLabel(daysTo(ev.date, today)))),
+    h('span', { class: 'pj-phasebar', 'aria-label': st.started ? '6구간 중 ' + (st.phase + 1) + '번째(' + PHASES[st.phase] + ')' : '아직 시작 전' }, PHASES.map((_, i) => h('i', { class: st.started ? (i < st.phase ? 'past' : i === st.phase ? 'on' : '') : '' }))),
+    h('span', { class: 'pj-proj-now' }, h('span', {}, !st.mine.length ? '준비할 일 없음' : st.started ? ['지금 ', h('b', {}, PHASES[st.phase]), ' · ', st.overdue.length ? h('span', { class: 'late' }, '밀린 일 ' + st.overdue.length) : fmt(ev.date)] : '첫 할 일 ' + fmt(st.first)), h('span', { class: 'num' }, st.doneCount + '/' + st.mine.length + ' 완료')));
+}
+const pjRec = (ev, st, data) => h('button', { type: 'button', class: 'pj-rec', onclick: () => openProject(ev) }, h('span', {}, ev.name + ' ', h('span', { class: 'meta num' }, (ev.date.slice(0, 4) !== todayIso().slice(0, 4) ? ev.date.slice(2, 4) + '년 ' : '') + md(ev.date))), h('span', { class: 'meta' }, data.records?.[evKey(ev)] ? '3줄 정리 있음' : '할 일 ' + st.doneCount + '/' + st.mine.length));
+// 절기·행사 목록 자료: 진행 중·다가오는(1년 안) / 끝난(1년 안, 최근 먼저). 할 일 0개 절기는 달력에만(교회가 넣은 행사는 관리하려고 남김)
+function projects(data, kind = 'all') {
+  const s = { ...data.settings, customEvents: data.customEvents }, today = todayIso(), y = +today.slice(0, 4), tasks = seasonTasks(today, s), done = handled(data.done, data.skipped);
+  const evs = occurrences([y - 1, y, y + 1], s).filter(ev => (kind === 'all' || !!ev.custom === (kind === 'custom')) && (ev.custom || ev.tasks.length)).map(ev => [ev, projectState(ev, tasks, today, done)]);
+  return { today, tasks, done, s, active: evs.filter(([ev, st]) => !st.ended && ev.date < addDays(today, 365)), past: evs.filter(([ev, st]) => st.ended && ev.date >= addDays(today, -365)).reverse() };
+}
+const secHead = (title, link) => h('div', { class: 'pj-sec-head' }, h('h3', {}, title), link);
+const pjLink = (text, onclick) => h('button', { type: 'button', class: 'text-button pj-link', onclick }, text);
+
+// 홈: 지금 할 일(밀린 일 + 앞으로 14일)
+function nowView() {
+  const box = h('div', { class: 'pj' }); view.append(box);
+  let data = {};
+  fill(box, h('p', { class: 'hint loading' }, '할 일을 불러오는 중이에요'));
+  const draw = () => {
+    const p = projects(data), { today, tasks, done } = p, r = nowTasks(tasks, today, done), all = [...r.now, ...r.later];
+    const sel = all.find(t => t.key === pickHome) || all[0], c = { data, done, today, sel: sel?.key, showEvent: true, pick: t => { pickHome = t.key; draw(); if (!matchMedia('(min-width:960px)').matches) $('pj-focus')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
+    const next = all.find(t => t.due >= today), reqN = store.mode === 'shared' && isAdmin(data, store.auth?.user?.()?.uid) ? requestList(data).length : 0;
+    fill(box,
+      h('div', { class: 'pj-head' }, h('div', {}, h('p', { class: 'pj-eyebrow num' }, mdLong(today) + ' ' + '일월화수목금토'[parse(today).getUTCDay()] + '요일 · ' + deptsOf(data.settings).join(' · ')), h('h1', {}, '지금 할 일'),
+        h('p', { class: 'pj-sub' }, all.length ? [all.length + '개', r.overdue > 0 && ' · ', r.overdue > 0 && h('span', { class: 'late' }, r.overdue + '개는 기한이 지났어요'), next && ' · 다음 기한 ' + fmt(next.due)] : '앞으로 2주 안에 할 일이 없어요')),
+        all.length > 0 && h('button', { type: 'button', onclick: () => shareText(tasksShare((data.name || '우리 교회') + ' 지금 할 일', all)) }, '할 일 ' + all.length + '개 카톡으로 보내기')),
+      reqN > 0 && h('p', { class: 'perm-alert' }, h('span', {}, '권한 요청 ' + reqN + '건'), h('button', { type: 'button', class: 'text-button go', onclick: () => { localStorage.setItem('church:open:set-admin', '1'); show('set'); } }, '보기')),
+      h('div', { class: 'pj-split' },
+        h('div', { class: 'pj-list' }, all.length ? h('div', { class: 'pj-box' }, r.now.map(t => pjRow(t, c)),
+          r.later.length > 0 && h('details', { class: 'pj-more', open: r.later.some(t => t.key === sel?.key) || !r.now.length }, h('summary', {}, h('span', {}, '그다음 주(' + md(addDays(today, 8)) + '~' + md(addDays(today, 14)) + ') ' + r.later.length + '개'), pjChevron(true)), r.later.map(t => pjRow(t, c))))
+          : h('div', { class: 'pj-box pj-empty' }, h('p', {}, '지금 챙길 일이 없어요.'), (() => { const n = tasks.find(t => t.due > today && !done[t.key]); return n && h('p', { class: 'meta' }, '다음 할 일 · ' + fmt(n.due) + ' ' + tTitle(n) + ' (' + n.event + ')'); })())),
+        h('div', { class: 'pj-focus-area' }, focusCard(sel, { ...c, first: sel === all[0] })),
+        h('div', { class: 'pj-rest' },
+          h('section', {}, secHead('준비 중인 절기·행사', pjLink('달력으로 보기', () => show('events'))), p.active.length ? h('div', { class: 'pj-box' }, p.active.slice(0, 4).map(([ev, st]) => pjProj(ev, st, today))) : h('p', { class: 'hint' }, '다가오는 절기가 없어요')),
+          p.past.length > 0 && h('section', {}, secHead('지난 절기 기록', pjLink('모두 보기', () => show('seasons'))), h('div', { class: 'pj-box' }, p.past.slice(0, 3).map(([ev, st]) => pjRec(ev, st, data)))))));
+  };
+  loadGuides().then(() => box.isConnected && draw());
+  watch(churchPath(), d => { data = d || {}; draw(); }, () => fill(box, h('div', { class: 'empty-state' }, h('p', {}, '불러오지 못했어요'), h('button', { type: 'button', class: 'sub', onclick: () => show('home') }, '다시 시도'))));
+}
+
+// 절기·행사 > 절기 / 행사: 진행 중·다가오는 목록(→ 상세) + 끝난 기록(→ 기록)
+function scheduleView(kind = 'season') {
+  const mine = kind === 'custom', box = h('div', { class: 'pj pj-lists' }), addBox = h('section', { class: 'card', hidden: true });
+  const add = () => { addBox.hidden = false; addEventPanel(addBox, todayIso(), () => { addBox.hidden = true; draw(); }); };
+  // 폰은 화면 위 [절기|행사], 컴퓨터는 사이드바 하위 메뉴
+  view.append(h('div', { class: 'segments only-narrow' }, [['season', 'seasons', '절기'], ['custom', 'ourEvents', '행사']].map(([k, id, t]) => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(k === kind), onclick: () => k !== kind && show(id) }, t))),
+    ...(mine ? [h('div', { class: 'schedule-bar' }, h('button', { class: 'primary', onclick: add }, '+ 행사 추가'))] : []), addBox, box);
+  let data = {};
+  fill(box, h('p', { class: 'hint' }, '일정을 불러오는 중이에요'));
+  const draw = () => {
+    const p = projects(data, mine ? 'custom' : 'season'), word = mine ? '행사' : '절기';
+    fill(box,
+      h('section', {}, secHead('진행 중·다가오는 ' + word, pjLink('달력으로 보기', () => show('events'))), p.active.length ? h('div', { class: 'pj-box' }, p.active.map(([ev, st]) => pjProj(ev, st, p.today)))
+        : h('div', { class: 'empty-state' }, h('p', {}, mine ? '아직 추가한 행사가 없어요. 수련회·바자회·성경학교를 넣어 보세요' : '앞으로 12개월 안에 절기가 없어요'), mine && h('button', { type: 'button', class: 'sub', onclick: add }, '첫 행사 추가'))),
+      h('section', {}, secHead('지난 기록'), p.past.length ? h('div', { class: 'pj-box' }, p.past.map(([ev, st]) => pjRec(ev, st, data))) : h('p', { class: 'hint' }, '최근 1년 동안 끝난 ' + word + '이 없어요')));
+  };
+  watch(churchPath(), d => { data = d || {}; draw(); }, () => fill(box, h('div', { class: 'empty-state' }, h('p', {}, '불러오지 못했어요'), h('button', { type: 'button', class: 'sub', onclick: () => show(mine ? 'ourEvents' : 'seasons') }, '다시 시도'))));
+}
+
+// 절기 상세(진행 중·다가오는) / 끝난 절기 기록. projectKey = '대림절 id_날짜'
+function projectView() {
+  const box = h('div', { class: 'pj' }); view.append(box);
+  let data = {};
+  fill(box, h('p', { class: 'hint loading' }, '불러오는 중이에요'));
+  const draw = () => {
+    const s = { ...data.settings, customEvents: data.customEvents }, today = todayIso(), y = +today.slice(0, 4), tasks = seasonTasks(today, s), done = handled(data.done, data.skipped);
+    const evs = occurrences([y - 1, y, y + 1], s), ev = evs.find(e => evKey(e) === projectKey);
+    if (!ev) { fill(box, h('div', { class: 'empty-state' }, h('p', {}, '이 절기·행사를 찾지 못했어요(숨겼거나 삭제했을 수 있어요)'), h('button', { type: 'button', class: 'sub', onclick: () => show('seasons') }, '절기 목록으로'))); return; }
+    markNav(ev.custom ? 'ourEvents' : 'seasons');
+    const st = projectState(ev, tasks, today, done), crumb = h('button', { type: 'button', class: 'text-button pj-link', onclick: () => projectList(ev) }, '절기·행사');
+    const others = evs.filter(e => e.id === ev.id && e.date !== ev.date && currentPhase(e.date, today) === 6);
+    if (st.ended) return fill(box, recordBody(ev, st, data, done, crumb, others));
+    const c = { data, done, today, showEvent: false, pick: t => { pickProject = t.key; draw(); if (!matchMedia('(min-width:960px)').matches) $('pj-focus')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
+    const cur = Math.min(st.phase, 5), rows = [...st.overdue, ...st.byPhase[cur]], undone = rows.find(t => !done[t.key]) || st.mine.find(t => !done[t.key]);
+    const sel = st.mine.find(t => t.key === pickProject) || undone || rows[0] || st.mine[0];
+    c.sel = sel?.key;
+    const ends = phaseEnds(ev.date), last = others.at(-1), lastMemo = last && data.records?.[evKey(last)];
+    fill(box,
+      h('div', { class: 'pj-head' }, h('div', {}, h('p', { class: 'pj-eyebrow' }, crumb, ' › ' + ev.date.slice(0, 4)), h('h1', {}, ev.name),
+        h('p', { class: 'pj-sub num' }, fmtLong(ev.date) + ' · ' + dLabel(daysTo(ev.date, today)), ABOUT[ev.id] && [' · ', h('button', { type: 'button', class: 'text-button pj-link', onclick: () => showAbout(ev) }, '무슨 절기인가요?')])),
+        st.mine.length > 0 && h('button', { type: 'button', onclick: () => shareText(tasksShare((data.name ? data.name + ' ' : '') + ev.name + ' 준비', st.mine.filter(t => !done[t.key]))) }, '이 ' + (ev.custom ? '행사' : '절기') + ' 할 일 카톡으로 보내기')),
+      h('ol', { class: 'pj-stepper', 'aria-label': '준비 구간 6개' }, PHASES.map((name, i) => { const ts = st.byPhase[i], now = st.started && i === cur, past = i < cur; return h('li', { class: 'pj-step' + (now ? ' now' : past ? ' past' : ''), ...(now && { 'aria-current': 'step' }) },
+        h('b', {}, name, h('em', {}, past ? '지남' : now ? '진행 중' : '시작 전')), h('span', { class: 'num' }, (i === 4 ? fmt(ends[4]) : md(ends[i]) + '까지') + (ts.length ? ' · ' + (past || now ? ts.filter(t => done[t.key]).length + '/' + ts.length : ts.length + '개') : ''))); })),
+      h('div', { class: 'pj-split' },
+        h('div', { class: 'pj-list' }, secHead((st.started ? '지금: ' : '곧 시작: ') + PHASES[cur] + ' 구간', h('span', { class: 'meta num' }, (cur === 4 ? fmt(ends[4]) : fmt(ends[cur]) + '까지') + ' · ' + st.byPhase[cur].length + '개 중 ' + st.byPhase[cur].filter(t => done[t.key]).length + '개')),
+          rows.length ? h('div', { class: 'pj-box' }, rows.map(t => pjRow(t, c))) : h('div', { class: 'pj-box pj-empty' }, h('p', { class: 'meta' }, '이 구간에는 할 일이 없어요. 아래 다음 구간을 보세요'))),
+        h('div', { class: 'pj-focus-area' }, focusCard(sel, { ...c, first: sel === undone && rows.includes(sel) })),
+        h('div', { class: 'pj-rest' },
+          PHASES.some((_, i) => i > cur && st.byPhase[i].length) && h('section', {}, secHead('다음 구간', h('span', { class: 'meta' }, '눌러서 미리 보기')), h('div', { class: 'pj-box' }, PHASES.map((name, i) => i > cur && st.byPhase[i].length > 0 && h('details', { class: 'pj-more', open: st.byPhase[i].some(t => t.key === sel?.key) }, h('summary', {}, h('span', {}, h('b', {}, name), h('span', { class: 'meta num' }, ' · ' + md(ends[i]) + '까지 · ' + st.byPhase[i].length + '개')), pjChevron(true)), st.byPhase[i].map(t => pjRow(t, c)))))),
+          PHASES.some((_, i) => i < cur && st.byPhase[i].length) && h('details', { class: 'pj-more pj-box' }, h('summary', {}, h('span', {}, '지난 구간 할 일 ' + st.byPhase.slice(0, cur).flat().length + '개'), pjChevron(true)), st.byPhase.slice(0, cur).flat().map(t => pjRow(t, c))),
+          h('section', { class: 'pj-side' }, h('h3', {}, '지난해 ' + ev.name + ' 기록'), lastMemo ? [h('div', { class: 'pj-facts read' }, MEMO.map(([f, label]) => lastMemo[f] && h('p', { class: 'pj-fact' }, h('span', { class: 'pj-label' }, label), lastMemo[f]))), pjLink('지난 기록 열기', () => openProject(last))]
+            : h('p', { class: 'meta' }, "아직 없어요. 올해 '정리·기록' 구간에서 3줄을 남기면, 내년 이맘때 여기에 떠요.")),
+          (ev.buy?.length > 0 || ev.id === 'retreat') && h('section', { class: 'pj-side pj-extras' }, h('h3', {}, '준비물'), eventExtras(ev, data).slice(0, 3)), // 서류는 할 일 안내 카드에
+          h('details', { class: 'pj-side pj-edit' }, h('summary', {}, '날짜 바꾸기 · ' + (ev.custom ? '삭제' : '올해 끄기')), eventEditor(ev, data, () => {}, false, true)))));
+  };
+  loadGuides().then(() => box.isConnected && draw());
+  watch(churchPath(), d => { data = d || {}; draw(); }, () => fill(box, h('div', { class: 'empty-state' }, h('p', {}, '불러오지 못했어요'), h('button', { type: 'button', class: 'sub', onclick: () => show('project') }, '다시 시도'))));
+}
+// 끝난 절기 기록: 3줄 정리 · 무엇을 언제 했나 · 남은 서류 · 다른 해. [한 장으로 저장] = 인쇄(PDF)
+function recordBody(ev, st, data, done, crumb, others) {
+  const n = st.doneCount, total = st.mine.length, files = [...new Set(st.mine.map(t => t.doc).filter(Boolean))].map(pjDoc).filter(Boolean);
+  const when = t => { const d = data.done?.[t.key]; if (d?.at) { const late = daysTo(d.at, t.due); return md(d.at) + (late > 0 ? ' (' + late + '일 늦음)' : ''); } return data.skipped?.[t.key] ? '건너뜀' : '안 함'; };
+  return [h('div', { class: 'pj-head' }, h('div', {}, h('p', { class: 'pj-eyebrow' }, crumb, ' › 지난 기록'), h('h1', {}, ev.date.slice(0, 4) + ' ' + ev.name),
+      h('p', { class: 'pj-sub num' }, fmtLong(ev.date) + ' · 끝남 · ' + (total && n === total ? '할 일 ' + total + '개 모두 완료' : '할 일 ' + total + '개 중 ' + n + '개 완료') + (files.length ? ' · 서류 ' + files.length : ''))),
+      h('button', { type: 'button', class: 'primary', onclick: () => window.print() }, '한 장으로 저장(인쇄·PDF)')),
+    h('div', { class: 'pj-grid pj-record' },
+      h('div', { class: 'pj-main' },
+        h('section', { class: 'pj-side pj-summary' }, h('h3', {}, '한눈에 보기'), memoFields(evKey(ev), data), h('p', { class: 'meta' }, '정리·기록 구간에 리더 모임이 남기는 3줄이에요. 내년 이맘때 이 ' + (ev.custom ? '행사' : '절기') + ' 상세 화면에 다시 보여요.')),
+        h('section', { class: 'pj-log-block' }, secHead('무엇을 언제 했나', h('span', { class: 'meta' }, '구간별 · 체크한 날')), h('ol', { class: 'pj-side pj-log' }, st.mine.map(t => h('li', {}, h('span', { class: 'pj-label' }, PHASES[t.phase]), h('span', {}, tTitle(t), h('span', { class: 'meta num' }, ' · ' + [t.who, when(t), t.doc && '서류 1'].filter(Boolean).join(' · ')))))))),
+      h('div', { class: 'pj-aside' },
+        h('section', { class: 'pj-side pj-files' }, h('h3', {}, '남은 자료 ', h('span', { class: 'meta' }, files.length + '개')), files.length ? h('ul', {}, files.map(doc => h('li', {}, h('span', {}, doc.title, h('span', { class: 'meta' }, ' · 워드')), h('a', { class: 'pj-btn text', href: doc.file, download: true, 'aria-label': doc.title + ' 워드 받기' }, '받기')))) : h('p', { class: 'meta' }, '이 ' + (ev.custom ? '행사' : '절기') + ' 할 일에 붙은 서류가 없어요')),
+        h('section', { class: 'pj-side pj-years' }, h('h3', {}, '다른 해 ' + ev.name), others.length ? others.map(o => pjLink(o.date.slice(0, 4) + '년 ' + ev.name + ' 기록', () => openProject(o))) : h('p', { class: 'meta' }, ev.date.slice(0, 4) + '년이 첫 기록이에요. 해마다 여기에 쌓여요.'))))];
 }
 // 홈 하위 탭 [홈 | 교회 일정]
 const homeTabs = cur => h('div', { class: 'segments home-tabs', role: 'group', 'aria-label': '홈 화면 고르기' }, [['home', '홈'], ['events', '교회 일정']].map(([id, t]) => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(id === cur), onclick: () => id !== cur && show(id) }, t)));
-// 교회 일정: 맨 위 '+ 행사 추가' → 챙길 일(체크 동그라미) → 우리 교회 행사 → 절기
-function churchScheduleView() {
-  view.prepend(homeTabs('events'));
-  const top = h('div', { class: 'schedule-bar' }), todo = h('section', { class: 'todo-box' }), ours = h('section', { class: 'timeline' }), seasons = h('section', { class: 'timeline' }), addBox = h('section', { hidden: true });
-  let data = {}; const dateOpen = new Set();
-  const add = () => { addBox.hidden = false; addEventPanel(addBox, todayIso(), () => { addBox.hidden = true; draw(); }); };
-  view.append(top, addBox, todo, ours, seasons);
-  fill(todo, h('p', { class: 'hint loading' }, '일정을 불러오는 중이에요'));
-  const draw = () => {
-    const s = { ...data.settings, customEvents: data.customEvents }, today = todayIso(), y = +today.slice(0, 4), tasks = tasksAround(today, s), c = { data, tasks, today, redraw: draw, dateOpen };
-    const w = thisWeek(today, s, handledMap(data)), items = [...w.overdue, ...w.week.filter(t => !handledMap(data)[t.key])];
-    fill(top, h('h3', { class: 'section-title' }, '챙길 일 ' + items.length + '개'), h('button', { type: 'button', class: 'primary', onclick: add }, '+ 행사 추가'));
-    fill(todo, items.length ? taskList(items, data.done || {}, false, data.skipped || {}) : h('p', { class: 'hint' }, '이번 주에 챙길 일이 없어요'));
-    const all = occurrences([y, y + 1], s).filter(ev => ev.date >= today && ev.date < addDays(today, 365));
-    const mine = all.filter(ev => ev.custom), rest = all.filter(ev => !ev.custom);
-    fill(ours, h('h3', { class: 'section-title' }, '우리 교회 행사 ' + mine.length + '개'), mine.length ? timelineMonths(mine, c) : h('div', { class: 'empty-state' }, h('p', {}, '아직 추가한 행사가 없어요. 수련회·바자회·성경학교를 넣어 보세요'), h('button', { type: 'button', class: 'sub', onclick: add }, '첫 행사 추가')));
-    fill(seasons, h('h3', { class: 'section-title' }, '절기 ' + rest.length + '개'), timelineMonths(rest, c));
-  };
-  watch(churchPath(), d => { data = d || {}; draw(); }, () => fill(todo, h('div', { class: 'empty-state' }, h('p', {}, '불러오지 못했어요'), h('button', { type: 'button', class: 'sub', onclick: () => show('events') }, '다시 시도'))));
-}
 function moreView(){ view.append(h('div',{class:'more-list'},[['worship','예배'],['docs','자료실'],['equipment','장비'],['set','설정']].map(([id,t])=>h('button',{class:'sub',onclick:()=>show(id)},t)))); }
 // 절기 줄을 펼쳤을 때 할 일 아래에 붙는 것: 준비물 사기, 수련회 팁·양식, 관련 서류
 // 행사 이름의 낱말(두 글자 이상)이 서류 제목에 있으면 관련 서류. 여름수련회는 수련회 규모별 준비도
@@ -1284,12 +1390,11 @@ function addEventPanel(host,initialDate,close){
 
 function homeView(){
 
- const homeHeading=screenHeading('home','홈');
  const nextBox=h('section',{class:'home-next'}),summary=h('section',{class:'home-summary'}),cal=h('section',{class:'card calendar'}),detail=h('section',{class:'card day-detail'}),agenda=foldCard('agenda',false,'agenda'),right=h('div',{class:'home-right'});
  let data={},selectedEvent=null,editing=null,adding=false; const sundayBox=foldCard('sunday',false,'rail-card'),wordBox=foldCard('word',false,'rail-card'),nowCard=foldCard('now',true,'now-card'),tipsCard=foldCard('tips',false,'tips-card');wordBox.hidden=true;
  // 주인공 버튼: 휴대폰에서는 탭바 위에 떠 있고, 컴퓨터에서는 화면 오른쪽 위에 붙는다
  const fab=h('button',{class:'primary fab',onclick:()=>{adding=true;editing=null;addEventPanel(right,selectedDay,()=>{adding=false;draw();});}},'+ 행사 추가');
- view.append(homeTabs('home'),summary,h('div',{class:'home-layout'},h('div',{class:'home-main'},nextBox,cal,detail),h('div',{class:'home-side'},agenda,right)),fab);
+ view.prepend(homeTabs('events'));view.append(summary,h('div',{class:'home-layout'},h('div',{class:'home-main'},nextBox,cal,detail),h('div',{class:'home-side'},agenda,right)),fab);
  // 첫 자료가 오기 전에는 빈 상자 대신 '불러오는 중'
  fill(cal,h('p',{class:'hint loading'},'일정을 불러오는 중이에요'));nextBox.hidden=detail.hidden=agenda.hidden=true;
  watch(churchPath()+'/conti/'+nextSunday(todayIso()),d=>{const songs=(d?.songs||[]).filter(s=>s.title);fill(sundayBox,foldHead('이번 주일 찬양',songs.length?songs.length+'곡':'아직 없음'),songs.length?h('ol',{class:'sunday-songs'},songs.map(s=>h('li',{},s.title))):h('p',{class:'hint'},'아직 콘티가 없어요'),h('button',{class:'sub go',onclick:()=>show('conti')},'콘티 열기'));});
@@ -1304,12 +1409,11 @@ function homeView(){
  const move=n=>{if(homeMode==='day'||homeMode==='week'){selectedDay=addDays(selectedDay,n*(homeMode==='week'?7:1));homeMonth=selectedDay.slice(0,7);}else{const d=parse(homeMonth+'-01');d.setUTCMonth(d.getUTCMonth()+n*(homeMode==='year'?12:1));homeMonth=d.toISOString().slice(0,7);selectedDay=homeMonth+'-01';}selectedEvent=null;draw();};
  const period=homeMode==='year'?y+'년':homeMode==='week'?md(weekDays(selectedDay)[0])+'~'+md(weekDays(selectedDay)[6]):homeMode==='day'?fmt(selectedDay):y+'년 '+m+'월';
  const reqN=store.mode==='shared'&&isAdmin(data,store.auth?.user?.()?.uid)?requestList(data).length:0;
- fill(summary,h('div',{class:'home-top'},h('p',{class:'meta home-dept'},deptsOf(data.settings).join(' · ')),homeHeading[0]),reqN>0&&h('p',{class:'perm-alert'},h('span',{},'권한 요청 '+reqN+'건'),h('button',{type:'button',class:'text-button go',onclick:()=>{localStorage.setItem('church:open:set-admin','1');show('set');}},'보기')),
+ fill(summary,h('div',{class:'home-top'},h('p',{class:'meta home-dept'},deptsOf(data.settings).join(' · '))),reqN>0&&h('p',{class:'perm-alert'},h('span',{},'권한 요청 '+reqN+'건'),h('button',{type:'button',class:'text-button go',onclick:()=>{localStorage.setItem('church:open:set-admin','1');show('set');}},'보기')),
   h('div',{class:'home-bar'},
    h('div',{class:'period-controls'},h('button',{class:'sub','aria-label':'이전 기간',onclick:()=>move(-1)},'◀'),h('strong',{class:'period-label'},homeMode==='month'?[h('span',{class:'period-year'},y+'년 '),m+'월']:period),h('button',{class:'sub','aria-label':'다음 기간',onclick:()=>move(1)},'▶')),
    h('button',{class:'sub today-button',onclick:()=>{homeMonth=today.slice(0,7);selectedDay=today;selectedEvent=null;draw();}},'오늘'),
-   h('select',{class:'view-select','aria-label':'보기 바꾸기',onchange:e=>{homeMode=e.target.value;draw();}},[['day','일 보기'],['week','주 보기'],['month','월 보기'],['year','년 보기']].map(([id,t])=>h('option',{value:id,selected:homeMode===id},t)))),
-  homeHeading[1]);
+   h('select',{class:'view-select','aria-label':'보기 바꾸기',onchange:e=>{homeMode=e.target.value;draw();}},[['day','일 보기'],['week','주 보기'],['month','월 보기'],['year','년 보기']].map(([id,t])=>h('option',{value:id,selected:homeMode===id},t)))));
  fill(cal,
  h('div',{class:'weekdays'},...'일월화수목금토'.split('').map(d=>h('div',{class:'weekday'},d))),grid.map(week=>h('div',{class:'calendar-week'},h('div',{class:'month-grid'},week.map(day=>{
  const cell=calendarCell(day,ts,evs), active=evs.filter(e=>occursOn(e,day)), starts=spans.filter(p=>p.start===day), inPrep=spans.filter(p=>p.start<=day&&p.end>day).sort((a,b)=>a.start.localeCompare(b.start));
@@ -1331,7 +1435,7 @@ function homeView(){
    h('p',{class:'next-sub'},fmt(nx.date)+' · '+(mine.length?prepText(start,today)+' · '+nd+'/'+mine.length+' 완료':'등록된 준비 항목이 없어요')),
    mine.length>0&&h('progress',{max:mine.length,value:nd,'aria-label':nx.name+' 준비 진행'}),
    (()=>{const dt=nextDocTask(mine,nx,done),doc=dt&&docs.find(d=>d.file.startsWith('docs/'+dt.doc+'_'));return doc&&h('p',{class:'next-doc'},h('span',{},'준비할 서류: '+doc.title+' · '+dt.event+' / '+mdLong(dt.due)+'까지'),h('button',{type:'button',class:'sub small',onclick:()=>showPreview(doc)},'미리보기'));})(),
-   (w.overdue.length+w.week.filter(t=>!done[t.key]).length)>0&&h('button',{type:'button',class:'sub go todo-link',onclick:()=>show('events')},'챙길 일 '+(w.overdue.length+w.week.filter(t=>!done[t.key]).length)+'개 · 보기'),
+   (w.overdue.length+w.week.filter(t=>!done[t.key]).length)>0&&h('button',{type:'button',class:'sub go todo-link',onclick:()=>show('home')},'챙길 일 '+(w.overdue.length+w.week.filter(t=>!done[t.key]).length)+'개 · 보기'),
    mine.length>0&&h('button',{type:'button',class:'sub next-go',onclick:()=>{homeMode='month';choose({eventId:nx.id,name:nx.name,start,end:nx.date});detail.scrollIntoView({behavior:'smooth',block:'nearest'});}},'준비할 일 보기'));}
  nextBox.hidden=false;agenda.hidden=false;
  // 일정 목록: 이 달에 준비 기간이 걸친 행사(오늘 이후)마다 D-day·준비 기간·진행률
