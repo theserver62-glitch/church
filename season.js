@@ -1,7 +1,7 @@
 // 절기 = 프로젝트: 할 일의 '몇 주 전' 숫자 하나로 구간 6개에 나누고, 홈 '지금 할 일'(밀린 일 + 앞으로 14일)을 뽑는다.
-import { addDays } from './calendar.js?v=202610250914';
-import { occurrences, tasksAround } from './custom-events.js?v=202610250914';
-import { sizeOf } from './entry.js?v=202610250914';
+import { addDays } from './calendar.js?v=202610250915';
+import { occurrences, tasksAround } from './custom-events.js?v=202610250915';
+import { sizeOf } from './entry.js?v=202610250915';
 
 export const PHASES = ['계획', '준비', '알리기·연습', '최종 점검', '당일', '정리·기록'];
 // 4주 이상 계획 · 3 준비 · 2 알리기·연습 · 1 최종 점검 · 0 당일 · 음수 정리·기록
