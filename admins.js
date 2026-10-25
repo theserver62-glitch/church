@@ -1,5 +1,5 @@
 // 교회 설정 권한: 링크로 들어온 사람은 사용, 설정(이름·부서·규모·절기 켜고 끄기)은 관리자만. firestore.rules와 같은 판정.
-import { DELETE } from './store.js?v=202610251020';
+import { DELETE } from './store.js?v=202610251206';
 const own = (o, k) => !!o && Object.prototype.hasOwnProperty.call(o, k) && !!o[k];
 export const isAdmin = (doc, uid) => !!uid && own(doc?.admins, uid);
 export const adminList = doc => Object.entries(doc?.admins || {}).filter(([, v]) => v).map(([uid, v]) => ({ uid, ...v }));
