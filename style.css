@@ -1689,7 +1689,7 @@ body.tour-on .onb{display:none} /* 처음 3단계 띠는 투어가 끝난 뒤에
 /* 튜토리얼 글씨: 화살표와 같은 동글동글한 손글씨(개구체) + 형광 노랑 */
 
 .tour-arrow{color:#ffe08a}
-.tour-title{font:700 22px/1.35 var(--text);color:#ffe08a;letter-spacing:var(--ls-sub)}
-.tour-text{font:500 17px/1.6 var(--text);color:#fff;letter-spacing:0}
+.tour-title{font:400 28px/1.3 'Yeon Sung',var(--text);color:#ffe08a;letter-spacing:0}
+.tour-text{font:400 21px/1.5 'Yeon Sung',var(--text);color:#fff;letter-spacing:0}
 @media(max-width:959px){.app-info{margin-bottom:calc(120px + env(safe-area-inset-bottom))}}
 .call-when{margin-left:var(--s2);font-size:var(--fs-14);color:var(--accent);font-weight:600}
