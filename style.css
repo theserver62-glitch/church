@@ -799,7 +799,7 @@ body:has(.event-dialog[open]){overflow:hidden}
 
 /* ---------- 컴퓨터(960px 이상): 사이드바 + 넓은 배치 ---------- */
 @media(min-width:960px){
- #sidebar{display:flex;flex-direction:column;gap:var(--s1);width:240px;position:fixed;inset:0 auto 0 0;padding:var(--s6) var(--s4);background:var(--surface);border-right:1px solid var(--line)}
+ #sidebar{display:flex;flex-direction:column;gap:var(--s1);width:240px;position:fixed;inset:0 auto 0 0;padding:var(--s6) var(--s4);background:var(--surface);border-right:1px solid var(--line);overflow-y:auto}
  #church-title{margin:0 var(--s2) var(--s5);font:700 var(--fs-22)/var(--lh-title) var(--display);letter-spacing:-.02em}
  #sidebar button{justify-content:flex-start;gap:var(--s3);padding:0 var(--s3);border:0;background:transparent;color:var(--ink-2);font-weight:400}
  #sidebar button:hover{background:var(--paper)}
