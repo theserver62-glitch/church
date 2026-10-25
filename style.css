@@ -1055,7 +1055,7 @@ body:has(.event-dialog[open]){overflow:hidden}
 .tl-toggle.sub:hover{background:var(--paper-2)}
 /* 4. 폰 달력: 준비 기간은 같은 주 안에서 이어지는 얇은 띠, 시작 칸에 작은 이름 */
 @media(max-width:959px){
- .calendar[data-mode=month] .day{min-height:58px}
+ .calendar[data-mode=month] .day{min-height:74px}
  .in-prep::after{left:0;right:0;bottom:2px;border-radius:0}
  .in-prep.prep-s::after{left:6px;border-radius:2px 0 0 2px}
  .in-prep.prep-e::after{right:6px;border-radius:0 2px 2px 0}
