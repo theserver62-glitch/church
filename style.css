@@ -773,9 +773,6 @@ dialog{width:calc(100% - 32px);max-width:480px;padding:var(--s5);border:1px soli
 dialog::backdrop{background:rgb(29 36 33 / .45)}
 dialog .row{margin-top:var(--s4)}
 .intro-dialog{max-width:560px}
-.intro-card{min-height:240px}
-.intro-dots{justify-content:center;margin:var(--s4) 0}
-.intro-dots button{border-radius:var(--r-pill)}
 .event-dialog{box-sizing:border-box;width:calc(100% - 32px);max-width:640px;max-height:90dvh;margin:auto;overflow:auto}
 .event-dialog-heading{display:flex;justify-content:space-between;align-items:center;gap:var(--s4);margin-bottom:var(--s4)}
 .event-dialog-heading h2{margin:0;font-size:var(--fs-22)}
@@ -1696,3 +1693,17 @@ body.tour-on .onb{display:none} /* 처음 3단계 띠는 투어가 끝난 뒤에
 .role-form{display:grid;gap:var(--s2)}
 .role-form input{flex:1 1 160px;min-width:0}
 .role-form button{min-width:88px}
+/* 상세 맨 위 '← 목록으로'(48px). 할 일 상세는 폰에서만(넓은 화면은 목록이 바로 옆) */
+.pj-back{min-height:48px;margin:0 0 var(--s3);padding:0 var(--s4);font-size:var(--fs-16)}
+@media(min-width:960px){.pj-focus>.pj-back{display:none}}
+/* 홈 추천 하나: '가장 먼저' 카드(넓은 화면은 옆 준비 방법 카드가 같은 일을 보여 줘서 숨김) */
+.pj-first{margin:0 0 var(--s4);padding:var(--s4);border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface)}
+.pj-first p{margin:0 0 var(--s1)}
+.pj-first .pj-first-title{font-size:var(--fs-18);font-weight:600;line-height:1.4}
+.pj-first .primary{justify-content:center;width:100%;min-height:48px;margin-top:var(--s2)}
+@media(min-width:960px){.pj-first{display:none}}
+.pj-share{width:100%;margin-top:var(--s3)}
+.pj-ro-note{margin:0 0 var(--s4)}
+/* 할 일 읽기 전용(로그인 전·관리자 아닌 성도): 처리 단추는 숨기고 무엇·언제·누가만 */
+.ro .pj-chk,.ro .task-check input,.ro .pj-focus-acts,.ro .pj-focus-head>button,.ro .pj-focus-foot,.ro .task-more,.ro .pj-first .primary,.ro .pj-edit,.ro .pj-skip-note{display:none}
+.ro .pj-row{grid-template-columns:minmax(0,1fr);padding-left:var(--s3)}

@@ -1,22 +1,22 @@
-import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610250915';
-import { TEMPLATES } from './templates.js?v=202610250915';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610250915';
-import { elementsFor, sundayName, callRec, nameDates, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610250915';
+import { occurrences, tasksAround, thisWeek, occursOn } from './custom-events.js?v=202610251002';
+import { TEMPLATES } from './templates.js?v=202610251002';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError } from './admins.js?v=202610251002';
+import { elementsFor, sundayName, callRec, nameDates, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610251002';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610250915';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610250915';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610250915';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked } from './season.js?v=202610250915';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610250915';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610250915';
-import { docs } from './docs.js?v=202610250915';
-import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610250915';
-import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610250915';
-import { introSections, sourceDomains, deepParts } from './bookintro.js?v=202610250915';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610250915';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610250915';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610250915';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610250915';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610251002';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610251002';
+import { openStore, newChurchCode, NOW } from './store.js?v=202610251002';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked, iGa, phaseCount } from './season.js?v=202610251002';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610251002';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610251002';
+import { docs } from './docs.js?v=202610251002';
+import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610251002';
+import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610251002';
+import { introSections, sourceDomains, deepParts } from './bookintro.js?v=202610251002';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610251002';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610251002';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610251002';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610251002';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -136,12 +136,16 @@ function loginAction() {
   return h('button', {type:'button', class:'sub', onclick: googleLogin}, '로그인');
 }
 const needLogin = () => { say('고치려면 구글 로그인이 필요해요'); msg.append(loginAction()); };
-// 맨 위 얇은 띠: 체험 모드면 그 안내(부팅 때 한 번), 교회 화면인데 로그인 안 했으면 "고치려면 로그인"
+// 보기 모드: 공유 교회인데 로그인 안 함(save()와 같은 판단) — 고치는 단추는 숨기고 글자로 보여 준다
+const viewOnly = () => store?.mode === 'shared' && !!store.auth && !store.auth.user();
+// 할 일 읽기 전용: 로그인 안 했거나, 관리자가 있는 교회에서 관리자가 아닌 사람(성도). 관리자가 아직 없으면 로그인한 사람은 리더로 본다(첫 사람이 막히지 않게)
+const taskReader = d => store?.mode === 'shared' && (!store.auth?.user() || (hasAdmins(d) && !isAdmin(d, store.auth.user().uid)));
+// 맨 위 얇은 띠: 체험 모드면 그 안내(부팅 때 한 번), 교회 화면인데 로그인 안 했으면 "보기 모드예요 · 고치려면 [로그인]"
 function paintBand() {
   const b = $('band');
   if (store?.mode !== 'shared') return;
   b.hidden = !!store.auth.user() || nav.hidden;
-  if (!b.hidden) fill(b, h('span', {}, '고치려면 구글 로그인이 필요해요'), loginAction());
+  if (!b.hidden) fill(b, h('span', {}, '보기 모드예요 · 고치려면'), loginAction());
 }
 const userName = u => (u.displayName || '이름 없음').slice(0, 40);
 const utcToday = () => new Date().toISOString().slice(0, 10);
@@ -173,21 +177,15 @@ async function dailySnapshot(force = false) {
     return 'made';
   } catch { return 'fail'; }
 }
-const INTRO_CARDS = [["사역자가 없어도, 교회가 놓치지 않게","절기·행사에서 거꾸로 계산해 언제부터 무엇을 준비할지 달력에 깔아 줘요."],["리더들이 함께 써요","초대 링크 하나로 같은 달력·콘티를 함께 보고 체크해요. 누가 했는지도 남아요."],["주일 준비를 한곳에서","찬양 콘티(곡 보관함·인쇄·예배 PPT), 말씀(주일설교 본문·큐티), 서류 양식, 장비 점검."],["이렇게 시작해요","① 초대 링크를 받았으면 누르기 ② 처음이면 새 교회 만들기 ③ 구글로 로그인하면 어느 기기서든 바로."]];
+// 처음 소개: 한 장(핵심 한 문장 + [시작하기]). 화면 안내는 각 화면 투어가 맡는다
 function showIntro() {
  if(document.getElementById('church-intro'))return;
  localStorage.setItem('church:introSeen','1');
- let index=0, startX=null; const box=h('dialog',{id:'church-intro',class:'intro-dialog','aria-label':'이 웹 소개'});
- const close=()=>box.close();
- function draw(){
-  fill(box,h('article',{class:'intro-card','aria-live':'polite'},h('p',{class:'hint'},(index+1)+' / 4'),h('h2',{},INTRO_CARDS[index][0]),h('p',{},INTRO_CARDS[index][1])),
-   h('div',{class:'row intro-dots','aria-label':'소개 카드 선택'},INTRO_CARDS.map((card,i)=>h('button',{type:'button','aria-label':(i+1)+'번째 소개','aria-pressed':String(index===i),onclick:()=>{index=i;draw();}},index===i?'●':'○'))),
-   h('div',{class:'row'},h('button',{type:'button',disabled:index===0,onclick:()=>{index--;draw();}},'이전'),h('button',{type:'button',class:'primary',onclick:()=>{if(index===3)close();else{index++;draw();}}},index===3?'시작하기':'다음'),h('button',{type:'button',class:'text-button',onclick:close},'건너뛰기')));
- }
- box.addEventListener('touchstart',e=>{startX=e.changedTouches[0].clientX;},{passive:true});
- box.addEventListener('touchend',e=>{if(startX===null)return;const dx=e.changedTouches[0].clientX-startX;startX=null;if(Math.abs(dx)<50)return;index=Math.max(0,Math.min(3,index+(dx<0?1:-1)));draw();},{passive:true});
+ const box=h('dialog',{id:'church-intro',class:'intro-dialog','aria-labelledby':'intro-title'});
+ fill(box,h('article',{class:'intro-card'},h('h2',{id:'intro-title'},'절기·행사 준비, 지금 할 일을 알려 드려요'),h('p',{},'날짜에 맞춰 오늘 할 일과 준비 방법을 보여 줘요. 리더들과 함께 보고 체크해요.')),
+  h('div',{class:'row'},h('button',{type:'button',class:'primary',onclick:()=>box.close()},'시작하기')));
  box.addEventListener('close',()=>box.remove());
- document.body.append(box);draw();box.showModal();
+ document.body.append(box);box.showModal();
 }
 function showEntry(message = '') {
   reset(); view.dataset.screen = 'entry';
@@ -286,7 +284,7 @@ async function enter(c, data) {
   // 주소에 교회 코드를 남겨 둔다: 이 주소를 즐겨찾기·홈 화면에 추가하면 어느 브라우저(카톡 안 브라우저 포함)에서도 바로 들어온다. 해시라 서버로는 안 간다.
   if(location.hash!=='#c='+c) history.replaceState(null,'',location.pathname+location.search+'#c='+c);
   nav.hidden = false;
-  show('home');
+  navHow = 'replace'; show('home'); // 첫 화면은 기록을 쌓지 않는다: 여기서 뒤로가기를 누르면 앱을 나간다
   dailySnapshot();
 }
 
@@ -300,7 +298,7 @@ const TOOLS = new Set(['word','sermon','qt','worship','worshipOrder','worshipGui
 const side = h('aside', { id:'sidebar', hidden:true }); document.body.prepend(side);
 const VIEWS = { worshipOrder:()=>{view.append(worshipSeg('worshipOrder'));worshipView();}, worshipGuide:()=>{view.append(worshipSeg('worshipGuide'));worshipGuideView();}, seasons:()=>scheduleView('season'), ourEvents:()=>scheduleView('custom'), ccm:()=>contiView('book'), special:()=>contiView('special'), hymn:()=>contiView('hymn'), sermon:()=>{wordMode='sermon';wordView();}, qt:()=>{wordMode='qt';wordView();}, events:homeView, project:projectView, worship:worshipView, home:nowView, schedule:scheduleView, conti:contiView, word:wordView, docs:docsView, equipment:equipmentView, set:setView, more:moreView };
 const GUIDES = {home:'밀린 일과 앞으로 2주 안에 할 일을 보여 줘요',schedule:'절기와 행사에 맞춰 준비할 일을 보여 줘요',conti:'이번 주일 찬양을 순서대로 준비해요',word:'주일설교 본문을 찾고 매일 말씀을 묵상해요',docs:'우리 교회에 필요한 준비 양식을 내려받아요',equipment:'장비의 수량과 상태를 함께 확인해요',set:'우리 교회에 맞게 설정해요',more:'자료실과 장비, 설정을 열어요'};
-const SCREEN_HELP = {"events":["◀ ▶로 기간을 옮기고, '월 보기'에서 일·주·월·년을 골라요","색 칸은 행사일, ○는 준비 시작일이에요","+ 행사 추가로 수련회·바자회·성경학교를 넣어요"],"worship":["[순서]: 예배를 고르면 순서·담당·메모가 나오고, 이름 옆 ⓘ로 그 순서 안내를 봐요","[순서 고치기]로 우리 교회 순서로 바꾸고, 순서지 인쇄·예배 PPT로 마무리해요","[안내]: 예배의 흐름, 예배로 부름 본문(이번 주 추천), 순서 사전, 평신도 인도 주의를 봐요"],"home":["할 일을 누르면 준비하는 방법이 옆(폰은 아래)에 나와요","끝냈으면 [다 했어요]나 왼쪽 네모를 눌러요","달력은 '달력으로 보기'나 [교회 일정]에서, 이번 주일 찬양·오늘의 말씀은 오른쪽 아래 한 줄에서 열어요"],"schedule":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"conti":["CCM 탭에서 키·주제·분위기로 곡을 찾아 [+ 담기]를 눌러요. 특송·찬송가 탭도 같아요","[순서 편집]으로 순서를 바꾸고, [⋯]에서 메모를 달아요","[공유·출력]에서 카톡·인쇄·PPT로 마무리해요"],"word":["주일설교: 본문(예: 막 4:1-9)을 검색하면 본문과 6단계 해설이 나와요","큐티: 매일 하나씩 순서대로 나와요","폰에서는 아래 [더보기] › 말씀에서 열어요"],"docs":["맨 위 '부서'를 눌러 우리 부서 자료를 골라요","서류 이름을 누르면 설명과 워드·한글 받기가 나와요","[커리큘럼·교재]·[나들이·수련회]·[링크] 탭에서 비교표와 추천 사이트를 봐요"],"equipment":["기본 장비 목록이 미리 있어요. 묶음 제목을 눌러 펼쳐요","−/+로 수량을 바꾸고, 문제가 있으면 [점검 필요]·[고장]을 눌러 메모해요","고장·점검이 있으면 맨 위 [확인하기]로 모아 봐요"],"set":["교회 이름·규모·부서를 바꿔요","초대 링크를 복사해 리더들에게 보내요","구글로 로그인하면 다른 기기에서도 바로 들어와요"],"seasons":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"ourEvents":["수련회·바자회처럼 우리 교회가 추가한 행사만 모여요","+ 행사 추가로 새 행사와 준비할 일을 넣어요","행사를 누르면 할 일·날짜 바꾸기·삭제가 있어요"],"sermon":["본문(예: 막 4:1-9)을 고르거나 검색하면 본문과 6단계 해설이 나와요","PPT로 내보내기에서 본문을 예배 화면용 PPT로 받아요","아래에 묵상을 적으면 리더들과 나눠져요"],"qt":["매일 하나씩 순서대로 큐티 본문과 해설이 나와요","날짜를 바꾸면 그날 큐티를 볼 수 있어요","아래에 묵상을 적으면 리더들과 나눠져요"]};
+const SCREEN_HELP = {"events":["◀ ▶로 기간을 옮기고, '월 보기'에서 일·주·월·년을 골라요","색 칸은 행사일, ○는 준비 시작일이에요","+ 행사 추가로 수련회·바자회·성경학교를 넣어요"],"worship":["[순서]: 예배를 고르면 순서·담당·메모가 나오고, 이름 옆 ⓘ로 그 순서 안내를 봐요","[순서 고치기]로 우리 교회 순서로 바꾸고, 순서지 인쇄·예배 PPT로 마무리해요","[안내]: 예배의 흐름, 예배로 부름 본문(이번 주 추천), 순서 사전, 평신도 인도 주의를 봐요"],"home":["할 일을 누르면 준비하는 방법이 "+(globalThis.matchMedia?.('(min-width:960px)').matches?'옆에':'아래에')+" 나와요","끝냈으면 [다 했어요]나 왼쪽 네모를 눌러요","달력은 맨 위 [달력]에서, 이번 주일 찬양·오늘의 말씀은 오른쪽 아래 한 줄에서 열어요"],"schedule":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"conti":["CCM 탭에서 키·주제·분위기로 곡을 찾아 [+ 담기]를 눌러요. 특송·찬송가 탭도 같아요","[순서 편집]으로 순서를 바꾸고, [⋯]에서 메모를 달아요","[공유·출력]에서 카톡·인쇄·PPT로 마무리해요"],"word":["주일설교: 본문(예: 막 4:1-9)을 검색하면 본문과 6단계 해설이 나와요","큐티: 매일 하나씩 순서대로 나와요","폰에서는 아래 [더보기] › 말씀에서 열어요"],"docs":["맨 위 '부서'를 눌러 우리 부서 자료를 골라요","서류 이름을 누르면 설명과 워드·한글 받기가 나와요","[커리큘럼·교재]·[나들이·수련회]·[링크] 탭에서 비교표와 추천 사이트를 봐요"],"equipment":["기본 장비 목록이 미리 있어요. 묶음 제목을 눌러 펼쳐요","−/+로 수량을 바꾸고, 문제가 있으면 [점검 필요]·[고장]을 눌러 메모해요","고장·점검이 있으면 맨 위 [확인하기]로 모아 봐요"],"set":["교회 이름·규모·부서를 바꿔요","초대 링크를 복사해 리더들에게 보내요","구글로 로그인하면 다른 기기에서도 바로 들어와요"],"seasons":["절기마다 준비 구간 6칸과 진행률이 보여요","누르면 구간별 할 일과 준비 방법이 나와요","끝난 절기는 기록(3줄 정리·한 일·서류)으로 남아요"],"ourEvents":["수련회·바자회처럼 우리 교회가 추가한 행사만 모여요","+ 행사 추가로 새 행사와 준비할 일을 넣어요","행사를 누르면 할 일·날짜 바꾸기·삭제가 있어요"],"sermon":["본문(예: 막 4:1-9)을 고르거나 검색하면 본문과 6단계 해설이 나와요","PPT로 내보내기에서 본문을 예배 화면용 PPT로 받아요","아래에 묵상을 적으면 리더들과 나눠져요"],"qt":["매일 하나씩 순서대로 큐티 본문과 해설이 나와요","날짜를 바꾸면 그날 큐티를 볼 수 있어요","아래에 묵상을 적으면 리더들과 나눠져요"]};
 // 화면 도움말: 제목 바로 옆 작은 원형 ? 버튼. 누르면 그 아래 말풍선(폰은 아래에서 올라오는 작은 시트). 본문을 밀지 않고, 바깥·Esc로 닫힘
 function screenHeading(id, title) {
  const key='church:guide:'+id;
@@ -340,14 +338,21 @@ function markNav(tab) {
  for(const b of side.querySelectorAll('button')){b.removeAttribute('aria-current');b.classList.toggle('parent-current',b.dataset.k===par);if(b.dataset.k===tab)b.setAttribute('aria-current','page');}
  for(const b of nav.children){b.removeAttribute('aria-current');if(b.dataset.k===navKey)b.setAttribute('aria-current','page');}
 }
+// 뒤로가기: 화면을 바꿀 때마다 기록(주소는 그대로라 #c=·?v= 링크는 안 바뀜). navHow: ''(쌓기) | 'replace'(첫 화면) | 'pop'(뒤로가기로 돌아옴)
+let navHow = '', curTab = '';
+const smooth = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
 function show(tab) {
  if(FIRST[tab])tab=FIRST[tab]();
+ const how=navHow,old=history.state,st={tab,pk:tab==='project'?projectKey:''}; navHow='';
+ if(how==='replace'||!old?.tab)history.replaceState(st,'',location.href);
+ else if(how!=='pop'&&(old.tab!==st.tab||old.pk!==st.pk))history.pushState({...st,prev:old.tab},'',location.href);
+ curTab=tab;
  reset(); side.hidden=false; nav.hidden=false; view.dataset.screen=PARENT[tab]&&PARENT[tab]!=='home'?PARENT[tab]:tab;
  markNav(tab);
  const helpId=SCREEN_HELP[tab]?tab:PARENT[tab]||tab;
  if(tab!=='home'&&tab!=='project')view.append(...(SCREEN_HELP[helpId]?screenHeading(helpId,MENUS.find(m=>m[0]===helpId)[1]):[h('h2',{},'더보기'),h('p',{class:'hint screen-guide'},GUIDES[tab])]));
  VIEWS[tab]();
- watch(churchPath(),d=>{ $('church-title').textContent=d?.name||'교회 사역앱'; });
+ watch(churchPath(),d=>{ $('church-title').textContent=d?.name||'교회 사역앱'; document.body.classList.toggle('ro',taskReader(d)); });
  for(const title of [...view.querySelectorAll('h2')].slice(1)) title.remove();
  [...view.children].forEach((el,i)=>el.style.animationDelay=(i*40)+'ms');
  scrollTo(0,0); paintBand(); tourScreen(tab);
@@ -567,7 +572,7 @@ function contiView(startPick = 'book') {
       !cur.length && h('div', { class: 'empty conti-empty' }, h('p', { class: 'hint only-wide' }, '왼쪽에서 곡을 찾아 [+ 담기]를 누르면 여기에 쌓여요'), h('button', { type: 'button', class: 'primary add-song only-narrow', onclick: openPicker }, '+ 곡 찾아 추가하기')),
       h('ol', { class: 'songs conti-songs' }, cur.map(songLi)),
       h('div', { class: 'row conti-more' }, !cur.length && lastCount > 0 && h('button', { type: 'button', class: 'text-button', onclick: () => loadLast() }, '지난주 콘티 그대로 가져오기'), h('button', { type: 'button', class: 'text-button', onclick: () => { memoOpen.clear(); setSongs([...cur, { title: '', key: '', memo: '' }]); box.querySelector?.('[data-k=title' + (cur.length - 1) + ']')?.focus(); } }, '+ 곡 직접 입력'),
-        h('button', { type: 'button', class: 'text-button', onclick: () => openKakao() }, '카톡 글 붙여 넣기'),
+        !viewOnly() && h('button', { type: 'button', class: 'text-button', onclick: () => openKakao() }, '카톡 글 붙여 넣기'),
         removed && h('button', { type: 'button', class: 'text-button', onclick: () => { const songs = [...cur]; songs.splice(removed.index, 0, removed.song); removed = null; setSongs(songs); } }, '삭제 되돌리기'))); };
   // 카톡 글 붙여 넣기: 글에서 곡(번호·곡명·키·메모)과 날짜를 뽑아 미리 보여 주고, 그 날짜(없으면 지금 연 날짜) 콘티에 넣는다. 이미 있는 곡(제목+키)은 다시 넣지 않는다
   const openKakao = () => {
@@ -1008,6 +1013,11 @@ const pjDoc = num => num && docs.find(d => d.file.startsWith('docs/' + num + '_'
 let projectKey = '', pickHome = '', pickProject = '';
 const openProject = ev => { projectKey = evKey(ev); pickProject = ''; show('project'); };
 const projectList = ev => show(ev.custom ? 'ourEvents' : 'seasons');
+// 폰: 할 일을 누르면 아래 준비 방법으로 내려가고 기록을 하나 남긴다(뒤로가기 = 목록). 이미 열려 있으면 기록을 더 쌓지 않음
+const openFocus = () => { if (matchMedia('(min-width:960px)').matches) return; if (!history.state?.pick) history.pushState({ ...history.state, pick: 1 }, '', location.href); $('pj-focus')?.scrollIntoView({ behavior: smooth(), block: 'start' }); };
+// '← 목록으로': 뒤로가기와 같게(기록이 있으면 되돌리고, 없으면 목록으로 올라가기)
+const focusBack = () => history.state?.pick ? history.back() : view.querySelector('.pj-list')?.scrollIntoView({ behavior: smooth(), block: 'start' });
+const backButton = onclick => h('button', { type: 'button', class: 'sub pj-back', onclick }, '← 목록으로');
 
 // 할 일 한 줄: [체크] 제목(밀린 날 표시)·절기·담당·기한 [›]. 줄을 누르면 오른쪽(폰은 아래) 준비 안내
 function pjRow(t, c) {
@@ -1030,7 +1040,7 @@ function focusCard(t, c) {
   const g = guideFor(G, t), isDone = !!c.data.done?.[t.key], skip = !isDone && !!c.data.skipped?.[t.key], late = !isDone && !skip && t.due < c.today, doc = pjDoc(t.doc);
   const row = (dt, dd) => dd && [h('dt', {}, dt), h('dd', {}, dd)];
   const list = (tag, xs) => xs?.length ? h(tag, {}, xs.map(x => h('li', {}, x))) : null;
-  return h('article', { class: 'pj-focus', id: 'pj-focus' },
+  return h('article', { class: 'pj-focus', id: 'pj-focus' }, backButton(focusBack),
     h('div', { class: 'pj-focus-head' },
       h('div', {}, h('p', { class: 'pj-label' }, [c.first && !isDone && !skip && '가장 먼저', c.showEvent && t.event, PHASES[t.phase] + ' 구간'].filter(Boolean).join(' · ')),
         h('h3', { class: 'pj-focus-title' }, tTitle(t)),
@@ -1067,28 +1077,34 @@ const pjLink = (text, onclick) => h('button', { type: 'button', class: 'text-but
 
 // 홈: 지금 할 일(밀린 일 + 앞으로 14일)
 function nowView() {
-  const box = h('div', { class: 'pj' }); view.append(box);
+  const box = h('div', { class: 'pj' }); view.append(homeTabs('home'), box); // 맨 위 [지금 할 일 | 달력]
   let data = {}, ready = false, contiN = 0, contiDoc = null, qtRef = '';
   // 처음 3단계 안내의 각 단계로 가기: ① 오른쪽 할 일 카드의 [다 했어요] ② 콘티 ③ 설정의 멤버 초대
-  const goStep = id => { if (id === 'conti') return show('ccm'); if (id === 'invite') { try { localStorage.setItem('church:open:set-invite', '1'); } catch { /* 그냥 연다 */ } return show('set'); } const b = box.querySelector('.pj-focus-area button.primary') || box.querySelector('.pj-chk input'); b?.scrollIntoView({ behavior: 'smooth', block: 'center' }); b?.focus({ preventScroll: true }); };
+  const goStep = id => { if (taskReader(data)) { if (id === 'task') return box.querySelector('.pj-pick')?.click(); if (id === 'conti') onbSet('conti'); } if (id === 'conti') return show('ccm'); if (id === 'invite') { try { localStorage.setItem('church:open:set-invite', '1'); } catch { /* 그냥 연다 */ } return show('set'); } const b = box.querySelector('.pj-focus-area button.primary') || box.querySelector('.pj-chk input'); b?.scrollIntoView({ behavior: 'smooth', block: 'center' }); b?.focus({ preventScroll: true }); };
   fill(box, h('p', { class: 'hint loading' }, '할 일을 불러오는 중이에요'));
   const draw = () => {
     const p = projects(data), { today, tasks, done } = p, r = nowTasks(tasks, today, done), all = [...r.now, ...r.later];
-    const sel = all.find(t => t.key === pickHome) || all[0], c = { data, done, today, sel: sel?.key, showEvent: true, pick: t => { pickHome = t.key; draw(); if (!matchMedia('(min-width:960px)').matches) $('pj-focus')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
+    const sel = all.find(t => t.key === pickHome) || all[0], c = { data, done, today, sel: sel?.key, showEvent: true, pick: t => { pickHome = t.key; onbSet('read'); draw(); openFocus(); } };
     const next = all.find(t => t.due >= today), reqN = store.mode === 'shared' && isAdmin(data, store.auth?.user?.()?.uid) ? requestList(data).length : 0;
     { const def = (DEPTS.find(x => x.id === deptToPpt(deptsOf(data.settings)[0])) || {}).service || 'sunday-main', ids = contiTabs(contiDoc, def).filter(id => contiSongsOf(contiDoc, id, def).some(s => s?.title));
       contiN = ids.length > 1 ? ids.map(id => svcShort((worshipData?.services || []).find(x => x.id === id)?.name || id) + ' ' + contiSongsOf(contiDoc, id, def).filter(s => s?.title).length).join(' · ') : contiSongsOf(contiDoc, def, def).filter(s => s?.title).length; }
-    const ob = onboardSteps({ anyDone: Object.values(data.done || {}).some(Boolean), contiSongs: typeof contiN === 'string' ? 1 : contiN, invited: onbGet('invite'), closed: onbGet('off') });
+    const ro = taskReader(data), first = all[0], firstDoc = first && pjDoc(first.doc), firstLate = first && first.due < today;
+    const ob = onboardSteps({ anyDone: Object.values(data.done || {}).some(Boolean), contiSongs: typeof contiN === 'string' ? 1 : contiN, invited: onbGet('invite'), closed: onbGet('off'), viewer: ro, read: onbGet('read'), contiSeen: onbGet('conti') });
     fill(box,
       ob.show && h('div', { class: 'onb', role: 'region', 'aria-label': '처음 쓰는 분 안내' }, h('span', { class: 'onb-title' }, '처음이라면'), h('ol', { class: 'onb-steps' }, ob.steps.map(([id, t, ok], i) => h('li', { class: ok ? 'done' : '' }, h('button', { type: 'button', class: 'onb-step', 'aria-label': (i + 1) + '단계 ' + t + (ok ? ' (했어요)' : ''), onclick: () => goStep(id) }, h('span', { class: 'onb-mark', 'aria-hidden': 'true' }, ok ? '✓' : String(i + 1)), h('span', {}, t))))), h('button', { type: 'button', class: 'text-button onb-close', onclick: () => { onbSet('off'); draw(); } }, '닫기')),
       h('div', { class: 'pj-head' }, h('div', {}, h('p', { class: 'pj-eyebrow num' }, mdLong(today) + ' ' + '일월화수목금토'[parse(today).getUTCDay()] + '요일 · ' + deptsOf(data.settings).join(' · ')), h('h1', {}, '지금 할 일'),
-        h('p', { class: 'pj-sub' }, all.length ? [all.length + '개', r.overdue > 0 && ' · ', r.overdue > 0 && h('span', { class: 'late' }, r.overdue + '개는 기한이 지났어요'), next && ' · 다음 기한 ' + fmt(next.due)] : '앞으로 2주 안에 할 일이 없어요')),
-        all.length > 0 && h('button', { type: 'button', onclick: () => shareText(tasksShare((data.name || '우리 교회') + ' 지금 할 일', all)) }, '할 일 ' + all.length + '개 카톡으로 보내기')),
+        h('p', { class: 'pj-sub' }, all.length ? [all.length + '개', r.overdue > 0 && ' · ', r.overdue > 0 && h('span', { class: 'late' }, r.overdue + '개는 기한이 지났어요'), next && ' · 다음 기한 ' + fmt(next.due)] : '앞으로 2주 안에 할 일이 없어요'))),
+      // 추천 하나: 가장 먼저 할 일 + 채운 버튼 하나(서류가 있으면 양식 받기). 보기 전용이면 버튼 없이 제목·기한만(.ro CSS)
+      first && h('section', { class: 'pj-first', 'aria-label': '가장 먼저 할 일' }, h('p', { class: 'pj-label' }, '가장 먼저'), h('p', { class: 'pj-first-title' }, tTitle(first)),
+        h('p', { class: 'meta num' + (firstLate ? ' late' : '') }, [first.who, firstLate ? fmt(first.due) + ' 마감, ' + daysTo(today, first.due) + '일 지남' : fmt(first.due) + '까지 · ' + dLabel(daysTo(first.due, today))].filter(Boolean).join(' · ')),
+        firstDoc ? h('a', { class: 'primary pj-start', href: firstDoc.file, download: true, 'aria-label': firstDoc.title + ' 받아서 시작하기' }, '양식 받아 시작하기') : h('button', { type: 'button', class: 'primary', onclick: () => c.pick(first) }, '준비 방법 보기')),
+      ro && store.auth?.user() && h('p', { class: 'meta pj-ro-note' }, '할 일 체크는 관리자가 해요 · ', pjLink('관리자 요청하기', () => { try { localStorage.setItem('church:open:set-admin', '1'); } catch { /* 그냥 연다 */ } show('set'); })),
       reqN > 0 && h('p', { class: 'perm-alert' }, h('span', {}, '권한 요청 ' + reqN + '건'), h('button', { type: 'button', class: 'text-button go', onclick: () => { localStorage.setItem('church:open:set-admin', '1'); show('set'); } }, '보기')),
       h('div', { class: 'pj-split' },
         h('div', { class: 'pj-list' }, all.length ? h('div', { class: 'pj-box' }, r.now.map(t => pjRow(t, c)),
           r.later.length > 0 && h('details', { class: 'pj-more', open: r.later.some(t => t.key === sel?.key) || !r.now.length }, h('summary', {}, h('span', {}, '그다음 주(' + md(addDays(today, 8)) + '~' + md(addDays(today, 14)) + ') ' + r.later.length + '개'), pjChevron(true)), r.later.map(t => pjRow(t, c))))
-          : h('div', { class: 'pj-box pj-empty' }, h('p', {}, '지금 챙길 일이 없어요.'), (() => { const n = tasks.find(t => t.due > today && !done[t.key]); return n && h('p', { class: 'meta' }, '다음 할 일 · ' + fmt(n.due) + ' ' + tTitle(n) + ' (' + n.event + ')'); })())),
+          : h('div', { class: 'pj-box pj-empty' }, h('p', {}, '지금 챙길 일이 없어요.'), (() => { const n = tasks.find(t => t.due > today && !done[t.key]); return n && h('p', { class: 'meta' }, '다음 할 일 · ' + fmt(n.due) + ' ' + tTitle(n) + ' (' + n.event + ')'); })()),
+          all.length > 0 && h('button', { type: 'button', class: 'pj-share', onclick: () => shareText(tasksShare((data.name || '우리 교회') + ' 지금 할 일', all)) }, '할 일 ' + all.length + '개 카톡으로 보내기')),
         h('div', { class: 'pj-focus-area' }, focusCard(sel, { ...c, first: sel === all[0] })),
         h('div', { class: 'pj-rest' },
           h('section', {}, secHead('준비 중인 절기·행사', pjLink('달력으로 보기', () => show('events'))), p.active.length ? h('div', { class: 'pj-box' }, p.active.slice(0, 4).map(([ev, st]) => pjProj(ev, st, today))) : h('p', { class: 'hint' }, '다가오는 절기가 없어요')),
@@ -1118,7 +1134,7 @@ function scheduleView(kind = 'season') {
     fill(box,
       h('section', {}, secHead('진행 중·다가오는 ' + word, pjLink('달력으로 보기', () => show('events'))), p.active.length ? h('div', { class: 'pj-box' }, p.active.map(([ev, st]) => pjProj(ev, st, p.today)))
         : h('div', { class: 'empty-state' }, h('p', {}, mine ? '아직 추가한 행사가 없어요. 수련회·바자회·성경학교를 넣어 보세요' : '앞으로 12개월 안에 절기가 없어요'), mine && h('button', { type: 'button', class: 'sub', onclick: add }, '첫 행사 추가'))),
-      h('section', {}, secHead('지난 기록'), p.past.length ? h('div', { class: 'pj-box' }, p.past.map(([ev, st]) => pjRec(ev, st, data))) : h('p', { class: 'hint' }, '최근 1년 동안 끝난 ' + word + '이 없어요')));
+      h('section', {}, secHead('지난 기록'), p.past.length ? h('div', { class: 'pj-box' }, p.past.map(([ev, st]) => pjRec(ev, st, data))) : h('p', { class: 'hint' }, '최근 1년 동안 끝난 ' + word + iGa(word) + ' 없어요')));
   };
   watch(churchPath(), d => { data = d || {}; draw(); }, () => fill(box, h('div', { class: 'empty-state' }, h('p', {}, '불러오지 못했어요'), h('button', { type: 'button', class: 'sub', onclick: () => show(mine ? 'ourEvents' : 'seasons') }, '다시 시도'))));
 }
@@ -1135,20 +1151,21 @@ function projectView() {
     markNav(ev.custom ? 'ourEvents' : 'seasons');
     const st = projectState(ev, tasks, today, done), crumb = h('button', { type: 'button', class: 'text-button pj-link', onclick: () => projectList(ev) }, '절기·행사');
     const others = evs.filter(e => e.id === ev.id && e.date !== ev.date && currentPhase(e.date, today) === 6);
-    if (st.ended) return fill(box, recordBody(ev, st, data, done, crumb, others));
-    const c = { data, done, today, showEvent: false, pick: t => { pickProject = t.key; draw(); if (!matchMedia('(min-width:960px)').matches) $('pj-focus')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
+    const back = backButton(() => history.state?.prev === (ev.custom ? 'ourEvents' : 'seasons') ? history.back() : projectList(ev));
+    if (st.ended) return fill(box, back, recordBody(ev, st, data, done, crumb, others));
+    const c = { data, done, today, showEvent: false, pick: t => { pickProject = t.key; draw(); openFocus(); } };
     const cur = Math.min(st.phase, 5), rows = [...st.overdue, ...st.byPhase[cur]], undone = rows.find(t => !done[t.key]) || st.mine.find(t => !done[t.key]);
     const sel = st.mine.find(t => t.key === pickProject) || undone || rows[0] || st.mine[0];
     c.sel = sel?.key;
     const ends = phaseEnds(ev.date), last = others.at(-1), lastMemo = last && data.records?.[evKey(last)];
-    fill(box,
+    fill(box, back,
       h('div', { class: 'pj-head' }, h('div', {}, h('p', { class: 'pj-eyebrow' }, crumb, ' › ' + ev.date.slice(0, 4)), h('h1', {}, ev.name),
         h('p', { class: 'pj-sub num' }, fmtLong(ev.date) + ' · ' + dLabel(daysTo(ev.date, today)), ABOUT[ev.id] && [' · ', h('button', { type: 'button', class: 'text-button pj-link', onclick: () => showAbout(ev) }, '무슨 절기인가요?')])),
         st.mine.length > 0 && h('button', { type: 'button', onclick: () => shareText(tasksShare((data.name ? data.name + ' ' : '') + ev.name + ' 준비', st.mine.filter(t => !done[t.key]))) }, '이 ' + (ev.custom ? '행사' : '절기') + ' 할 일 카톡으로 보내기')),
       h('ol', { class: 'pj-stepper', 'aria-label': '준비 구간 6개' }, PHASES.map((name, i) => { const ts = st.byPhase[i], now = st.started && i === cur, past = i < cur; return h('li', { class: 'pj-step' + (now ? ' now' : past ? ' past' : ''), ...(now && { 'aria-current': 'step' }) },
         h('b', {}, name, h('em', {}, past ? '지남' : now ? '진행 중' : '시작 전')), h('span', { class: 'num' }, (i === 4 ? fmt(ends[4]) : md(ends[i]) + '까지') + (ts.length ? ' · ' + (past || now ? ts.filter(t => done[t.key]).length + '/' + ts.length : ts.length + '개') : ''))); })),
       h('div', { class: 'pj-split' },
-        h('div', { class: 'pj-list' }, secHead((st.started ? '지금: ' : '곧 시작: ') + PHASES[cur] + ' 구간', h('span', { class: 'meta num' }, (cur === 4 ? fmt(ends[4]) : fmt(ends[cur]) + '까지') + ' · ' + st.byPhase[cur].length + '개 중 ' + st.byPhase[cur].filter(t => done[t.key]).length + '개')),
+        h('div', { class: 'pj-list' }, secHead((st.started ? '지금: ' : '곧 시작: ') + PHASES[cur] + ' 구간', h('span', { class: 'meta num' }, (cur === 4 ? fmt(ends[4]) : fmt(ends[cur]) + '까지') + ' · ' + phaseCount(st.byPhase[cur].length, st.byPhase[cur].filter(t => done[t.key]).length, st.overdue.filter(t => !done[t.key]).length))),
           rows.length ? h('div', { class: 'pj-box' }, rows.map(t => pjRow(t, c))) : h('div', { class: 'pj-box pj-empty' }, h('p', { class: 'meta' }, '이 구간에는 할 일이 없어요. 아래 다음 구간을 보세요'))),
         h('div', { class: 'pj-focus-area' }, focusCard(sel, { ...c, first: sel === undone && rows.includes(sel) })),
         h('div', { class: 'pj-rest' },
@@ -1178,7 +1195,7 @@ function recordBody(ev, st, data, done, crumb, others) {
         h('section', { class: 'pj-side pj-years' }, h('h3', {}, '다른 해 ' + ev.name), others.length ? others.map(o => pjLink(o.date.slice(0, 4) + '년 ' + ev.name + ' 기록', () => openProject(o))) : h('p', { class: 'meta' }, ev.date.slice(0, 4) + '년이 첫 기록이에요. 해마다 여기에 쌓여요.'))))];
 }
 // 홈 하위 탭 [홈 | 교회 일정]
-const homeTabs = cur => h('div', { class: 'segments home-tabs', role: 'group', 'aria-label': '홈 화면 고르기' }, [['home', '홈'], ['events', '교회 일정']].map(([id, t]) => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(id === cur), onclick: () => id !== cur && show(id) }, t)));
+const homeTabs = cur => h('div', { class: 'segments home-tabs', role: 'group', 'aria-label': '홈 화면 고르기' }, [['home', '지금 할 일'], ['events', '달력']].map(([id, t]) => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(id === cur), onclick: () => id !== cur && show(id) }, t)));
 function moreView(){ view.append(h('div',{class:'more-list'},[['word','말씀'],['worship','예배'],['docs','자료실'],['equipment','장비'],['set','설정']].map(([id,t])=>h('button',{class:'sub',onclick:()=>show(id)},t)))); }
 // 절기 줄을 펼쳤을 때 할 일 아래에 붙는 것: 준비물 사기, 수련회 팁·양식, 관련 서류
 // 행사 이름의 낱말(두 글자 이상)이 서류 제목에 있으면 관련 서류. 여름수련회는 수련회 규모별 준비도
@@ -1247,7 +1264,8 @@ function docsView() {
   fill(picker, h('summary', {}, '부서: ' + dept), h('div', { class: 'row', role: 'group', 'aria-label': '부서 고르기' }, DOC_DEPTS.map(d => h('button', { type: 'button', class: 'sub', 'aria-pressed': String(d === dept), onclick: () => { dept = d; picker.open = false; draw(); } }, d))));
   // 분류(행정·안내/교육·행사/수련회·MT/순례)별로 접어 묶는다. 자료가 적으면 처음부터 펼친다.
   const groups = [...new Set(['행정·안내', '교육·행사', '수련회·MT', '순례', ...mine.map(d => d.group)])].map(g => [g, mine.filter(d => d.group === g)]).filter(([, list]) => list.length);
-  fill(mineBox, h('h3', {}, (dept === '전체' ? '모든 자료 ' : dept + ' 자료 ') + mine.length + '개'), mine.length ? groups.map(([g, list]) => h('details', { class: 'doc-group' }, h('summary', {}, h('strong', { class: 'doc-group-title' }, g), h('small', { class: 'meta' }, list.length + '개')), list.map(d => row(d, true)))) : h('p', { class: 'empty' }, '이 부서용 자료가 아직 없어요'));
+  // 제목 개수 = 보이는 개수: 공통 = 아래 공통 자료 + 예배 PPT 양식
+  fill(mineBox, h('h3', {}, dept === '전체' ? '모든 자료 ' + (mine.length + DEPTS.length) + '개' : dept + ' 전용 ' + mine.length + '개 · 모든 부서 공통 ' + (common.length + DEPTS.length) + '개'), mine.length ? groups.map(([g, list]) => h('details', { class: 'doc-group' }, h('summary', {}, h('strong', { class: 'doc-group-title' }, g), h('small', { class: 'meta' }, list.length + '개')), list.map(d => row(d, true)))) : h('p', { class: 'empty' }, '이 부서용 자료가 아직 없어요'));
   fill(commonBox, common.length ? h('details', { class: 'doc-group' }, h('summary', {}, h('strong', { class: 'doc-group-title' }, '공통 자료'), h('small', { class: 'meta' }, common.length + '개')), common.map(d => row(d, true))) : null);
   commonBox.hidden = !common.length;
  };
@@ -1308,8 +1326,10 @@ function buyHelpBody(list, confirmed, ask) {
 }
 // 장비 한 줄: [품목명(좋음+메모면 옆에 작은 회색 메모)] [점검 필요][고장] 칩 · 켜진 칩이면 메모 칸 · [− n +]
 // 칩을 다시 누르면 꺼짐 = 좋음(메모는 지우지 않는다). 칩은 수량 1개 이상일 때만
+// act.ro(보기 모드): 단추 없이 글자 한 줄 "5개 · 정상"
 function eqRow(id, item, act) {
  const qty = Number(item.qty) || 0, bad = item.state === '점검 필요' || item.state === '고장';
+ if (act.ro) return h('tr', { class: 'eq-ro' }, h('th', { scope: 'row' }, item.name, item.memo && h('small', { class: 'eq-note' }, item.memo)), h('td', { class: bad ? 'late' : 'meta' }, qty ? qty + '개 · ' + (item.state === '좋음' ? '정상' : item.state) : '없음'));
  const chip = (v, cls) => h('button', { type: 'button', class: 'eq-chip ' + cls, 'aria-pressed': String(item.state === v), 'aria-label': item.name + ' ' + v + (item.state === v ? ' 끄기' : ''), onclick: () => act.setState(item.state === v ? '좋음' : v) }, h('span', {}, v));
  return h('tr', { class: qty ? 'has-qty' : '' }, h('th', { scope: 'row' }, item.name, !bad && item.memo && h('small', { class: 'eq-note' }, item.memo)),
   qty > 0 && h('td', { class: 'eq-chips' }, chip('점검 필요', 'check'), chip('고장', 'broken')),
@@ -1324,7 +1344,7 @@ function equipmentView() {
  const cat=h('select',{'aria-label':'추가 장비 분류'},Object.keys(equipment).map(c=>h('option',{value:c},c)));
  const name=h('input',{required:true,maxLength:100,placeholder:'품목 이름','aria-label':'추가할 품목 이름'});
  const form=h('form',{class:'equipment-add',onsubmit:e=>{e.preventDefault();const n=name.value.trim();if(!n)return;save(churchPath(),{equipment:{[equipmentId(cat.value,n)]:{cat:cat.value,name:n,qty:1,state:'좋음',memo:''}}});name.value='';say(n+' 1개를 넣었어요');}},cat,name,h('button',{class:'sub'},'추가'));
- view.append(summary,box,h('h3',{class:'equipment-add-title'},'목록에 없는 품목 추가'),form);
+ const ro=viewOnly(); view.append(summary,box,...(ro?[]:[h('h3',{class:'equipment-add-title'},'목록에 없는 품목 추가'),form]));
  const render=d=>{
  const entries=equipmentRows(d?.equipment||{}),total=entries.reduce((n,[,v])=>n+Number(v.qty||0),0),needs=entries.filter(([,v])=>v.state==='점검 필요').length,broken=entries.filter(([,v])=>v.state==='고장').length;
  // 점검 필요·고장 거르기: 켜면 그 상태 품목만, 그 묶음은 [수량]이 열린다
@@ -1338,12 +1358,12 @@ function equipmentView() {
   return h('section',{class:'equipment-category'},h('div',{class:'eq-head'},h('button',{type:'button',class:'eq-fold','aria-expanded':String(qOn),'aria-controls':tid,onclick:()=>{qtyOpen.set(c,!qOn);render(last);}},h('span',{class:'chev','aria-hidden':'true'}),h('span',{class:'eq-name'},c),h('small',{class:warn?'late':'meta'},owned.length?owned.length+'종 보유'+(warn?' · 점검 '+warn:''):'없음')),
     list.length>0&&h('button',{type:'button',class:'eq-buy','aria-expanded':String(bOn),'aria-controls':'buy-'+equipmentId(c,''),onclick:()=>{buyOpen.set(c,!bOn);render(last);}},bOn?'살 곳 닫기':'살 곳 보기')),
    bOn&&buyBox(c,list),
-   qOn&&h('table',{id:tid},h('thead',{},h('tr',{},['품목','수량'].map(t=>h('th',{},t)))),h('tbody',{},rows.map(([id,item])=>{
+   qOn&&h('table',{id:tid},h('thead',{},h('tr',{},['품목',ro?'수량 · 상태':'수량'].map(t=>h('th',{},t)))),h('tbody',{},rows.map(([id,item])=>{
  const write=(key,value)=>save(churchPath(),{equipment:{[id]:{cat:item.cat,name:item.name,[key]:value}}});
  const qty=Number(item.qty)||0;
  // 수량을 바꾸면 상태도 맞춘다: 0개면 '없음', 처음 1개 이상이면 '좋음'
  const setQty=n=>{n=Math.max(0,Math.floor(n)||0);save(churchPath(),{equipment:{[id]:{cat:item.cat,name:item.name,qty:n,state:n===0?'없음':item.state==='없음'?'좋음':item.state}}});};
- return eqRow(id,item,{setQty,setState:v=>{if(v!=='좋음')focusMemo=id;write('state',v);},setMemo:v=>later('eq:'+id+'memo',()=>write('memo',v))});
+ return eqRow(id,item,{ro,setQty,setState:v=>{if(v!=='좋음')focusMemo=id;write('state',v);},setMemo:v=>later('eq:'+id+'memo',()=>write('memo',v))});
  }))));}));
  if(focusMemo){box.querySelector('[data-k="eq:'+focusMemo+'memo"]')?.focus();focusMemo='';}
  };
@@ -1772,7 +1792,7 @@ function worshipView() {
     const rec = recommendService(thisWeek(todayIso(), { ...data.settings, customEvents: data.customEvents }, {}).upcoming, W.services);
     sel ||= rec?.service.id || 'sunday-main'; group ||= W.services.find(s => s.id === sel)?.group || '정기'; worshipSel = sel;
     const groups = [...new Set(W.services.map(s => s.group))];
-    fill(top, rec && h('p', { class: 'special-note' }, h('span', {}, rec.event.name + (/[가-힣]$/.test(rec.event.name) && (rec.event.name.charCodeAt(rec.event.name.length - 1) - 0xAC00) % 28 ? '이' : '가') + ' 다가와요'), h('button', { type: 'button', class: 'text-button', onclick: () => { sel = rec.service.id; group = rec.service.group; draw(); } }, rec.service.name + ' 순서 보기')),
+    fill(top, rec && h('p', { class: 'special-note' }, h('span', {}, rec.event.name + iGa(rec.event.name) + ' 다가와요'), h('button', { type: 'button', class: 'text-button', onclick: () => { sel = rec.service.id; group = rec.service.group; editing = false; draw(); detail.scrollIntoView({ behavior: smooth(), block: 'start' }); } }, rec.service.name + ' 순서 보기')),
       h('div', { class: 'browse-chips' }, groups.map(g => h('button', { type: 'button', class: 'chip', 'aria-pressed': String(g === group), onclick: () => { group = g; if (W.services.find(s => s.id === sel)?.group !== g) { sel = W.services.find(s => s.group === g)?.id || sel; editing = false; } draw(); } }, g))),
       h('ul', { class: 'worship-list' }, W.services.filter(s => s.group === group).map(s => h('li', {}, h('button', { type: 'button', class: 'worship-pick', 'aria-pressed': String(s.id === sel), onclick: () => { sel = s.id; editing = false; draw(); } }, h('strong', {}, s.name), h('small', { class: 'meta' }, s.when))))));
     const sv = W.services.find(s => s.id === sel), saved = data.worshipOrders || {}, steps = orderFor(sv, saved), edited = Array.isArray(saved[sel]) && saved[sel].length > 0;
@@ -1815,7 +1835,9 @@ if (!store) msg.textContent = '저장소에 연결하지 못했어요. 새로고
 else {
   $('band').hidden = store.mode !== 'local'; $('band').textContent='체험 모드 · 이 기기에 저장';
   await store.auth?.ready; // 로그인 상태를 먼저 확인(구글 로그인한 기기면 내 교회로 바로)
-  store.auth?.onChange(u => { paintBand(); if (u && !nav.hidden) dailySnapshot(); }); // 로그인·로그아웃하면 위 띠를 바꾸고, 로그인했으면 오늘 스냅샷
+  let lastUid = store.auth?.user()?.uid || '';
+  // 로그인·로그아웃하면 위 띠를 바꾸고, 보기 모드가 바뀌었으니 지금 화면을 다시 그린다. 로그인했으면 오늘 스냅샷
+  store.auth?.onChange(u => { paintBand(); if ((u?.uid || '') !== lastUid) { lastUid = u?.uid || ''; if (!nav.hidden && curTab) { navHow = 'pop'; show(curTab); } } if (u && !nav.hidden) dailySnapshot(); });
   // 페이지 이동 방식으로 로그인하고 돌아온 경우
   let back = null; try { back = store.auth && await store.auth.redirectResult(); } catch (e) { say(loginErrorText(e?.code)); }
   const viewing = !back && parseViewer(location.search);
@@ -1885,3 +1907,11 @@ async function openInvite() {
   catch {showEntry('불러오지 못했어요. 인터넷 연결을 확인해 주세요.');}
 }
 addEventListener('hashchange',()=>{if(store && location.hash.startsWith('#c='))openInvite();});
+// 폰 뒤로가기: 같은 화면 안(할 일 준비 방법 → 목록)은 목록으로 올라가고, 다른 화면이면 그 화면을 다시 그린다
+history.scrollRestoration='manual'; // 브라우저가 스크롤을 되돌려 놓으면 아래 목록 이동을 덮어써서
+addEventListener('popstate',e=>{
+  const s=e.state; if(!store||!s?.tab||nav.hidden)return;
+  if(s.tab===curTab&&(s.pk||'')===(curTab==='project'?projectKey:'')){(s.pick?$('pj-focus'):view.querySelector('.pj-list'))?.scrollIntoView({behavior:smooth(),block:'start'});return;}
+  if(s.pk)projectKey=s.pk;
+  navHow='pop'; show(s.tab);
+});

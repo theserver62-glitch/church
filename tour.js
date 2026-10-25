@@ -1,12 +1,15 @@
 // 화면 첫 방문 안내(게임 튜토리얼처럼): 화면을 어둡게 덮고 버튼 하나만 밝혀 "이건 뭐고 어떻게 쓰는지" 알려 준다.
 // 화면·탭마다 한 번(기기 저장 'tour:<id>'). 'tour:off'면 전부 끔. 대상이 없거나 안 보이면 그 단계는 건너뛴다.
 // when: 이 투어를 띄울 때 보여야 하는 선택자(배열이면 모두). covers: 끝날 때 같이 본 것으로 치는 투어(그때 보이면)
+// 홈은 넓은 화면(960px~)이면 준비 방법이 목록 옆에, 폰이면 아래에 나온다
+const where = () => (globalThis.matchMedia?.('(min-width:960px)').matches ? '옆에' : '아래에');
 export const TOURS = [
   { id: 'home', screen: 'home', when: '.pj-head', steps: [
-    { sel: '.pj-list', title: '지금 할 일', text: '기한 지난 일은 빨간색이에요. 하나 누르면 옆(폰은 아래)에 준비 방법이 나와요.' },
+    { sel: '.home-tabs', title: '지금 할 일 | 달력', text: '달력을 보려면 [달력]을 눌러요. 다시 [지금 할 일]을 누르면 여기로 와요.' },
+    { sel: '.pj-list', title: '지금 할 일', text: () => '기한 지난 일은 빨간색이에요. 하나 누르면 ' + where() + ' 준비 방법이 나와요.' },
     { sel: '.pj-focus', title: '준비 방법', text: '목표·이렇게 해요·안내문까지 있어요. 읽고 그대로 하면 돼요.' },
     { sel: '.pj-focus-head button.primary', title: '[다 했어요]', text: '끝내면 눌러요. 누가 언제 했는지 기록으로 남아요.' },
-    { sel: '.pj-head > button', title: '할 일 카톡으로 보내기', text: '지금 할 일을 글로 만들어 카톡방에 보내요.' },
+    { sel: '.pj-share', title: '할 일 카톡으로 보내기', text: '지금 할 일을 글로 만들어 카톡방에 보내요.' },
     { sel: '.pj-rest > section', title: '준비 중인 절기·행사', text: '절기마다 준비 구간과 진행률이 보여요. 누르면 자세히 볼 수 있어요.' }] },
   { id: 'events', screen: 'events', when: '.home-bar', steps: [
     { sel: '.period-controls', title: '기간 옮기기', text: '◀ ▶로 달을 옮겨요. [오늘]을 누르면 이번 달로 돌아와요.' },
@@ -24,7 +27,7 @@ export const TOURS = [
     { sel: '.pj-lists > section:nth-of-type(2)', title: '지난 기록', text: '끝난 행사는 기록으로 남아요.' }] },
   { id: 'project', screen: 'project', when: '.pj-stepper', steps: [
     { sel: '.pj-stepper', title: '준비 구간', text: "6칸 중 '진행 중' 칸이 지금 할 구간이에요." },
-    { sel: '.pj-list', title: '이번 구간 할 일', text: '하나 누르면 준비 방법이 나와요. 끝내면 왼쪽 네모를 눌러요.' },
+    { sel: '.pj-list', title: '이번 구간 할 일', text: () => '하나 누르면 준비 방법이 나와요.' + (globalThis.document?.body.classList.contains('ro') ? '' : ' 끝내면 왼쪽 네모를 눌러요.') },
     { sel: '.pj-rest > section.pj-side', title: '지난해 기록', text: '작년에 남긴 3줄 정리가 여기에 떠요.' },
     { sel: '.pj-head > button', title: '카톡으로 보내기', text: '남은 할 일을 글로 만들어 카톡방에 보내요.' }] },
   { id: 'conti', screen: 'conti', when: '.conti-editor', covers: ['conti:ccm'], steps: [
@@ -196,7 +199,7 @@ function runTour(t) {
   const go = n => {
     i = n; const s = steps[i], last = i === steps.length - 1;
     count.textContent = (i + 1) + '/' + steps.length; count.setAttribute('aria-label', steps.length + '단계 중 ' + (i + 1) + '단계');
-    title.textContent = s.title; text.textContent = s.text; next.textContent = last ? '시작하기' : '다음';
+    title.textContent = s.title; text.textContent = typeof s.text === 'function' ? s.text() : s.text; next.textContent = last ? '시작하기' : '다음';
     const el = find(s.sel); // 화면보다 큰 대상은 제목이 보이게 위쪽부터
     if (el) { const x = scrollX; el.scrollIntoView({ block: el.getBoundingClientRect().height > innerHeight * 0.6 ? 'start' : 'center', behavior: 'instant' }); if (scrollX !== x) scrollTo(x, scrollY); } // 가로로는 움직이지 않게
     place(); later(); next.focus({ preventScroll: true });

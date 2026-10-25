@@ -1,7 +1,7 @@
 // 절기 = 프로젝트: 할 일의 '몇 주 전' 숫자 하나로 구간 6개에 나누고, 홈 '지금 할 일'(밀린 일 + 앞으로 14일)을 뽑는다.
-import { addDays } from './calendar.js?v=202610250915';
-import { occurrences, tasksAround } from './custom-events.js?v=202610250915';
-import { sizeOf } from './entry.js?v=202610250915';
+import { addDays } from './calendar.js?v=202610251002';
+import { occurrences, tasksAround } from './custom-events.js?v=202610251002';
+import { sizeOf } from './entry.js?v=202610251002';
 
 export const PHASES = ['계획', '준비', '알리기·연습', '최종 점검', '당일', '정리·기록'];
 // 4주 이상 계획 · 3 준비 · 2 알리기·연습 · 1 최종 점검 · 0 당일 · 음수 정리·기록
@@ -71,3 +71,8 @@ export const guideMap = list => new Map((Array.isArray(list) ? list : []).filter
 // 할 일 하나의 안내: 자동 할 일(PLAN·REPORT·ANNUAL)은 그 키로 찾고 '{절기명}'을 실제 이름으로. 없으면 undefined
 const fillName = (v, name) => typeof v === 'string' ? v.split('{절기명}').join(name) : Array.isArray(v) ? v.map(x => fillName(x, name)) : v;
 export const guideFor = (map, t) => { const g = map?.get?.(t.guide || t.text); return g && t.guide ? Object.fromEntries(Object.entries(g).map(([k, v]) => [k, fillName(v, t.event)])) : g; };
+
+// 받침에 따라 이/가: '행사'→'가', '추수감사절'→'이'. 한글이 아니면 '가'
+export const iGa = w => /[가-힣]$/.test(w) && (w.charCodeAt(w.length - 1) - 0xAC00) % 28 ? '이' : '가';
+// 절기 상세 '지금 구간' 줄: 이번 구간 할 일이 없으면 "0개 중 0개" 대신 밀린 일부터 하라고 알려 준다
+export const phaseCount = (n, doneN, overdueN = 0) => n ? n + '개 중 ' + doneN + '개 완료' : overdueN ? '밀린 일 ' + overdueN + '개부터' : '이 구간 할 일 없음';

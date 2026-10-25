@@ -1,4 +1,4 @@
-import { occurrences as baseOccurrences, addDays, parse } from './calendar.js?v=202610250915';
+import { occurrences as baseOccurrences, addDays, parse } from './calendar.js?v=202610251002';
 export function customOccurrences(customEvents = {}, years = []) {
  return Object.entries(customEvents || {}).filter(([,e])=>e && /^\d{4}-\d{2}-\d{2}$/.test(e.date) && years.includes(+e.date.slice(0,4)) && !Number.isNaN(parse(e.date).getTime()) && parse(e.date).toISOString().slice(0,10)===e.date).map(([id,e])=>({id,name:e.name,date:e.date,tasks:(e.tasks||[]).map(t=>Array.isArray(t)?[...t]:[t.w,t.t,t.who||'',t.doc]),custom:true,days:Math.min(10,Math.max(1,Math.trunc(Number(e.days)||1)))})).sort((a,b)=>a.date.localeCompare(b.date));
 }
