@@ -1693,3 +1693,6 @@ body.tour-on .onb{display:none} /* 처음 3단계 띠는 투어가 끝난 뒤에
 .tour-text{font:400 21px/1.5 'Yeon Sung',var(--text);color:#fff;letter-spacing:0}
 @media(max-width:959px){.app-info{margin-bottom:calc(120px + env(safe-area-inset-bottom))}}
 .call-when{margin-left:var(--s2);font-size:var(--fs-14);color:var(--accent);font-weight:600}
+.role-form{display:grid;gap:var(--s2)}
+.role-form input{flex:1 1 160px;min-width:0}
+.role-form button{min-width:88px}
