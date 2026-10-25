@@ -1707,3 +1707,24 @@ body.tour-on .onb{display:none} /* 처음 3단계 띠는 투어가 끝난 뒤에
 /* 할 일 읽기 전용(로그인 전·관리자 아닌 성도): 처리 단추는 숨기고 무엇·언제·누가만 */
 .ro .pj-chk,.ro .task-check input,.ro .pj-focus-acts,.ro .pj-focus-head>button,.ro .pj-focus-foot,.ro .task-more,.ro .pj-first .primary,.ro .pj-edit,.ro .pj-skip-note{display:none}
 .ro .pj-row{grid-template-columns:minmax(0,1fr);padding-left:var(--s3)}
+/* 내 부서 우선 보기: 다른 부서는 흐린 점선 테두리 + '부서 · 이름'(색만으로 구분하지 않음) */
+.dept-view{display:flex;margin:var(--s3) 0 0}
+.dept-view button{font-size:var(--fs-16)}
+.other-event .day-number::before{border:2px dashed var(--ink-3)}
+.key-other{border:2px dashed var(--ink-3)}
+.event-tag.other-dept{border-style:dashed;background:var(--paper);color:var(--ink-2);font-weight:400}
+.dept-overlap{margin:0 0 var(--s3);padding:var(--s2) var(--s3);border-left:3px solid var(--ink-2);background:var(--paper-2);font-size:var(--fs-16)}
+.other-depts>summary{color:var(--ink-2)}
+.dept-toggles{flex-wrap:wrap;gap:var(--s2)}
+.dept-toggles button{min-height:48px;font-size:var(--fs-16)}
+.pj-other{margin-top:var(--s3);font-size:var(--fs-16)}
+@media(min-width:960px){
+ .calendar[data-mode=month] .other-event .day-number::before{border:0}
+ .calendar .calendar-item.event-title.other-dept{border:1px dashed var(--ink-3);background:var(--surface);color:var(--ink-2);font-weight:400}
+}
+/* 폰 달력: 날짜 아래 작은 글자('오늘' · 다른 부서 앞 두 글자), 떠 있는 +행사 추가 버튼(56px+16px)에 마지막 줄이 안 가리게 */
+.day-sub{margin-top:2px;position:relative;z-index:1;font-size:var(--fs-12);line-height:14px;color:var(--ink-2);white-space:nowrap}
+.today .day-sub{color:var(--accent);font-weight:700}
+@media(max-width:959px){.home-main .calendar{margin-bottom:72px}}
+@media(min-width:960px){.day-sub{display:none}}
+#dept-ask .hint{margin:var(--s3) 0 0}

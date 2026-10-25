@@ -1,5 +1,5 @@
-import { addDays, parse } from './calendar.js?v=202610251002';
-import { occurrences, tasksAround, occursOn } from './custom-events.js?v=202610251002';
+import { addDays, parse } from './calendar.js?v=202610251020';
+import { occurrences, tasksAround, occursOn } from './custom-events.js?v=202610251020';
 export function monthGrid(year, month) {
  const first = new Date(Date.UTC(year, month - 1, 1)).toISOString().slice(0,10);
  const start = addDays(first, -parse(first).getUTCDay());
@@ -7,7 +7,7 @@ export function monthGrid(year, month) {
 }
 export function prepSpans(year, month, settings = {}) {
  const grid=monthGrid(year,month), from=grid[0][0], to=grid[5][6];
- return occurrences([year-1,year,year+1],settings).filter(e=>e.tasks.length).map(e=>({eventId:e.id,name:e.name,start:addDays(e.date,-7*Math.max(...e.tasks.map(t=>t[0]))),end:e.date})).filter(e=>e.start<=to&&e.end>=from);
+ return occurrences([year-1,year,year+1],settings).filter(e=>e.tasks.length).map(e=>({eventId:e.id,name:e.name,start:addDays(e.date,-7*Math.max(...e.tasks.map(t=>t[0]))),end:e.date,...(e.dept&&{dept:e.dept})})).filter(e=>e.start<=to&&e.end>=from);
 }
 const md=s=>+s.slice(5,7)+'/'+ +s.slice(8,10);
 const fmt=s=>md(s)+'('+'일월화수목금토'[parse(s).getUTCDay()]+')';

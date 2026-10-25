@@ -1,7 +1,7 @@
 // 절기 = 프로젝트: 할 일의 '몇 주 전' 숫자 하나로 구간 6개에 나누고, 홈 '지금 할 일'(밀린 일 + 앞으로 14일)을 뽑는다.
-import { addDays } from './calendar.js?v=202610251002';
-import { occurrences, tasksAround } from './custom-events.js?v=202610251002';
-import { sizeOf } from './entry.js?v=202610251002';
+import { addDays } from './calendar.js?v=202610251020';
+import { occurrences, tasksAround, deptOf } from './custom-events.js?v=202610251020';
+import { sizeOf } from './entry.js?v=202610251020';
 
 export const PHASES = ['계획', '준비', '알리기·연습', '최종 점검', '당일', '정리·기록'];
 // 4주 이상 계획 · 3 준비 · 2 알리기·연습 · 1 최종 점검 · 0 당일 · 음수 정리·기록
@@ -39,9 +39,9 @@ export function seasonTasks(today, settings = {}) {
     const maxW = Math.max(0, ...ev.tasks.map(t => Number(t[0]) || 0)), due = [addDays(ev.date, -7 * maxW - 7), addDays(ev.date, -28)].sort()[0];
     const planDue = settings.taskDue?.[plan] || due;
     return [
-      { key: plan, event: ev.name, eventDate: ev.date, due: planDue, weeks: Math.max(4, Math.round((Date.parse(ev.date) - Date.parse(planDue)) / 6048e5)), text: planText(ev.name), who: '부장·교사', doc: planDoc(ev, settings), auto: true, guide: 'PLAN' },
+      { key: plan, event: ev.name, eventDate: ev.date, dept: deptOf(ev), due: planDue, weeks: Math.max(4, Math.round((Date.parse(ev.date) - Date.parse(planDue)) / 6048e5)), text: planText(ev.name), who: '부장·교사', doc: planDoc(ev, settings), auto: true, guide: 'PLAN' },
       // 결과 보고서(26)를 이미 쓰는 할 일이 있으면(여름수련회 정산 보고) 겹치지 않게 빼기
-      !ev.tasks.some(t => String(t[3] || '') === REPORT_DOC) && { key: wrap, event: ev.name, eventDate: ev.date, due: settings.taskDue?.[wrap] || addDays(ev.date, 7), weeks: -1, text: reportText(ev.name), who: '리더 모임', doc: REPORT_DOC, auto: true, guide: 'REPORT' },
+      !ev.tasks.some(t => String(t[3] || '') === REPORT_DOC) && { key: wrap, event: ev.name, eventDate: ev.date, dept: deptOf(ev), due: settings.taskDue?.[wrap] || addDays(ev.date, 7), weeks: -1, text: reportText(ev.name), who: '리더 모임', doc: REPORT_DOC, auto: true, guide: 'REPORT' },
     ].filter(Boolean);
   });
   const annual = [y - 1, y, y + 1].map(yy => { const date = firstDecSunday(yy), key = 'annual_' + date + '_plan';
