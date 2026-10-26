@@ -1733,3 +1733,7 @@ body.tour-on .onb{display:none} /* 처음 3단계 띠는 투어가 끝난 뒤에
 .login-state{margin:0;font-size:var(--fs-16);color:var(--ink-2)}
 .login-state.on{color:var(--accent);font-weight:600}
 .choice-mine{display:grid;gap:var(--s2)}
+
+/* 교회 없이 보는 공통 자료의 큰 탭 */
+.common-tabs > button, .common-song-tabs > button { min-height: 44px; font-size: 16px; flex: 1; }
+[data-screen="common"] > .song-browser { position: static; max-height: none; overflow: visible; }

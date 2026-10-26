@@ -1,22 +1,22 @@
-import { occurrences, tasksAround, thisWeek, occursOn, ALL, deptOf, isMine, splitMine, byPriority, myDeptsIn } from './custom-events.js?v=202610262330';
-import { TEMPLATES } from './templates.js?v=202610262330';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError, isMember, joinList, memberList, joinPatch, acceptPatch, denyPatch, removeMemberPatch } from './admins.js?v=202610262330';
-import { elementsFor, sundayName, callRec, nameDates, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610262330';
+import { occurrences, tasksAround, thisWeek, occursOn, ALL, deptOf, isMine, splitMine, byPriority, myDeptsIn } from './custom-events.js?v=202610262337';
+import { TEMPLATES } from './templates.js?v=202610262337';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError, isMember, joinList, memberList, joinPatch, acceptPatch, denyPatch, removeMemberPatch } from './admins.js?v=202610262337';
+import { elementsFor, sundayName, callRec, nameDates, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610262337';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610262330';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610262330';
-import { openStore, newChurchCode, NOW } from './store.js?v=202610262330';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked, iGa, phaseCount } from './season.js?v=202610262330';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610262330';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610262330';
-import { docs } from './docs.js?v=202610262330';
-import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610262330';
-import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610262330';
-import { introSections, sourceDomains, deepParts } from './bookintro.js?v=202610262330';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610262330';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610262330';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610262330';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610262330';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610262337';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610262337';
+import { openStore, newChurchCode, NOW, DELETE } from './store.js?v=202610262337';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked, iGa, phaseCount } from './season.js?v=202610262337';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610262337';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610262337';
+import { docs } from './docs.js?v=202610262337';
+import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610262337';
+import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610262337';
+import { introSections, sourceDomains, deepParts } from './bookintro.js?v=202610262337';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610262337';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610262337';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610262337';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610262337';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -433,7 +433,7 @@ const retreatForms = forms => h('div', {}, h('h4', {}, '수련회 양식'), RETR
 const sheetLink = song => typeof song?.sheet === 'string' && song.sheet.startsWith('https://')
   ? h('a', { class: 'sheet-link', 'aria-label':song.title+' 악보 열기', title:'악보 열기', href: song.sheet, target: '_blank', rel: 'noopener' }, icon()) : null;
 
-function contiView(startPick = 'book') {
+function contiView(startPick = 'book', common = false) {
   let path, cur = [], stop = () => {}, book = {}, churchName = '';
   const printBox = h('section', { class: 'print-conti' });
   const paper = h('select', { 'aria-label': '인쇄 용지' }, ['A4', 'A3'].map(v => h('option', { value: v }, v)));
@@ -478,21 +478,21 @@ function contiView(startPick = 'book') {
     // 빠르기: 곡 데이터의 분위기(신나게/잔잔하게, AI 추정)를 빠른/느린 찬양으로 바로 거른다
     [['신나게','빠른 찬양'],['잔잔하게','느린 찬양']].map(([v,t])=>h('button',{type:'button',class:'chip','aria-pressed':String(filters.mood===v),onclick:()=>{filters.mood=filters.mood===v?'':v;count=20;drawBrowse();}},t)),
     Object.keys(sheets).length>0&&h('button',{type:'button',class:'chip','aria-pressed':String(useSheets()),onclick:()=>{onlySheets=!useSheets();count=20;drawBrowse();}},'악보 있는 곡'),
-    h('button',{type:'button',class:'chip','aria-pressed':String(onlyFav),onclick:()=>{onlyFav=!onlyFav;count=20;drawBrowse();}},'즐겨찾기'),
+    !common&&h('button',{type:'button',class:'chip','aria-pressed':String(onlyFav),onclick:()=>{onlyFav=!onlyFav;count=20;drawBrowse();}},'즐겨찾기'),
     h('button',{type:'button',class:'chip','aria-pressed':String(nFilters()>0),'aria-haspopup':'dialog',onclick:openFilters},'필터'+(nFilters()?' '+nFilters():'')));
   const drawBrowse=()=>{
     drawChips();
     fill(tags,nFilters()>0&&[...['key','theme'].filter(f=>filters[f]).map(f=>h('button',{type:'button',class:'tag','aria-label':NAMES[f]+' '+filters[f]+' 조건 빼기',onclick:()=>{filters[f]='';drawBrowse();}},NAMES[f]+' '+filters[f]+' ×')),h('button',{type:'button',class:'text-button',onclick:()=>{filters.key=filters.theme=filters.mood='';drawBrowse();}},'조건 초기화')]);
     const {songs,reason}=browseSongs(Object.values(book),query());
     fill(countLine,h('span',{'aria-live':'polite'},songs.length+'곡'));
-    const q=search.value.trim(),typed=q&&!songs.some(x=>x.title===q)&&h('button',{type:'button',class:'sub add-title',onclick:()=>{setSongs([...cur,{title:q,key:'',memo:''}]);say(q+' 추가했어요');search.value='';drawBrowse();}},"+ '"+q+"' 곡으로 추가");
+    const q=search.value.trim(),typed=!common&&q&&!songs.some(x=>x.title===q)&&h('button',{type:'button',class:'sub add-title',onclick:()=>{setSongs([...cur,{title:q,key:'',memo:''}]);say(q+' 추가했어요');search.value='';drawBrowse();}},"+ '"+q+"' 곡으로 추가");
     const hint=!songs.length&&emptyHint({reason,onlyFav,onlySheets:useSheets(),...filters});
     const added=s=>cur.some(c=>c.title===s.title&&(c.key||'')===(s.key||''));
     // 곡 한 줄: 1줄 곡명(즐겨찾기면 작은 ★), 2줄 "악보 D·E · 시와찬미 47", 오른쪽 [악보 보기][+ 추가]
     const songRow=(s,gk)=>{const keys=sheetKeys(s.title,sheets),want=gk||filters.key,hit=keys.length&&sheetFor(s.title,want&&keys.includes(want)?want:s.key),link=!hit&&typeof s.sheet==='string'&&s.sheet.startsWith('https://')&&s.sheet;
       return h('li',{},h('div',{class:'song-info'},h('span',{class:'song-name'},isFav(s)&&h('span',{class:'fav-mark','aria-label':'즐겨찾기'},'★ '),s.title),h('small',{class:'meta'},[keys.length?'악보 '+keys.map(k=>k||'키 없음').join('·'):s.key&&s.key+'키',s.note].filter(Boolean).join(' · '))),
        hit?h('button',{type:'button',class:'sub sheet-button','aria-label':s.title+' 악보 보기',onclick:()=>showSheet(s.title,hit[0],sheets,{isFav,toggleFav})},'악보 보기'):link?h('a',{class:'sub-link',href:link,target:'_blank',rel:'noopener'},'악보 보기'):null,
-       added(s)?h('button',{type:'button',class:'sub added',disabled:true},'담았음 ✓'):h('button',{type:'button',class:'sub add-button','aria-label':s.title+' 콘티에 담기',onclick:()=>{const at=cur.length;flashAt=at;setTimeout(()=>{flashAt=-1;},1600);setSongs([...cur,{title:s.title,key:s.key,memo:''}]);draw();drawBrowse();say(whichLabel()+'에 담았어요');msg.append(h('button',{onclick:()=>{setSongs(cur.filter((_,j)=>j!==at));msg.textContent='';drawBrowse();}},'실행 취소'));}},'+ 담기'));};
+       common?null:added(s)?h('button',{type:'button',class:'sub added',disabled:true},'담았음 ✓'):h('button',{type:'button',class:'sub add-button','aria-label':s.title+' 콘티에 담기',onclick:()=>{const at=cur.length;flashAt=at;setTimeout(()=>{flashAt=-1;},1600);setSongs([...cur,{title:s.title,key:s.key,memo:''}]);draw();drawBrowse();say(whichLabel()+'에 담았어요');msg.append(h('button',{onclick:()=>{setSongs(cur.filter((_,j)=>j!==at));msg.textContent='';drawBrowse();}},'실행 취소'));}},'+ 담기'));};
     // 묶어 보기(키별·주제별·분위기별): 묶음 머리줄로 접고 펼침(처음엔 첫 묶음만). 가나다는 묶지 않은 목록
     const grouped=groupBy&&songs.length?groupFor(songs,groupBy,sheets).filter(([k])=>groupBy!=='key'||!filters.key||k===filters.key):null;
     if(grouped&&!openGroups.size)openGroups.add(grouped[0][0]);
@@ -520,7 +520,8 @@ function contiView(startPick = 'book') {
   };
   const drawSpecial=()=>{
     if(!specials)return;
-    const t=date.value;fill(spNote,(+t.slice(5,7))+'월 '+(+t.slice(8,10))+'일('+'일월화수목금토'[new Date(t+'T00:00:00Z').getUTCDay()]+') 콘티에 추가돼요');
+    const t=common?todayIso():date.value;fill(spNote,(+t.slice(5,7))+'월 '+(+t.slice(8,10))+'일('+'일월화수목금토'[new Date(t+'T00:00:00Z').getUTCDay()]+') 콘티에 추가돼요');
+    spNote.hidden=common;
     fill(spChips,autoSeason&&sp.season===autoSeason.season&&h('button',{type:'button',class:'chip season-on','aria-label':autoSeason.event+josa(autoSeason.event)+' 다가와서 '+sp.season+' 절기 적용 중, 누르면 해제',onclick:()=>{localStorage.setItem('church:specialSeasonOff',sp.season);sp.season='';drawSpecial();}},sp.season+' 적용 중 ×'),Object.entries(SP_OPTS).filter(([f])=>!(f==='season'&&autoSeason&&sp.season===autoSeason.season)).map(([f,vals])=>h('select',{class:'chip chip-select'+(sp[f]?' on':''),k:'sp-'+f,'aria-label':SP_NAMES[f],onchange:e=>{sp[f]=e.target.value;drawSpecial();}},h('option',{value:''},SP_NAMES[f]+' 전체'),vals.map(v=>h('option',{value:v,selected:sp[f]===v},v)))),
       h('button',{type:'button',class:'chip','aria-pressed':String(!!sp.theme),'aria-haspopup':'dialog',onclick:openThemes},sp.theme?'주제: '+sp.theme+' ▾':'주제 ▾'));
     const list=filterSpecials(specials,{...sp,q:spSearch.value});
@@ -528,7 +529,7 @@ function contiView(startPick = 'book') {
     const hint=!list.length&&specialEmpty({...sp,q:spSearch.value});
     const row=x=>h('li',{},h('div',{class:'song-info'},h('span',{class:'song-name'},x.title,h('a',{class:'yt-link',href:youtubeLink(x),target:'_blank',rel:'noopener','aria-label':x.title+' 유튜브에서 찾기(새 창)'},'▶ 유튜브')),h('small',{class:'meta'},[cleanBy(x.by),(x.form||[]).join('·'),(x.age||[]).join('·')].filter(Boolean).join(' · '))),
       h('div',{class:'buy'},h('a',{class:'sub-link','aria-label':x.title+' 악보 구매(새 창)',href:x.url,target:'_blank',rel:'noopener'},'악보 구매 ↗'),h('small',{class:'meta'},seller(x.url)+' · 유료')),
-      spAdded(x)?h('button',{type:'button',class:'sub added',disabled:true},'담았음 ✓'):h('button',{type:'button',class:'sub add-button','aria-label':x.title+' 특송으로 담기',onclick:()=>{const at=cur.length;flashAt=at;setTimeout(()=>{flashAt=-1;},1600);setSongs([...cur,{title:x.title,key:'',memo:'특송'}]);draw();drawSpecial();say(whichLabel()+'에 특송으로 담았어요');msg.append(h('button',{onclick:()=>{setSongs(cur.filter((_,j)=>j!==at));msg.textContent='';drawSpecial();}},'실행 취소'));}},'+ 담기'));
+      common?null:spAdded(x)?h('button',{type:'button',class:'sub added',disabled:true},'담았음 ✓'):h('button',{type:'button',class:'sub add-button','aria-label':x.title+' 특송으로 담기',onclick:()=>{const at=cur.length;flashAt=at;setTimeout(()=>{flashAt=-1;},1600);setSongs([...cur,{title:x.title,key:'',memo:'특송'}]);draw();drawSpecial();say(whichLabel()+'에 특송으로 담았어요');msg.append(h('button',{onclick:()=>{setSongs(cur.filter((_,j)=>j!==at));msg.textContent='';drawSpecial();}},'실행 취소'));}},'+ 담기'));
     fill(spBox,list.length?h('ul',{class:'browse special-list'},list.map(row)):h('div',{class:'empty-state'},h('p',{},hint.text),h('button',{type:'button',class:'sub',onclick:()=>{if(hint.action==='reset'){sp.form=sp.age=sp.season=sp.theme='';spSearch.value='';}else sp[hint.action]='';drawSpecial();}},hint.button)),
       h('p',{class:'meta special-source'},'외부 판매처로 이동합니다. 구매 전 편성·조성과 이용 조건을 확인하세요. 구매만으로 단체 복사·배포가 허용되는 것은 아니에요.'));
   };
@@ -542,13 +543,28 @@ function contiView(startPick = 'book') {
     const q=hySearch.value.trim(),list=filterHymns(hymns,q);
     const row=x=>{const l=hymnLinks(x),title=x.no+'장 '+x.title;return h('li',{},h('div',{class:'song-info'},h('span',{class:'song-name'},title)),
       h('a',{class:'sub-link',href:l.sheet,target:'_blank',rel:'noopener','aria-label':title+' 악보 찾기(새 창)'},'악보 ↗'),h('a',{class:'sub-link',href:l.ppt,target:'_blank',rel:'noopener','aria-label':title+' PPT 찾기(새 창)'},'PPT ↗'),
-      cur.some(c=>c.title===title)?h('button',{type:'button',class:'sub added',disabled:true},'담았음 ✓'):h('button',{type:'button',class:'sub add-button','aria-label':title+' 콘티에 담기',onclick:()=>{flashAt=cur.length;setTimeout(()=>{flashAt=-1;},1600);setSongs([...cur,{title,key:'',memo:''}]);draw();drawHymns();say(whichLabel()+'에 담았어요');}},'+ 담기'));};
+      common?null:cur.some(c=>c.title===title)?h('button',{type:'button',class:'sub added',disabled:true},'담았음 ✓'):h('button',{type:'button',class:'sub add-button','aria-label':title+' 콘티에 담기',onclick:()=>{flashAt=cur.length;setTimeout(()=>{flashAt=-1;},1600);setSongs([...cur,{title,key:'',memo:''}]);draw();drawHymns();say(whichLabel()+'에 담았어요');}},'+ 담기'));};
     if(q)return fill(hyBox,h('p',{class:'browse-count'},'찾은 찬송가 '+list.length+'장'),list.length?h('ul',{class:'browse hymn-list'},list.map(row)):h('p',{class:'hint'},'맞는 찬송가가 없어요'));
     const groups=[];for(const x of list){const k=x.theme||'기타';(groups.find(g=>g[0]===k)||groups[groups.push([k,[]])-1])[1].push(x);}
     fill(hyBox,groups.map(([k,l])=>{const on=hymnOpen.has(k);return h('section',{class:'song-group'},h('button',{type:'button',class:'group-head','aria-expanded':String(on),onclick:()=>{on?hymnOpen.delete(k):hymnOpen.add(k);drawHymns();}},h('span',{},k),h('small',{class:'meta'},' ('+l.length+'장)'),h('span',{class:'chev','aria-hidden':'true'})),on&&h('ul',{class:'browse hymn-list'},l.map(row)));}));
   };
   const hymnSection=h('section',{class:'card hymn-browser'},h('p',{class:'meta hymn-note'},'PPT는 한국찬송가공회 공식 자료실로, 악보는 검색으로 연결돼요'),hySearch,hyBox);
   const specialSection=h('section',{class:'card special-browser'},spSearch,spChips,spCount,spNote,spBox);
+  // 공통 보관함은 교회 구독·콘티 편집기를 만들기 전에 끝낸다.
+  if (common) {
+    book = mergeLibrary(defaultSongs, {});
+    const sections = {book: browse, special: specialSection, hymn: hymnSection};
+    const pickTabs = h('div', {class:'segments common-song-tabs', role:'group', 'aria-label':'찬양 종류'});
+    const pick = id => {
+      for (const [key, section] of Object.entries(sections)) section.hidden = key !== id;
+      for (const button of pickTabs.children) button.setAttribute('aria-pressed', String(button.dataset.k === id));
+      if (id === 'special') loadSpecials();
+      if (id === 'hymn') loadHymns();
+    };
+    pickTabs.append(...[['book','CCM'],['special','특송'],['hymn','찬송가']].map(([id,title]) => h('button', {type:'button', class:'sub', k:id, onclick:()=>pick(id)}, title)));
+    view.append(pickTabs, browse, specialSection, hymnSection);
+    drawBrowse(); pick(startPick); return;
+  }
   // 곡 목록에 있는 "제목 (키)"를 고르면 제목과 키를 나눠 채우고, 목록에 없는 새 곡은 목록에 더한다.
   const pick = i => {
     const s = book[cur[i].title];
@@ -752,7 +768,7 @@ function contiView(startPick = 'book') {
   drawBrowse(); open(); if (globalThis.matchMedia?.('(min-width: 960px)').matches) { loadSpecials(); loadHymns(); } // 컴퓨터 배치(960px~)는 탭 없이 다 보여서
 }
 
-function qtView() {
+function qtView(common = false) {
   let path, stop = () => {}, archive = []; const passageBox=h('section',{class:'card'}); 
   const daily = h('section', { class: 'card', hidden: true });
   const drawDaily = () => {
@@ -776,8 +792,9 @@ function qtView() {
   const open = () => {
     flush();
     stop();
-    path = `${churchPath()}/qt/${date.value}`;
     drawDaily();
+    if (common) return;
+    path = `${churchPath()}/qt/${date.value}`;
     stop = watch(path, d => {
       const notes = Object.values(d?.notes || {}).sort((a, b) => (a.at || '').localeCompare(b.at || ''));
       fill(box, h('label', {}, h('span', {}, '본문 범위'), h('input', { value: d?.passage || '', placeholder: archive[qtIndex(date.value, archive.length)]?.ref || '예: 요 3:1-16', maxLength: 50, k: 'passage',
@@ -788,8 +805,8 @@ function qtView() {
         : h('p', { class: 'empty' }, '아직 묵상이 없어요'));
     });
   };
-  view.append(h('div',{class:'row'},h('button',{class:'sub',onclick:()=>{date.value=addDays(date.value,-1);open();}},'이전'),h('label',{},h('span',{},'날짜'),date),h('button',{class:'sub',onclick:()=>{date.value=addDays(date.value,1);open();}},'다음')),passageBox,daily,box,
-    h('form', { class: 'card', onsubmit: post }, h('h3', {}, '묵상 쓰기'),
+  view.append(h('div',{class:'row'},h('button',{class:'sub',onclick:()=>{date.value=addDays(date.value,-1);open();}},'이전'),h('label',{},h('span',{},'날짜'),date),h('button',{class:'sub',onclick:()=>{date.value=addDays(date.value,1);open();}},'다음')),passageBox,daily);
+  if (!common) view.append(box, h('form', { class: 'card', onsubmit: post }, h('h3', {}, '묵상 쓰기'),
       h('label', {}, h('span', {}, '역할'), who), h('label', {}, h('span', {}, '묵상'), text), h('button', {class:'primary'}, '올리기')));
   fetch('./qt-archive.json').then(r => { if (!r.ok) throw new Error('QT'); return r.json(); }).then(items => { archive = Array.isArray(items) ? items : []; drawDaily(); }).catch(() => {});
   open();
@@ -958,14 +975,14 @@ function setView() {
   const copy = h('button', { type: 'button', class: 'sub', onclick: () => (navigator.clipboard?.writeText(code) || Promise.reject())
     .then(() => (copy.textContent = '복사했어요'), () => say('복사가 안 돼요. 코드를 길게 눌러 복사해 주세요.')) }, '코드만 복사');
   const fold=(id,title,note,...kids)=>{const d=foldCard(id);d.append(foldHead(title,note),...kids.filter(Boolean));return d;};
-  const permBox=h('div',{class:'perm-box'}), adminBox=h('div'), joinBox=h('div'), skipBox=h('div',{class:'skip-box'}), myDeptBox=h('div');
+  const permBox=h('div',{class:'perm-box'}), adminBox=h('div'), joinBox=h('div'), delBox=h('div'), skipBox=h('div',{class:'skip-box'}), myDeptBox=h('div');
   let latest = null;
   const snapF = store.mode === 'shared' && recordsFold('set-snap', '이전 상태로 되돌리기', '/snap', 30, (box, list) => drawSnaps(box, list, () => latest));
   const logF = store.mode === 'shared' && recordsFold('set-log', '변경 기록', '/log', 50, drawLog);
   // 설정 묶음: 사람 / 우리 교회 / 데이터 / 내 기기(맨 아래)
   const inviteBtn=h('button',{class:'sub',onclick:()=>copyInvite(code)},'초대 링크 복사'), inviteF=fold('set-invite','멤버 초대',code,h('h4',{},'교회 코드'),h('p',{class:'code'},code),inviteBtn,copy);
   view.append(permBox,h('div',{class:'settings-grid'},
- h('h3',{class:'set-group'},'사람'),inviteF,store.mode==='shared'&&fold('set-join','교인 가입 승인','',joinBox),store.mode==='shared'&&fold('set-admin','관리자','',adminBox),
+ h('h3',{class:'set-group'},'사람'),inviteF,store.mode==='shared'&&fold('set-join','교인 가입 승인','',joinBox),store.mode==='shared'&&delBox,store.mode==='shared'&&fold('set-admin','관리자','',adminBox),
  h('h3',{class:'set-group'},'우리 교회'),fold('set-church','교회 정보','',nameBox),fold('set-dept','부서·규모','',sizeBox),fold('set-events','절기·행사 켜고 끄기','',evBox),fold('set-skip','계획서·보고 생략할 절기','',skipBox),
  h('h3',{class:'set-group'},'데이터'),fold('set-songs','곡 목록·자료 옮기기','',bookBox,
   h('section',{class:'song-tool'},h('h4',{},'곡 한꺼번에 넣기'),h('p',{class:'hint'},"한 줄에 한 곡씩 '곡명 키' 또는 '곡명 (키)'로 붙여 넣어요"),bulk,bulkInfo,bulkBtn),
@@ -1017,6 +1034,14 @@ function setView() {
       : h('button', { type: 'button', class: 'sub', onclick: () => doIt(requestPatch(u, today2), '요청했어요 · 리더 승인을 기다려요') }, '권한 요청')));
     if (store.mode === 'shared') {
       const admins = adminList(d), reqs = requestList(d), me = isAdmin(d, uid), joins = joinList(d), members = memberList(d);
+      // 잘못 만든 교회 지우기: 관리자만, 교회 이름을 그대로 쳐야 지운다. 지우면 이 기기·내 계정 목록에서도 뺀다
+      fill(delBox, me && h('button', { type: 'button', class: 'danger', onclick: async () => {
+        const c = localStorage.getItem('church:code'), name = d?.name || '';
+        if (prompt('이 교회를 지우면 되돌릴 수 없어요. 지우려면 교회 이름 "' + name + '"을 그대로 입력하세요.') !== name) return say('이름이 달라서 지우지 않았어요');
+        try { await store.remove('churches/' + c); } catch { return say('지우지 못했어요. 관리자로 로그인했는지 확인해 주세요.'); }
+        localStorage.setItem('church:recent', JSON.stringify(getRecent().filter(x => x.code !== c))); localStorage.removeItem('church:code');
+        if (u) store.update('users/' + uid, { churches: { [c]: DELETE } }).catch(() => {});
+        say('교회를 지웠어요'); showChoice(); } }, '이 교회 지우기'));
       fill(joinBox, me && [h('h4', {}, '가입 요청 ' + joins.length + '건'), joins.length ? h('ul', { class: 'buy-list' }, joins.map(r => h('li', { class: 'admin-row' }, h('strong', {}, r.name || '이름 없음'), h('small', { class: 'meta' }, [r.email, r.at].filter(Boolean).join(' · ')),
           h('div', { class: 'row' }, h('button', { type: 'button', class: 'primary', onclick: () => doIt(acceptPatch(r, today2), r.name + '님을 교인으로 승인했어요') }, '승인'), h('button', { type: 'button', class: 'text-button', onclick: () => doIt(denyPatch(r.uid), '요청을 거절했어요') }, '거절'))))) : h('p', { class: 'hint' }, '새 가입 요청이 없어요'),
         h('h4', {}, '승인된 교인 ' + members.length + '명'), members.length > 0 && h('ul', { class: 'buy-list' }, members.map(m => h('li', { class: 'admin-row' }, h('strong', {}, m.name || '이름 없음'), m.email && h('small', { class: 'meta' }, m.email),
@@ -1296,7 +1321,7 @@ function showSheet(title, id, sheets, fav = null) {
  };
  const box = bigDialog(title + ' 악보', 'sheet-dialog', status, img); box.querySelector('.event-dialog-heading')?.append(h('div', { class: 'sheet-tools' }, bar, star)); load(id);
 }
-function docsView() {
+function docsView(common = false) {
  let dept = null;
  const find = h('input', { type: 'search', class: 'doc-search', placeholder: '수련회, 회의록, 결과보고…', 'aria-label': '자료 찾기', oninput: () => draw() });
  const picker = h('details', { class: 'dept-picker' }), mineBox = h('section', { class: 'doc-list' }), commonBox = h('section', { class: 'doc-list' });
@@ -1350,7 +1375,7 @@ function docsView() {
   if (!doc) return fill(rec);
   const days = Math.round((parse(ev.date) - parse(today)) / 864e5);
   fill(rec, h('span', {}, ev.name + '까지 ' + (days < 7 ? days + '일' : Math.round(days / 7) + '주') + ': '), h('a', { class: 'primary', href: doc.file, download: true, 'aria-label': doc.title + ' 워드 파일 받기' }, doc.title + ' 받기'), h('button', { type: 'button', class: 'text-button', onclick: () => showPreview(doc) }, '미리보기')); };
- if (globalThis.localStorage && !localStorage.getItem('church:code')) { dept = '전체'; draw(); return; } // 공통자료만 보기: 교회 없이
+ if (common || (globalThis.localStorage && !localStorage.getItem('church:code'))) { dept = '전체'; draw(); return; } // 공통자료만 보기: 교회 없이
  watch(churchPath(), d => { paintRec(d); if (dept !== null) return; dept = docDept(d?.settings); draw(); });
 }
 // 구매 도움: "구매하려고 해요"를 체크해야 링크가 눌린다(구매 의사가 있을 때만). 체크 전에는 흐린 버튼
@@ -1644,7 +1669,8 @@ async function scripture(box,text,commentary=true){
  if(commentary){const matches=archive.filter(a=>{const r=refRange(a.ref,index);return r&&overlaps(ref,r);});box.append(...(matches.length?matches.map(a=>h('section',{class:'card'},h('h3',{},a.ref+' · '+a.title),...STEPS.map(([k,t])=>h('div',{},stepTitle(t),h('p',{class:'qt-copy'},a[k]))),deepBox(a))):[h('p',{},'이 본문의 해설은 준비 중이에요')]));}
  }catch{if(box.request!==request)return;fill(box,h('p',{class:'err'},'본문을 불러오지 못했어요. 본문 범위와 인터넷 연결을 확인해 주세요.'));}
 }
-function wordView(){
+function wordView(common = false){
+ if(common){qtView(true);return;}
  view.append(h('div',{class:'segments switcher only-narrow'},[['sermon','주일설교'],['qt','큐티']].map(([id,t])=>h('button',{class:'sub','aria-pressed':String(wordMode===id),onclick:()=>show(id)},t))));
  if(wordMode==='qt'){qtView();return;}
  const box=h('section',{class:'reading','aria-live':'polite'},h('p',{class:'hint'},'성경과 장·절을 고르면 말씀이 나와요')),input=h('input',{id:'scripture-input',required:true,'aria-label':'성경 본문'});
@@ -1964,7 +1990,7 @@ function showChoice() {
   const u=store.auth?.user(), mineBox=h('div',{class:'choice-mine'});
   const recent=getRecent();
   // 최근 목록과 구글 계정 목록을 합치고, 없어진 교회는 빼고, 이름이 같으면 코드 끝자리로 구분한다
-  const paint=async list=>{ const ok=[]; for(const x of list){ const d=await readOnce('churches/'+x.code).catch(e=>isPermissionError(e)?{}:null); if(d) ok.push(x); }
+  const paint=async list=>{ const ok=[]; for(const x of list){ const d=localStorage.getItem('church:code') ? await readOnce('churches/'+x.code).catch(e=>isPermissionError(e)?{}:null) : {}; if(d) ok.push(x); }
     const dup=n=>ok.filter(x=>x.name===n).length>1;
     fill(mineBox,ok.map(x=>h('button',{type:'button',class:'primary',onclick:()=>enter(x.code)},x.name+(dup(x.name)?' ('+x.code.slice(-5)+')':'')+'(으)로 들어가기'))); };
   (u?myChurches():Promise.resolve([])).then(mine=>{const seen=new Set(recent.map(x=>x.code));paint([...recent,...mine.filter(x=>!seen.has(x.code))]);});
@@ -1972,7 +1998,7 @@ function showChoice() {
     h('p',{class:'login-state'+(u?' on':'')},u?'✓ '+(u.email||u.displayName||'구글 계정')+'로 로그인되어 있어요':'로그인되어 있지 않아요'),
     u?h('button',{type:'button',class:'text-button',onclick:async()=>{await store.auth.signOut();showChoice();}},'로그아웃'):loginBox(),mineBox,
     h('button',{type:'button',class:recent.length?'sub':'primary',onclick:()=>showEntry()},'교회 선택하기'),
-    h('button',{type:'button',class:'sub',onclick:commonView},'공통자료만 보기')));
+    h('button',{type:'button',class:'sub',onclick:()=>commonView()},'공통자료만 보기')));
 }
 // 교인이 아닌 사람: 로그인 → 가입 요청 → 관리자 승인 뒤에 들어온다(교회 내용은 하나도 안 보임)
 function showJoin(c) {
@@ -1989,10 +2015,14 @@ function showJoin(c) {
   view.append(box);
 }
 // 교회 없이 보는 공통 자료(서류 양식·링크). 교회 데이터는 읽지 않는다
-function commonView() {
-  reset(); view.dataset.screen='docs'; nav.hidden=true; side.hidden=true;
-  view.append(h('button',{type:'button',class:'text-button',onclick:showChoice},'← 처음으로'),h('h2',{},'공통 자료'));
-  docsView();
+function commonView(tab = 'docs') {
+  reset(); view.dataset.screen='common'; nav.hidden=true; side.hidden=true; paintBand();
+  const tabs = h('div',{class:'segments common-tabs',role:'group','aria-label':'공통 자료 종류'},
+    [['docs','자료실'],['qt','큐티'],['songs','찬양']].map(([id,title])=>h('button',{type:'button',class:'sub','aria-pressed':String(tab===id),onclick:()=>commonView(id)},title)));
+  view.append(h('button',{type:'button',class:'text-button',onclick:showChoice},'← 처음으로'),h('h2',{},'공통 자료'),tabs);
+  if(tab==='qt') wordView(true);
+  else if(tab==='songs') contiView('book',true);
+  else docsView(true);
 }
 addEventListener('hashchange',()=>{if(store && location.hash.startsWith('#c='))openInvite();});
 // 폰 뒤로가기: 같은 화면 안(할 일 준비 방법 → 목록)은 목록으로 올라가고, 다른 화면이면 그 화면을 다시 그린다

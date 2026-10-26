@@ -1,5 +1,5 @@
-import { addDays, nextSunday } from './calendar.js?v=202610262330';
-import { DELETE } from './store.js?v=202610262330';
+import { addDays, nextSunday } from './calendar.js?v=202610262337';
+import { DELETE } from './store.js?v=202610262337';
 
 const record = v => v !== null && typeof v === 'object' && !Array.isArray(v);
 // 깊게 합치는 저장소에 위험한 키가 들어가지 않게 중첩된 값도 검사한다.

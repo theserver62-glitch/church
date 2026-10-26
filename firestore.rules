@@ -24,6 +24,8 @@ service cloud.firestore {
       // 관리자가 아직 없는 교회(막 만든 교회)는 로그인한 사람이 읽을 수 있다 — 첫 관리자가 되려고
       allow get: if validCode(code) && signedIn() && (isAdmin() || isMember() || admins().size() == 0);
       // 새 교회는 로그인한 사람만, 만든 사람이 유일한 첫 관리자로 들어가야 만들 수 있다
+      // 잘못 만든 교회는 그 교회 관리자만 지운다(앱은 교회 이름을 그대로 쳐야 지운다)
+      allow delete: if validCode(code) && isAdmin();
       allow create: if validCode(code) && signedIn() && request.resource.data.size() < 50
         && request.resource.data.get('admins', {}).keys().hasOnly([request.auth.uid])
         && request.resource.data.get('admins', {}).keys().hasAll([request.auth.uid]);
