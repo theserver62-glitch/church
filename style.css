@@ -1728,3 +1728,5 @@ body.tour-on .onb{display:none} /* 처음 3단계 띠는 투어가 끝난 뒤에
 @media(max-width:959px){.home-main .calendar{margin-bottom:72px}}
 @media(min-width:960px){.day-sub{display:none}}
 #dept-ask .hint{margin:var(--s3) 0 0}
+.choice{display:grid;gap:var(--s3);max-width:420px}
+.choice button{width:100%;min-height:52px}
