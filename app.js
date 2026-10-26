@@ -1669,10 +1669,10 @@ async function scripture(box,text,commentary=true){
  if(commentary){const matches=archive.filter(a=>{const r=refRange(a.ref,index);return r&&overlaps(ref,r);});box.append(...(matches.length?matches.map(a=>h('section',{class:'card'},h('h3',{},a.ref+' · '+a.title),...STEPS.map(([k,t])=>h('div',{},stepTitle(t),h('p',{class:'qt-copy'},a[k]))),deepBox(a))):[h('p',{},'이 본문의 해설은 준비 중이에요')]));}
  }catch{if(box.request!==request)return;fill(box,h('p',{class:'err'},'본문을 불러오지 못했어요. 본문 범위와 인터넷 연결을 확인해 주세요.'));}
 }
-function wordView(common = false){
- if(common){qtView(true);return;}
- view.append(h('div',{class:'segments switcher only-narrow'},[['sermon','주일설교'],['qt','큐티']].map(([id,t])=>h('button',{class:'sub','aria-pressed':String(wordMode===id),onclick:()=>show(id)},t))));
- if(wordMode==='qt'){qtView();return;}
+function wordView(common = false, mode = common ? 'qt' : wordMode){
+ if(common && mode==='qt'){qtView(true);return;}
+ if(!common) view.append(h('div',{class:'segments switcher only-narrow'},[['sermon','주일설교'],['qt','큐티']].map(([id,t])=>h('button',{class:'sub','aria-pressed':String(wordMode===id),onclick:()=>show(id)},t))));
+ if(mode==='qt'){qtView();return;}
  const box=h('section',{class:'reading','aria-live':'polite'},h('p',{class:'hint'},'성경과 장·절을 고르면 말씀이 나와요')),input=h('input',{id:'scripture-input',required:true,'aria-label':'성경 본문'});
  // 성경 66권 ▾ · 장 ▾ · 시작 절 ▾ · 끝 절 ▾ — 고르면 바로 찾는다. 절 수는 그 권 파일에서
  const testa=h('select',{'aria-label':'구약 신약'},h('option',{value:''},'구약·신약'),h('option',{value:'old'},'구약'),h('option',{value:'new'},'신약')),book=h('select',{'aria-label':'성경',disabled:true}),chap=h('select',{'aria-label':'장',disabled:true}),v1=h('select',{'aria-label':'시작 절',disabled:true}),v2=h('select',{'aria-label':'끝 절',disabled:true});
@@ -2018,9 +2018,10 @@ function showJoin(c) {
 function commonView(tab = 'docs') {
   reset(); view.dataset.screen='common'; nav.hidden=true; side.hidden=true; paintBand();
   const tabs = h('div',{class:'segments common-tabs',role:'group','aria-label':'공통 자료 종류'},
-    [['docs','자료실'],['qt','큐티'],['songs','찬양']].map(([id,title])=>h('button',{type:'button',class:'sub','aria-pressed':String(tab===id),onclick:()=>commonView(id)},title)));
+    [['docs','자료실'],['sermon','주일설교'],['qt','큐티'],['songs','찬양']].map(([id,title])=>h('button',{type:'button',class:'sub','aria-pressed':String(tab===id),onclick:()=>commonView(id)},title)));
   view.append(h('button',{type:'button',class:'text-button',onclick:showChoice},'← 처음으로'),h('h2',{},'공통 자료'),tabs);
-  if(tab==='qt') wordView(true);
+  if(tab==='sermon') wordView(true,'sermon');
+  else if(tab==='qt') wordView(true);
   else if(tab==='songs') contiView('book',true);
   else docsView(true);
 }
