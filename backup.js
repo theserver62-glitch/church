@@ -1,5 +1,5 @@
-import { addDays, nextSunday } from './calendar.js?v=202610262323';
-import { DELETE } from './store.js?v=202610262323';
+import { addDays, nextSunday } from './calendar.js?v=202610262327';
+import { DELETE } from './store.js?v=202610262327';
 
 const record = v => v !== null && typeof v === 'object' && !Array.isArray(v);
 // 깊게 합치는 저장소에 위험한 키가 들어가지 않게 중첩된 값도 검사한다.
@@ -60,7 +60,7 @@ export function previousSundays(date) {
 
 // ---------- 매일 스냅샷 · 되돌리기 · 변경 기록 ----------
 // 관리자 목록·권한 요청은 스냅샷에 담지도, 되돌리지도 않는다(되돌리기로 권한이 바뀌면 안 되니까)
-const SNAP_SKIP = ['admins', 'adminRequests'];
+const SNAP_SKIP = ['admins', 'adminRequests', 'members', 'joinRequests'];
 export const churchPart = doc => Object.fromEntries(Object.entries(doc || {}).filter(([k]) => !SNAP_SKIP.includes(k)));
 export const contiPart = doc => Object.fromEntries(['songs', 'services'].filter(k => doc?.[k] !== undefined).map(k => [k, doc[k]]));
 const bytes = v => new TextEncoder().encode(JSON.stringify(v)).length;
