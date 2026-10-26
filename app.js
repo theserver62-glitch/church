@@ -1,22 +1,22 @@
-import { occurrences, tasksAround, thisWeek, occursOn, ALL, deptOf, isMine, splitMine, byPriority, myDeptsIn } from './custom-events.js?v=202610270003';
-import { TEMPLATES } from './templates.js?v=202610270003';
-import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError, isMember, joinList, memberList, joinPatch, acceptPatch, denyPatch, removeMemberPatch } from './admins.js?v=202610270003';
-import { elementsFor, sundayName, callRec, nameDates, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610270003';
+import { occurrences, tasksAround, thisWeek, occursOn, ALL, deptOf, isMine, splitMine, byPriority, myDeptsIn } from './custom-events.js?v=202610270006';
+import { TEMPLATES } from './templates.js?v=202610270006';
+import { isAdmin, hasAdmins, canEditSettings, adminList, requestList, requestPatch, cancelRequestPatch, claimFirstPatch, approvePatch, rejectPatch, removeAdminPatch, isPermissionError, isMember, joinList, memberList, joinPatch, acceptPatch, denyPatch, removeMemberPatch } from './admins.js?v=202610270006';
+import { elementsFor, sundayName, callRec, nameDates, orderFor, isPastorOnly, recommendService, DEPTS, themeFor, worshipSlides, worshipFileName } from './worship.js?v=202610270006';
 // 교회 사역앱 화면. 사용자 글은 textContent/value로만 넣는다(innerHTML 금지).
-import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610270003';
-import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610270003';
-import { openStore, newChurchCode, NOW, DELETE } from './store.js?v=202610270003';
-import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked, iGa, phaseCount } from './season.js?v=202610270003';
-import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610270003';
-import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610270003';
-import { docs } from './docs.js?v=202610270003';
-import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610270003';
-import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610270003';
-import { introSections, sourceDomains, deepParts } from './bookintro.js?v=202610270003';
-import { linksFor, byKind, resourcesFor } from './links.js?v=202610270003';
-import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610270003';
-import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610270003';
-import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610270003';
+import { weekDays, dayItems, monthGrid, prepSpans, prepWeek, calendarCell, shortTask, weekShare, contiShare, parseRef, refRange, overlaps, donePatch, skipPatch, handled, nextDocTask, scriptureSlides, scriptureFileName, passageLabel } from './home.js?v=202610270006';
+import { deptsOf, toggleDept, sizeOf, sizeTips, formatCodeInput, validCode, nameKey, recentChurches, inviteText, mineList, isKakaoInApp, kakaoExternalUrl, isInAppBrowser, loginErrorText, chromeUrl, safariUrl } from './entry.js?v=202610270006';
+import { openStore, newChurchCode, NOW, DELETE } from './store.js?v=202610270006';
+import { PHASES, phaseEnds, currentPhase, evKey, seasonTasks, nowTasks, projectState, guideMap, guideFor, reportLocked, iGa, phaseCount } from './season.js?v=202610270006';
+import { todayIso, nextSunday, addDays, parse, monthItems, qtIndex } from './calendar.js?v=202610270006';
+import { EVENTS, RETREAT_FORMS, ABOUT } from './events.js?v=202610270006';
+import { docs } from './docs.js?v=202610270006';
+import { onboardSteps, onbGet, onbSet } from './onboard.js?v=202610270006';
+import { tourScreen, tourAgain, resetTours } from './tour.js?v=202610270006';
+import { introSections, sourceDomains, deepParts } from './bookintro.js?v=202610270006';
+import { linksFor, byKind, resourcesFor } from './links.js?v=202610270006';
+import { equipment, equipmentId, equipmentRows, productsFor, productLink, compareLink, buyNotice } from './equipment.js?v=202610270006';
+import { label, parseCsv, mergeLibrary, filterSongs, parseBulk, nameFromFile, sheetId, sheetFirst, pickSheet, contiSlides, fitImage, groupFor, fromKakao, splitLinks, viewerLink, parseViewer, contiTabs, svcShort, bundleShare, viewerPages, hymnLinks, filterHymns, contiSongsOf, contiPatchOf, contiServices, newContiSongs, browseSongs, sheetKeys, emptyHint, filterSpecials, defaultSeason, specialEmpty, cleanBy, seller, youtubeLink, parseKakaoConti } from './songbook.js?v=202610270006';
+import { parseBackup, backupSundays, previousSundays, snapshotOf, snapWeeks, replacePatch, churchPart, contiPart, snapSummary, changeLabel, KEY_LABEL } from './backup.js?v=202610270006';
 
 const $ = id => document.getElementById(id);
 const view = $('view'), nav = $('tabs'), msg = $('msg');
@@ -208,7 +208,7 @@ function showEntry(message = '') {
   myChurches().then(mine=>{ if(mine.length) fill(mineBox,h('h2',{},'내 교회'),mine.map(item=>h('div',{class:'recent-row'},h('button',{class:'recent-church',onclick:()=>join(item.code)},item.name)))); });
   // 로그인 영역이 없거나(체험 모드) 최근 교회가 없을 때 null·false가 글자로 찍히지 않게 걸러서 넣는다
   view.append(...[h('h1',{},'교회 사역앱'),h('p',{class:'hint'},'우리 교회의 사역을 함께 준비해요.'),loginBox(),mineBox,
-    recent.length > 0 && h('section',{},h('h2',{},'최근 들어간 교회'),recent.map(item=>h('div',{class:'recent-row'},
+    store.mode==='local' && recent.length > 0 && h('section',{},h('h2',{},'최근 들어간 교회'),recent.map(item=>h('div',{class:'recent-row'},
       h('button',{class:'recent-church',onclick:()=>join(item.code)},item.name),
       h('button',{class:'text-button', 'aria-label':item.name+' 목록에서 빼기',onclick:()=>{localStorage.setItem('church:recent',JSON.stringify(getRecent().filter(x=>x.code!==item.code)));showEntry();}},'목록에서 빼기')))),
     h('section',{},h('h2',{},'초대 링크를 받았나요?'),h('p',{},'카톡으로 받은 링크를 누르면 바로 들어와요.')),
@@ -1993,11 +1993,12 @@ function showChoice() {
   const paint=async list=>{ const ok=[]; for(const x of list){ const d=localStorage.getItem('church:code') ? await readOnce('churches/'+x.code).catch(e=>isPermissionError(e)?{}:null) : {}; if(d) ok.push(x); }
     const dup=n=>ok.filter(x=>x.name===n).length>1;
     fill(mineBox,ok.map(x=>h('button',{type:'button',class:'primary',onclick:()=>enter(x.code)},x.name+(dup(x.name)?' ('+x.code.slice(-5)+')':'')+'(으)로 들어가기'))); };
-  (u?myChurches():Promise.resolve([])).then(mine=>{const seen=new Set(recent.map(x=>x.code));paint([...recent,...mine.filter(x=>!seen.has(x.code))]);});
+  // 로그아웃이면 교회 버튼을 하나도 안 보인다(기기 기록도 숨김). 로그인하면 내 구글 계정의 교회만. 체험 모드는 이 기기 목록
+  (store.mode==='local'?Promise.resolve(recent):u?myChurches():Promise.resolve([])).then(paint);
   view.append(h('section',{class:'choice'},h('h1',{},'교회 사역앱'),
     h('p',{class:'login-state'+(u?' on':'')},u?'✓ '+(u.email||u.displayName||'구글 계정')+'로 로그인되어 있어요':'로그인되어 있지 않아요'),
     u?h('button',{type:'button',class:'text-button',onclick:async()=>{await store.auth.signOut();showChoice();}},'로그아웃'):loginBox(),mineBox,
-    h('button',{type:'button',class:recent.length?'sub':'primary',onclick:()=>showEntry()},'교회 선택하기'),
+    h('button',{type:'button',class:u?'sub':'primary',onclick:()=>showEntry()},'교회 선택하기'),
     h('button',{type:'button',class:'sub',onclick:()=>commonView()},'공통자료만 보기'),
     store.mode==='local'?h('button',{type:'button',class:'text-button',onclick:()=>{location.href=location.pathname;}},'체험 끝내기'):h('button',{type:'button',class:'text-button',onclick:()=>{location.href=location.pathname+'?mode=local';}},'체험해 보기 (가입 없이, 내 기기에만 저장)')));
 }
