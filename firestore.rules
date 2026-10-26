@@ -1,0 +1,121 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 교회 코드 모양(헷갈리는 글자 뺀 5-5자리)만 받는다 — 아무 이름으로 문서를 만들지 못하게
+    function validCode(code) { return code.matches('[A-Z2-9]{5}-[A-Z2-9]{5}'); }
+    // 고치기는 구글 로그인한 사람만 — 링크만 아는 낯선 사람이 지우거나 바꾸지 못하고, 누가 바꿨는지 남기려고
+    function signedIn() { return request.auth != null; }
+    // 스냅샷·변경 기록은 그 교회 관리자만 본다 — 하위 문서에서는 교회 문서를 직접 읽어 admins 표에 내 uid가 있는지 본다
+    function adminOf(code) {
+      return signedIn() && get(/databases/$(database)/documents/churches/$(code)).data.get('admins', {}).keys().hasAny([request.auth.uid]);
+    }
+    // 이 교회 교인(관리자 또는 승인된 교인)인지 — 교회 코드만 알아서는 아무것도 못 보게. 하위 문서에서 쓴다
+    function memberOf(code) {
+      let d = get(/databases/$(database)/documents/churches/$(code)).data;
+      return signedIn() && (d.get('admins', {}).keys().hasAny([request.auth.uid]) || d.get('members', {}).keys().hasAny([request.auth.uid]));
+    }
+    // 한 자리 수 앞에 0 — 서버 시각으로 'YYYY-MM-DD'를 만들려고
+    function two(n) { return (n < 10 ? '0' : '') + string(n); }
+    // 서버 시각의 UTC 날짜 — 스냅샷 날짜를 미래·과거로 꾸며 미리 만들거나 끼워 넣지 못하게
+    function utcDay() { return string(request.time.year()) + '-' + two(request.time.month()) + '-' + two(request.time.day()); }
+
+    // 로그인하고 관리자가 승인한 교인만 읽고 고친다. 처음 온 사람은 가입 요청(내 칸)만 넣을 수 있다. 목록 보기·삭제는 막는다.
+    match /churches/{code} {
+      // 관리자가 아직 없는 교회(막 만든 교회)는 로그인한 사람이 읽을 수 있다 — 첫 관리자가 되려고
+      allow get: if validCode(code) && signedIn() && (isAdmin() || isMember() || admins().size() == 0);
+      // 새 교회는 로그인한 사람만, 만든 사람이 유일한 첫 관리자로 들어가야 만들 수 있다
+      allow create: if validCode(code) && signedIn() && request.resource.data.size() < 50
+        && request.resource.data.get('admins', {}).keys().hasOnly([request.auth.uid])
+        && request.resource.data.get('admins', {}).keys().hasAll([request.auth.uid]);
+      // 교회 설정(이름·부서·규모·절기 켜고 끄기)과 관리자 목록은 관리자만 바꾼다.
+      // 관리자가 아직 없으면 첫 사람이 스스로 관리자가 될 수 있다. 관리자 신청은 자기 것만 넣고 뺀다.
+      allow update: if validCode(code) && signedIn() && request.resource.data.size() < 50
+        && (isAdmin() || claimFirst() || (isMember() && !protectedChange() && ownRequestOnly()) || joinOnly());
+      // 승인된 교인인지
+      function isMember() { return request.auth != null && resource.data.get('members', {}).keys().hasAny([request.auth.uid]); }
+      // 가입 요청: 내 칸 하나만 넣고 빼는 쓰기(다른 칸은 못 건드림)
+      function joinOnly() {
+        return request.auth != null
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['joinRequests'])
+          && request.resource.data.get('joinRequests', {}).diff(resource.data.get('joinRequests', {})).affectedKeys().hasOnly([request.auth.uid]);
+      }
+      // 지금 문서의 관리자 표 — 없으면 빈 표
+      function admins() { return resource.data.get('admins', {}); }
+      // 내가 이 교회 관리자인지 — 설정·관리자 목록을 바꿀 수 있는지 가른다
+      function isAdmin() { return request.auth != null && admins().keys().hasAny([request.auth.uid]); }
+      // 관리자가 아무도 없을 때 나 하나만 관리자로 넣는 쓰기 — 첫 관리자 되기
+      function claimFirst() {
+        return request.auth != null && admins().size() == 0
+          && request.resource.data.get('admins', {}).keys().hasOnly([request.auth.uid])
+          && request.resource.data.get('admins', {}).keys().hasAll([request.auth.uid]);
+      }
+      // 관리자만 바꿀 칸(이름·관리자 표·부서·규모·절기 켜고 끄기)을 건드리는지
+      function protectedChange() {
+        let before = resource.data.get('settings', {});
+        let after = request.resource.data.get('settings', {});
+        return request.resource.data.diff(resource.data).affectedKeys().hasAny(['name', 'admins', 'members', 'joinRequests'])
+          || after.diff(before).affectedKeys().hasAny(['depts', 'dept', 'size', 'churchSize', 'deptSize', 'enabled']);
+      }
+      // 관리자 신청 표는 내 칸만 넣고 뺀다 — 남의 신청을 지우거나 꾸미지 못하게
+      function ownRequestOnly() {
+        let before = resource.data.get('adminRequests', {});
+        let after = request.resource.data.get('adminRequests', {});
+        return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['adminRequests'])
+          || (request.auth != null && after.diff(before).affectedKeys().hasOnly([request.auth.uid]));
+      }
+      // 날짜별 콘티·큐티: 교인만 읽고 쓴다. 지우기는 없다.
+      match /{col}/{id} {
+        allow get: if validCode(code) && memberOf(code) && col in ['conti', 'qt'] && id.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}');
+        allow create, update: if memberOf(code) && validCode(code) && col in ['conti', 'qt']
+          && id.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}');
+      }
+      // 우리 교회 악보 그림(한 장에 한 문서, 1MB 미만). 목록 보기는 막고, 곡 목록은 교회 문서의 sheets 표로 안다.
+      match /sheets/{id} {
+        allow get: if validCode(code) && memberOf(code) && id.matches('[a-f0-9]{16}');
+        allow create, update: if memberOf(code) && validCode(code) && id.matches('[a-f0-9]{16}')
+          && request.resource.data.keys().hasOnly(['title', 'key', 'img', 'at'])
+          && request.resource.data.img is string && request.resource.data.img.size() < 900000;
+      }
+      // 매일 자동 스냅샷(되돌리기용). 그날(UTC) 처음 들어온 로그인 사용자가 만들고, 한 번 만들면 누구도 고치거나 지울 수 없다.
+      match /snap/{day} {
+        // 내용은 관리자만. 없는 날짜인지는 로그인한 누구나 확인할 수 있다(없을 때만 읽힘 = 내용은 못 봄) — 그날 첫 사람이 만들지 정하려고
+        allow get: if adminOf(code) || (memberOf(code) && resource == null);
+        allow list: if adminOf(code);
+        // 오늘(서버 UTC) 날짜로만, 정해진 칸만, 만든 사람·시각은 위조 불가, 교회 내용은 지금 교회 문서와 같아야(관리자 표 제외) 한다
+        allow create: if validCode(code) && memberOf(code) && day == utcDay()
+          && request.resource.data.keys().hasOnly(['church', 'conti', 'by', 'who', 'at'])
+          && request.resource.data.keys().hasAll(['church', 'conti', 'by', 'at'])
+          && request.resource.data.by == request.auth.uid
+          && request.resource.data.at == request.time
+          && request.resource.data.get('who', '') is string && request.resource.data.get('who', '').size() <= 100
+          && request.resource.data.conti is map && request.resource.data.conti.size() <= 110
+          && request.resource.data.church is map
+          && !request.resource.data.church.keys().hasAny(['admins', 'adminRequests', 'members', 'joinRequests'])
+          && get(/databases/$(database)/documents/churches/$(code)).data.diff(request.resource.data.church).affectedKeys().hasOnly(['admins', 'adminRequests', 'members', 'joinRequests']);
+      }
+      // 변경 기록(누가·언제·무엇). 남기기만 하고 고치기·지우기는 없다. 보는 건 관리자만.
+      match /log/{id} {
+        allow get, list: if adminOf(code);
+        // 내 uid로만, 서버 시각으로만, 정해진 칸과 길이만(앱은 80·40자로 자르고, 규칙은 여유 있게 100자까지)
+        allow create: if validCode(code) && memberOf(code) && id.size() <= 40
+          && request.resource.data.keys().hasOnly(['what', 'who', 'uid', 'at'])
+          && request.resource.data.keys().hasAll(['what', 'who', 'uid', 'at'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.at == request.time
+          && request.resource.data.what is string && request.resource.data.what.size() > 0 && request.resource.data.what.size() <= 100
+          && request.resource.data.who is string && request.resource.data.who.size() <= 100;
+      }
+    }
+    // 구글 로그인한 사람의 "내 교회 목록". 본인만 읽고 쓴다.
+    match /users/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.size() < 5;
+    }
+    // 같은 이름 교회가 또 만들어지는 걸 막는 이름 표. 코드·이름 원문 없이 만든 날만 담고, 고치기·지우기·목록 보기는 막는다.
+    match /names/{n} {
+      allow get: if n.size() <= 60;
+      allow create: if n.size() <= 60 && request.resource.data.keys().hasOnly(['createdAt']);
+    }
+  }
+}
