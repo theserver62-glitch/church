@@ -1,7 +1,7 @@
 // 저장소. config.js에 Firebase 설정이 있으면 Firestore(리더끼리 실시간 공유),
 // 없으면 이 기기 localStorage(체험 모드, 같은 브라우저의 다른 탭끼리만 공유).
 // 쓰기는 늘 "깊게 합치기"라서 두 사람이 다른 칸을 동시에 고쳐도 서로 지우지 않는다(배열은 통째로 바뀜).
-import { firebaseConfig } from './config.js?v=202610262337';
+import { firebaseConfig } from './config.js?v=202610270003';
 
 const FB = 'https://www.gstatic.com/firebasejs/10.12.2/';
 // 이 값을 넣은 칸은 지운다(합치기 쓰기로는 맵의 키를 지울 수 없어서). 관리자 승인·빼기·요청 취소에 쓴다
@@ -13,7 +13,8 @@ const isNow = v => v === NOW || (v && v.__now === true && Object.keys(v).length 
 const swapDelete = (o, del, now) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, isDelete(v) ? del() : isNow(v) ? now() : v && typeof v === 'object' && !Array.isArray(v) ? swapDelete(v, del, now) : v]));
 
 export async function openStore() {
-  if (firebaseConfig) {
+  // ?mode=local: 서버 없이 이 기기에만 저장하는 체험 모드(테스트용, 진짜 교회 데이터와 섞이지 않음)
+  if (firebaseConfig && new URLSearchParams(location.search).get('mode') !== 'local') {
     const { initializeApp } = await import(FB + 'firebase-app.js');
     const { getFirestore, doc, onSnapshot, setDoc, deleteDoc, deleteField, serverTimestamp, collection, query, orderBy, limit, getDocs } = await import(FB + 'firebase-firestore.js');
     const A = await import(FB + 'firebase-auth.js');
