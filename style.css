@@ -1737,3 +1737,27 @@ body.tour-on .onb{display:none} /* 처음 3단계 띠는 투어가 끝난 뒤에
 /* 교회 없이 보는 공통 자료의 큰 탭 */
 .common-tabs > button, .common-song-tabs > button { min-height: 44px; font-size: 16px; flex: 1; }
 [data-screen="common"] > .song-browser { position: static; max-height: none; overflow: visible; }
+
+/* 화면 정리 1단계 */
+.church-header{margin-bottom:var(--s4)}
+.church-header h1{font-size:24px;margin:0}
+.church-header p{font-size:16px;margin:8px 0 0}
+.choice form{display:grid;gap:12px;text-align:left}
+.choice form input,.choice form button,.choice .entry-create{min-height:44px}
+.choice form input,.choice form button,.choice-mine button{font-size:16px}
+.svc-groups{display:flex;gap:8px;margin-bottom:12px}
+.svc-groups button{flex:1;min-height:44px;font-size:16px}
+.conti-editor>summary{min-height:44px;font-size:18px;cursor:pointer}
+#sidebar details{border:0;margin:0}
+#sidebar details>summary{min-height:44px;font-size:16px;padding:10px 12px}
+#sidebar details>summary::before{content:'▸';transform:none;border:0;width:auto;height:auto}
+#sidebar details[open]>summary::before{content:'▾';transform:none}
+@media(min-width:960px){
+ #view[data-screen=word]>:not(.church-header),#view[data-screen=common]>.row,#view[data-screen=common]>.card{max-width:760px;width:100%;box-sizing:border-box}
+ .scripture{width:100%;max-width:760px;box-sizing:border-box}
+ #view:not([data-screen=common]) .only-narrow,#view:not([data-screen=common]) .pick-tabs{display:none!important}
+}
+#sidebar details>button{display:flex;width:100%}
+/* 콘티를 접어 두면 곡 찾기 칸도 숨긴다 — 콘티를 연 뒤에만 담기 */
+.conti-layout:has(>.conti-editor:not([open])){display:block}
+.conti-layout:has(>.conti-editor:not([open]))>.pick-col{display:none}
